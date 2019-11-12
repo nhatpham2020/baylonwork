@@ -1,0 +1,10 @@
+{
+    "database" : "mongodb://157.230.57.197:27017/pewpew",
+    "port":"3000",
+    "security": {
+        "generate" :false,
+        "time": 81400,
+        "secret":"test"
+    },
+    "apipath": "/"
+}
