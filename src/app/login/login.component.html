@@ -1,0 +1,110 @@
+<div   class="container ">
+<a  (click) = "close()"><i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+
+  <div class="user">
+    <h2>USER ACCOUNT</h2>
+  </div>
+<!--   for big device -->
+  <div class="d-none d-lg-block">
+  <div class="user1">
+  <h2>NEW MEMBER</h2>
+     <div class="setting">
+        <form action="/action_page.php">
+          <div class="input-container">
+            <label for="subject">USER NAME</label>
+            <input #signupid class="input-field" type="text" placeholder="" name="username">
+          </div>
+          
+          <div class="input-container">
+            <label for="subject">EMAIL</label>
+            <input #signupemail class="input-field" type="email" placeholder="" name="email">
+          </div>
+          
+		  <div class="input-container frees">
+            <label for="subject">PASSWORD</label>
+            <input #signuppwd class="input-field" type="password" placeholder="" name="psw" (keyup)="onKey(signuppwd.value, signuppwd2.value)">
+          </div>
+		  <div class="input-container frees">
+            <label for="subject">CONFRIM PASSWORD</label>
+            <input #signuppwd2 class="input-field pastt" type="password" placeholder="" name="psw1" (keyup)="onKey(signuppwd.value, signuppwd2.value)">
+            
+          </div>
+          <p> {{values}} </p>   
+        </form>
+      </div>
+	
+	<div class="text-left"><button type="button" class="btn btn6" (click)="register(signupid.value, signupemail.value, signuppwd.value,signuppwd2.value)">REGISTER</button></div> 
+    </div>
+	<div class="user2">
+	<h2>EXISTING MEMBER</h2>
+	<div class="setting">
+        <form action="/action_page.php">
+          <div class="input-container frees">
+            <label for="subject">Email</label>
+            <input #loginemail class="input-field" type="text" placeholder="" name="psw" required>
+          </div>
+            <div class="input-container frees">
+            <label for="subject">PASSWORD</label>
+            <input #loginpassword class="input-field" type="password" placeholder="" name="psw" required>
+          </div>
+          <a href="#" style="text-align: center; color :#0000ff" (click)=forgotPassword($event,loginemail.value)><u>Did you forgot your Password?</u></a>
+          <p> {{warn}} </p> 
+          
+        </form>
+		<div class="text-center"><button type="button" class="btn btn6" (click)="login($event, loginemail.value,loginpassword.value)">LOGIN</button></div> 
+      </div>
+	  
+    </div>
+  </div>
+ <!-- For small device  -->
+  <div class="d-lg-none">
+    <div class="user2" style="width: 98%; border-bottom: solid 5px #000;">
+    <h2>NEW MEMBER</h2>
+       <div class="setting">
+          <form action="/action_page.php">
+            <div class="input-container">
+              <label for="subject"><h6><small>USER NAME</small></h6></label>
+              <input #signupid_s class="input-field" type="text" placeholder="" name="username" >
+            </div>
+            
+            <div class="input-container">
+              <label for="subject"><h6><small>EMAIL</small></h6>EMAIL</label>
+              <input #signupemail_s class="input-field" type="email" placeholder="" name="email">
+            </div>
+            
+        <div class="input-container frees">
+              <label for="subject"><h6><small>PASSWORD</small></h6></label>
+              <input #signuppwd_s class="input-field" type="password" placeholder="" name="psw" (keyup)="onKey(signuppwd_s.value, signuppwd2_s.value)">
+            </div>
+        <div class="input-container frees">
+              <label for="subject"><h6><small>CONFRIM PASSWORD</small></h6></label>
+              <input #signuppwd2_s class="input-field pastt" type="password" placeholder="" name="psw1" (keyup)="onKey(signuppwd_s.value, signuppwd2_s.value)">
+              
+            </div>
+            <p> {{values}} </p>   
+          </form>
+        </div>
+    
+    <div class="text-left"><button type="button" class="btn btn6" (click)="register(signupid_s.value, signupemail_s.value, signuppwd_s.value,signuppwd2_s.value)">REGISTER</button></div> 
+      </div>
+    <div class="user2"  style="width: 98%">
+    <h2>EXISTING MEMBER</h2>
+    <div class="setting">
+          <form action="/action_page.php">
+            <div class="input-container frees">
+              <label for="subject"><h6><small>EMAIL</small></h6></label>
+              <input #loginemail_s class="input-field" type="text" placeholder="" name="psw" required>
+            </div>
+              <div class="input-container frees">
+              <label for="subject"><h6><small>PASSWORD</small></h6></label>
+              <input #loginpassword_s class="input-field" type="password" placeholder="" name="psw" required>
+            </div>
+            <a href="#" style="text-align: center; color :#0000ff" (click)=forgotPassword($event,loginemail_s.value)><u>Did you forgot your Password?</u></a>
+          <p> {{warn}} </p> 
+          </form>
+      <div class="text-center"><button type="button" class="btn btn6" (click)="login($event, loginemail_s.value,loginpassword_s.value)">LOGIN</button></div> 
+        </div>
+      
+      </div>
+    </div>
+</div>

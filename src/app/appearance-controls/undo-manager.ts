@@ -13,16 +13,18 @@ export const UndoMgr: UndoManager = undoFactory('default');
  */
 
 export function undoFactory(name: string) {
-    console.log(undoManagerMap);
     if (undoManagerMap[name]) {
         return undoManagerMap[name];
     }
 
-    const undoManager = new UndoManager();
-    undoManager.setLimit(9)
+    const undoManager =  new UndoManager();
+
+    const mLimit = 9;
+    undoManager.getLimit = () => mLimit;
+
+    undoManager.setLimit(mLimit);
     const mUndoMgr = {
         setMaterialProperty: function (viewer: BabylonViewerComponent, meshName: string, propertyName: string, propertyValue: any) {
-            console.log(meshName)
             const material = <BABYLON.PBRMaterial>viewer.getMesh(meshName).material;
             let lastVal: any = material.albedoColor.toHexString();
             switch (propertyName) {
@@ -30,7 +32,7 @@ export function undoFactory(name: string) {
                     lastVal = material.albedoColor.toHexString();
                     break;
                 case 'texture':
-                    lastVal = material.albedoTexture
+                    lastVal = material.albedoTexture;
                     break;
             }
             this.add({
@@ -55,10 +57,12 @@ export function undoFactory(name: string) {
                 undo: function () {
                     console.log('undo', meshName, propertyValue);
                     viewer.getMesh(meshName).material = oldMaterial;
+                    console.log(oldMaterial);
                 },
                 redo: function () {
                     console.log('redo', meshName, propertyValue);
-                   viewer.changeMeshMaterial(meshName, propertyValue);
+                    viewer.changeMeshMaterial(meshName, propertyValue);
+                    console.log(oldMaterial);
                 }
             });
         },

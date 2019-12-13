@@ -1,5 +1,48 @@
+import {PreviewOptions} from '../customizer-data-types';
+
+export const defaultMeshRotation = (mesh, mAngle, quaternionBase?: BABYLON.Quaternion) => {
+
+    // @7frank TODO change axis for m1-garand and other models to rotate
+
+    if (!quaternionBase) {
+
+        const axis = new BABYLON.Vector3(-1, 1, 0);
+        const angle = Math.PI / 4;
+        quaternionBase = BABYLON.Quaternion.RotationAxis(axis, angle);
+    }
+    // rotate around the y-axis
+    const axis2 = new BABYLON.Vector3(0, 1, 0);
+    const quaternionRotation = BABYLON.Quaternion.RotationAxis(axis2, mAngle);
+
+    //  mesh.rotationQuaternion = rotationOffset.multiplyInPlace(quaternionRotation).multiply(quaternionBase);
+    mesh.rotationQuaternion = quaternionRotation.multiply(quaternionBase);
+};
+
+
+/**
+
+ export const defaultMeshRotation = (mesh, mAngle, rotationOffset = new BABYLON.Quaternion()) => {
+
+    // @7frank TODO change axis for m1-garand and other models to rotate
+    const axis = new BABYLON.Vector3(-1, 1, 0);
+    const angle = Math.PI / 4;
+    const quaternionBase: BABYLON.Quaternion = BABYLON.Quaternion.RotationAxis(axis, angle);
+
+    // rotate around the y-axis
+    const axis2 = new BABYLON.Vector3(0, 1, 0);
+    const quaternionRotation = BABYLON.Quaternion.RotationAxis(axis2, mAngle);
+
+  //  mesh.rotationQuaternion = rotationOffset.multiplyInPlace(quaternionRotation).multiply(quaternionBase);
+    mesh.rotationQuaternion = quaternionRotation.multiply(quaternionBase);
+};
+
+ */
+
 export interface IExportPreview {
-    enablePreview(mesh: BABYLON.Mesh);
+    enablePreview(mesh: BABYLON.Mesh, previewOptions: PreviewOptions);
+
+    setPreviewTargetRotation(angle: number);
+    
     disablePreview();
 }
 
@@ -113,3 +156,36 @@ export function createLightTube(radii: Array<number>, height, scene) {
     return BABYLON.Mesh.CreateTube('tube', path, 2, 6, radiusFunction, 0, scene, false, BABYLON.Mesh.FRONTSIDE);
 
 }
+
+export interface FileUploadResponse {
+    url: string;
+    blob: Blob;
+}
+
+export
+    type FileUploadProgressCallback = (current: number, type?: string) => void;
+
+
+/**
+ * Some options for the video converter
+ */
+export interface VideoConverterOptions {
+    quality?: number;
+    framesPerSecond?: number;
+    totalFrames?: number;
+}
+
+
+/*
+interface IConverter {
+}
+
+interface IBaseConverter {
+    converter: IConverter;
+    grabFrames(scene: BABYLON.Scene, canvasElement: HTMLCanvasElement, mesh: BABYLON.Mesh): Promise<any>;
+    createConverter();
+    cancel();
+
+}
+*/
+

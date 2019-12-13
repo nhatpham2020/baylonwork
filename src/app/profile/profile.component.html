@@ -1,0 +1,147 @@
+<div *ngIf="!profile">
+  <h5 class="text-center">Loading...</h5>
+</div>
+<div class="main-box" *ngIf="profile">
+  <a (click)="close()"><i class="fa fa-times-circle-o" aria-hidden="true"></i></a>
+  <div class="container">
+    <div class="user">
+      <h2>USER ACCOUNT</h2>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row display_flex">
+      <div class="tab">
+        <button class="tablinks " onclick="openCity(event, 'London')" id="defaultOpen"><img
+            src="../../assets/img/profile/Profile.png"><span class="d-none d-md-inline "> PROFILE</span></button>
+        
+        <button class="tablinks" onclick="openCity(event, 'Tokyo')"><img
+            src="../../assets/img/profile/Support.png"><span class="d-none d-md-inline "> SUPPORT</span></button>
+        <button class="tablinks logout" (click)="logout()"><img src="../../assets/img/profile/Log_Out.png"><span
+            class="d-none d-md-inline "> LOG OUT</span></button>
+      </div>
+      <div id="London" class="tabcontent">
+        <div class="profile-section d-none d-lg-block">
+          <div class="profile-left">
+            <div class="profile-img"> <img src="{{profile.avatarURL}}" style=" border-radius: 50%;"></div>
+            <input type="file" (change)="uploadAvatar($event)" class="form-control form-control-sm">
+            <div class="form-profile">
+              <form action="/action_page.php">
+                <div class="input-container">
+                  <input class="input-field" #usernamelarge type="text" value={{profile.username}}
+                    placeholder={{profile.username}} name="psw">
+                  <a href="#" (click)="changeUsername($event,usernamelarge.value, profile)"><i
+                      class="fa fa-save icon"></i></a></div>
+                <div class="input-container">
+                  <input class="input-field" type="text" placeholder="MY MARKET" name="" disabled>
+                  <i class="icon-text">{{profile.myMarket}}</i> </div>
+                <div class="input-container">
+                  <input class="input-field" type="text" placeholder="MY WALL" name="" disabled>
+                  <i class="icon-text">{{profile.myWall}}/10</i> </div>
+                <div class="input-container">
+                  <input class="input-field" type="text" placeholder="MY FAVORITE" name="" disabled>
+                  <i class="icon-text">{{profile.myFavourite}}</i> </div>
+                 
+              </form>
+            </div>
+          </div>
+          <div class="profile-right">
+            <div class="progrss">
+             
+              <div class="clearfix"></div>
+            </div>
+            <div class="input-container">
+              <input class="input-field" type="text" placeholder={{email}}>
+              <i class="fa fa-edit icon"></i>
+            </div>
+            <button type="button" class="btn btn5" (click)="changePassword()">Change Password</button>
+            <div class="container">
+              <form action="/action_page.php">
+                <label for="subject">BIO</label>
+                <div style="position:relative;">
+                  <textarea id="subject" #BIOlarge name="subject" placeholder="BIO.."
+                    style="height:200px;color:#fff;width:100%;" value={{profile.BIO}}></textarea>
+                  <a href="#" (click)="changeBIO($event, BIOlarge.value, profile)"><i
+                      class="fa fa-save icon textarea_icon"></i></a></div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="profile-section d-lg-none">
+          <div class="profile-left">
+            <div class="profile-img"> <img src="{{profile.avatarURL}}" style=" border-radius: 50%;"></div>
+            <input type="file" (change)="uploadAvatar($event)" class="form-control form-control-sm">
+            <div class="progrss">
+              
+              <div class="clearfix"></div>
+            </div>
+            <div class="form-profile">
+              <form action="/action_page.php">
+                <button type="button" class="btn btn5" (click)="changePassword()" style="margin-bottom: 20px;">Change Password</button>
+                <div class="input-container">
+                  <input #usernamesmall class="input-field" type="text" value={{profile.username}} name="psw">
+                  <a href="#" (click)="changeUsername($event,usernamesmall.value, profile)"><i
+                      class="fa fa-save icon"></i></a></div>
+                <div class="input-container">
+                  <input class="input-field" type="text" placeholder="MY MARKET" name="" disabled>
+                  <i class="icon-text">{{profile.myMarket}}</i> </div>
+                <div class="input-container">
+                  <input class="input-field" type="text" placeholder="MY WALL" name="" disabled>
+                  <i class="icon-text">{{profile.myWall}}/10</i> </div>
+                <div class="input-container">
+                  <input class="input-field" type="text" placeholder="MY FAVORITE" name="" disabled>
+                  <i class="icon-text">{{profile.myFavourite}}</i> </div>
+              </form>
+            </div>
+            <div class="input-container">
+              <input class="input-field" type="text" placeholder={{email}} disabled>
+              <i class="fa fa-edit icon"></i> </div>
+              
+            <div class="container">
+              <form action="/action_page.php">
+                <label for="subject">BIO</label>
+                <div style="position:relative;">
+                  <textarea #BIOsmall id="subject" name="subject" placeholder="BIO.."
+                    style="height:200px;color:#fff;width:100%;" value={{profile.BIO}}></textarea>
+                  <a href="#" (click)="changeBIO($event, BIOsmall.value, profile)"><i
+                      class="fa fa-save icon textarea_icon"></i></a></div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div id="Paris" class="tabcontent"> </div>
+      <div id="Tokyo" class="tabcontent" style="display: none">
+        <div class="setting ">
+
+          <div class="input-container frees">
+            <label for="subject" class="d-none d-md-inline">ACCOUNT</label>
+            <input class="input-field" type="text" value="PAID" name="psw" *ngIf="isPaid" disabled>
+            <input class="input-field" type="text" value="FREE" name="psw" *ngIf="!isPaid" disabled>
+          </div>
+          <div class="input-container updgrdd">
+            <button type="button" class="btn btn5" (click)="upgrade()" *ngIf="!isPaid"><i class="fa fa-arrow-up"></i>
+              UPGRADE</button>
+            <button type="button" class="btn btn5" (click)="upgrade()" *ngIf="isPaid"><i class="fa fa-ban fa-lg"></i>
+              CANCEL</button>
+
+          </div>
+          <div class="input-container">
+            <label for="subject" class="d-none d-md-inline">EMAIL</label>
+            <input class="input-field" type="email" value={{email}} name="">
+          </div>
+          <div class="input-container">
+            <label for="subject" class="d-none d-md-inline">THREAD</label>
+            <input #thread class="input-field" type="text" placeholder="" name="" required>
+          </div>
+          <textarea #mailcontent id="subject" name="subject" placeholder=""
+            style="height:200px" required></textarea>
+          <div class="text-right"><button type="button" class="btn btn6"
+              (click)="sendMail(profile, thread.value,mailcontent.value)"><img
+                src="../../assets/img/profile/mail_small.png" width="40"> SEND</button></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

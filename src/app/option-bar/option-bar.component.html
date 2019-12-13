@@ -1,0 +1,57 @@
+<!-- For large device  -->
+<div class="main-box d-none d-lg-block">
+
+  <div class="row display_flex">
+
+    <div id="Profile" class="tabcontent1">
+      <div class="profile-section">
+        <div class="profile-left">
+          <div class="profile-img"> <img src={{hero.avatarURL}} style="border-radius: 50%">
+          <h5 class="text-center">{{hero.username}}</h5></div>
+
+        </div>
+        <div class="profile-right">
+          
+        
+
+        </div>
+        <div class="profile-end sidebar ml-auto flex-row">
+          <li><a href="#"   (click)="openShareModal($event)" ><img  src="assets/img/nav-icons/Share-color.png"/></a>  </li>             
+          <li><a href="#"  (click)="Editgun($event)"><img  src="assets/img/nav-icons/Edit-color.png"/></a></li>
+          <li><a href="#"   (click) = "Marketgun($event)"style="padding-top:0.3rem"><img  src="assets/img/nav-icons/Market-color.png"/></a></li>
+          <li><a href="#"   (click) = "Deletegun($event, hero.key, hero.uid)"style="padding-top:0.3rem"><img  src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- For small device -->
+<div class="main-box d-lg-none">
+
+  <div class="row display_flex">
+
+    <div id="Profile" class="tabcontent1">
+      <div class="profile-section">
+        <div class="profile-left-small" style="margin-top: 10px;">
+          <div class="profile-img"> <img src={{hero.avatarURL}} style="border-radius: 50%">
+            <h5 class="text-center"><small>{{hero.username}}</small></h5> </div>
+
+        </div>
+        <div class="profile-right-small">
+
+        </div>
+        <div class="profile-end sidebar ml-auto flex-row">
+          <li><a href="#"   (click)="openShareModal($event)" ><img  src="assets/img/nav-icons/Share-color.png"/></a>  </li>             
+          <li><a href="#"  (click)="Editgun($event)"><img  src="assets/img/nav-icons/Edit-color.png"/></a></li>
+          <li><a href="#"   (click) = "Marketgun($event)"style="padding-top:0.3rem"><img  src="assets/img/nav-icons/Market-color.png"/></a></li>
+          <li><a href="#"   (click) = "Deletegun($event, hero.key, hero.uid)"style="padding-top:0.3rem"><img  src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

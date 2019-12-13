@@ -2917,88 +2917,116 @@
   ],
   "images": [
     {
-      "uri": "honey_badger_mat_emissive.jpg"
+      "name": "honey_badger_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "honey_badger_mat_baseColor.jpg"
+      "name": "honey_badger_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "silencer03_mat_emissive.jpg"
+      "name": "silencer03_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "silencer03_mat_baseColor.jpg"
+      "name": "silencer03_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "silencer01_mat_emissive.jpg"
+      "name": "silencer01_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "silencer01_mat_baseColor.jpg"
+      "name": "silencer01_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "silencer02_mat_emissive.jpg"
+      "name": "silencer02_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "silencer02_mat_baseColor.jpg"
+      "name": "silencer02_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "grip02_mat_emissive.jpg"
+      "name": "grip02_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "grip02_mat_baseColor.jpg"
+      "name": "grip02_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "reflect_sight_mat_emissive.jpg"
+      "name": "reflect_sight_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "reflect_sight_mat_baseColor.jpg"
+      "name": "reflect_sight_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "red_dot_sight_mat_emissive.jpg"
+      "name": "red_dot_sight_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "red_dot_sight_mat_baseColor.jpg"
+      "name": "red_dot_sight_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "holographic_sight_mat_emissive.jpg"
+      "name": "holographic_sight_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "holographic_sight_mat_baseColor.jpg"
+      "name": "holographic_sight_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "grip01_mat_emissive.jpg"
+      "name": "grip01_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "grip01_mat_baseColor.jpg"
+      "name": "grip01_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "grip03_mat_emissive.jpg"
+      "name": "grip03_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "grip03_mat_baseColor.jpg"
+      "name": "grip03_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "tactical_laser_mat_emissive.jpg"
+      "name": "tactical_laser_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "tactical_laser_mat_baseColor.jpg"
+      "name": "tactical_laser_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "acog_mat_emissive.jpg"
+      "name": "acog_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "acog_mat_baseColor.jpg"
+      "name": "acog_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "scope_mat_emissive.jpg"
+      "name": "scope_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "scope_mat_baseColor.jpg"
+      "name": "scope_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "flash_light_mat_emissive.jpg"
+      "name": "flash_light_mat_emissive.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     },
     {
-      "uri": "flash_light_mat_baseColor.jpg"
+      "name": "flash_light_mat_baseColor.jpg",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
     }
   ],
   "samplers": [

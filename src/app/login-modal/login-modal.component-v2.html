@@ -1,0 +1,40 @@
+<div id="loginmodal">
+<div class="">
+        <div class="text-right">
+        <h4 style="text-align:center">USER ACCOUNT</h4>
+        </div>
+        <button type="button" class="close text-right" aria-label="Close" (click)="close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="">
+        <div class="text-center">
+            
+        </div>
+        <form class="needs-validation" novalidate>
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input id="loginUsername" type="text" placeholder="PewPewCustoms" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" class="form-control">
+            </div>
+            <div class="text-right">
+                <a href="#">Forgot Password?</a>&nbsp;<button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="loginConfirmPassword">Confirm Password</label>
+                <input id="loginConfirmPassword" type="password" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="loginEmail">E-mail</label>
+                <input id="loginEmail" type="email" class="form-control" placeholder="account@emailhost.com">
+            </div>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </form>
+    </div>
+</div>

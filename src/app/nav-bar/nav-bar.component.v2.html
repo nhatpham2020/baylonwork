@@ -1,0 +1,50 @@
+
+<nav class="navbar navbar-expand-md navbar-light row">
+    <a class="navbar-brand mr-auto" href="#"><img src="assets/img/logo-goat.png" id="log"></a>
+   <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-md-right" id="navbarsExample04">
+        -->
+
+
+      
+        <ul class="navbar-nav ml-auto flex-row">
+            <li class="nav-link" class="nav-item top-item">
+                
+            <a href="#"(click) =" openMarketModal($event)">
+              <img  src="assets/img/nav-icons/Market.png"/><span class="d-none d-md-inline">&nbsp;MARKET</span></a>
+            </li>
+            <!--
+            <li class="nav-link" class="nav-item">
+                <a href="#" (click)="resetMaterials($event)"><i class="material-icons md-inherit icon">refresh</i><span>START OVER</span></a>
+            </li>
+            -->
+
+            <li class="nav-link" class="nav-item top-item">
+                <a href="#"(click) =" openGunwallModal($event)"><img  src="assets/img/nav-icons/Gunwall.png"/><span  class="d-none d-sm-inline">&nbsp;GUNWALL</span></a>
+            </li>
+            <!--
+            <li class="nav-item">
+                <a class="nav-link" href="#" (click)="openFavoriteModal($event)"><i
+                        class="material-icons md-inherit icon">favorite_border</i><span>FAVORITE</span></a>
+            </li>
+            -->
+            <li class="nav-link" class="nav-item top-item">
+                <a (click) =" openFavoriteModal($event)"><img  src="assets/img/nav-icons/Favorite.png"/><span  class="d-none d-sm-inline">&nbsp;FAVORITE</span></a>
+            </li>
+            <li class="nav-link" class="nav-item ">
+                    <a href="#"(click) = "openlogin($event)"><img class="small" src="assets/img/nav-icons/login-v2.png"/></a>
+            </li>
+           
+        </ul>
+    
+</nav>
+<router-outlet></router-outlet>
+
+
+    
+    
+    
+  

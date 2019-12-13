@@ -1,0 +1,45 @@
+<h5 class="text-center" style="margin: 1%;" *ngIf="!fileUploads">Loading data from database...</h5>
+<h4 class="text-center" style="margin: 1%;" *ngIf="isPaid&&fileUploads">{{fileUploads.length}}/10</h4>
+<h4 class="text-center" style="margin: 1%;" *ngIf="!isPaid&&fileUploads">{{fileUploads.length}}/3</h4>
+<div class="recipe-itmes bg-light">
+    <div class="row no-gutters clearfix">
+        <!-- Item 1 -->
+        <div class="col-sm-6 col-6" *ngFor="let file of fileUploads">
+          <div class="card">
+            <div class="card-body text-center">
+                <a href="#" (click)="Edit($event, file)">
+                  <img width="300px" height="300px" src="{{file.url}}">
+                </a>
+              <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                <h3 class="card-title"><a class="stretched-link">{{file.weaponName}}</a>
+                </h3>
+                <span class="badge badge-primary bgcolor"><i class="icon-star3"></i> 4.6</span>
+              </div>
+              <p class="card-author">By <a class="stretched-link"> {{file.username}}</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-6" *ngFor="let number of numbers">
+          <div class="card">
+            <div class="card-body text-center">
+                <a href="#" (click)="Edit($event, file)">
+                  <img width="300px" height="300px" src="../../assets/img/gunwall/grey-cross.png">
+                </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-6" *ngFor="let inactive of inactiveNumbers">
+          <div class="card">
+            <div class="card-body text-center">
+                <a href="#" (click)="Edit($event, file)">
+                  <img width="300px" height="300px" src="../../assets/img/gunwall/grey_lock.png">
+                </a>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+  </div>

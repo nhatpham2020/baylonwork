@@ -1,15 +1,26 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+.cdk-global-overlay-wrapper, .cdk-overlay-container { z-index: 9999!important; }
+
 html, body {
   margin: 0;
   padding: 0;
   background-color: #F1F2ED;
   color: #222222;
   overflow: hidden;
+  
 }
 
 app-root {
   height: 100vh;
 }
+@media screen and (max-width: 420px) {
+  app-root {
+    height: 87vh;
+  }  
 
+    
+  }
 app-babylon-viewer {
   line-height: 0;
   overflow: hidden;
@@ -40,4 +51,15 @@ a {
 .contain-svg svg {
   max-height: 100%;
   max-width: 100%;
+}
+
+
+
+
+
+
+.color-picker{
+  margin-left: auto!important;
+  margin-right: auto!important;
+
 }

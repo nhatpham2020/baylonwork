@@ -62,12 +62,12 @@ http-server -p 8081
 
 ### Option 3 (production)
 
-* make sure supervisor is installed or use:
+* make sure pm2 is installed or use:
 ````
-apt-get install supervisor
+npm install pm2 -g 
 ````
 
-* install the application like with option 1 or 2 
+* install the application similar to option 1 or 2 
 ````
 rm gun-customizer -r &&
 git clone https://github.com/SymboInteractive/gun-customizer.git --branch develop --single-branch &&
@@ -79,16 +79,18 @@ npm install
 
 ````
 
-* run the application as a service
-    * TODO this mightnot work that way currently
-    * "supervisord" might still be running and nto the service itself
-    *  alias kill3000="fuser -k -n tcp 3000"
+* run the application as a service first time starting pm2    
+````
+# pm2 start server.js
+pm2 start server.config.js --env production
+pm2 startup
+````    
+* restarting pm2 after new release e. g. 
 
 ````
-cd /usr/share/nginx/html/goat-dev/gun-customizer/server/ &&
-cp /usr/share/nginx/html/goat-dev/gun-customizer/server/supervisord.conf /etc/supervisor/conf.d/goat.conf
-
-service supervisor restart
+pm2 restart server.config.js --env production
+# save potential changes 
+pm2 save
 
 ````
 
@@ -102,80 +104,46 @@ npm install -g localtunnel
 ````
 lt -p 3000 --subdomain mighty-starfish-59
 ````
+* kill server
+````   
+    # use kill3000 command to stop process whenever necessary 
+   alias kill3000="fuser -k -n tcp 3000"
+````
 
 
 
 
 #"Backlog"
 ## potential improvements
-* visual feedback on hover (e.g. wireframe )
-    * partially implemented
-* persistent uploads directory like volumes  
-    * docker for persistency of data?                       
+* migrate log to
+    * https://github.com/SymboInteractive/gun-customizer/issues                 
+
+* twitter response
+    * show user on preview so if user has multiple accounts he is not irritated
+    * twitter invalidate token    
+
+* facebook 
+    * invision3d.org is deemed bad on fb
+        * Ok, talked with my friend at FB, apparently they have updated they algorithms and blocked lots of weapon related content today. One thing we can do is to remove all text with the word”GUN” in it, to avoid been blocked. Let’s try that when you have time, and see if that works. Thanks
+    * test via tunnel until facebook scraper finds what it needs...
+        * https://developers.facebook.com/tools/debug/og/object/
+    * use clients facebook api key
+* preview should use transformation node for orientation offset and scaling of mesh
        
                     
 ## TODO 
-** Ok, talked with my friend at FB, apparently they have updated they algorithms and blocked lots of weapon related content today. One thing we can do is to remove all text with the word”GUN” in it, to avoid been blocked. Let’s try that when you have time, and see if that works. Thanks
 
-* invision3d.org is deemed bad on fb
-* test via tunnel until facebook scraper finds what it needs...
-    * https://developers.facebook.com/tools/debug/og/object/
-* ???
-    * maybe twitter needs secure https like in the docs
-    * facebook secure_url https.. same goes here .. might be necessary for auto play 
-    * but still card validator does not work
-    * FB - app might not be in production mode but why would that matter?    
-    
-* socketio not working on server as nginx is not configured right
-* uploadTar route not working on server ..
 
-* closing share modal has become bugged ...
+* stream upload for browsers that support it
+    * https://github.com/fbsamples/Canvas-Streaming-Example
+    * https://github.com/google/WebFundamentals/blob/master/src/content/en/updates/2016/10/capture-stream.md
+    * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/captureStream
+    * https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
 
-* notes
-    * Weapon offset position after the Sharing feature o Same issue been mentioned before,
-  when the sharing feature completed or been canceled, 
-  can we set the weapons back to the default pose? 
-    * Adjust turntable camera angle o The stake holder prefers this angle instead (see doc)
- 
-
-* use clients facebook api key
-
-* preview 
-    * second mesh has different rotation 
-    * add custom starting positions?
-
-* GIF export: test file size based on materials and patterns used
-    * also viewing angle impacts file size
-    * and artifacts
-
-* how to handle no longer available content?
-    * currently page links to files anyway
-                  
+* how to handle if content was deleted on the server
+    * currently page links to files anyway       
 * delete file if user aborts sharing
-
-* save file for mobile users
-    * we should be able to have it saved in Pictures/Photos       
-    
+ 
 * update tests and documentation    
     
 ## done
-
-* have a quick file upload api to send the gifs and then to create random html files that deliver 
-* undo manager bug (preview interfered with picking)
-    * after share is initialized the mesh cant be edited anymore
-
-* <b>twitter and facebook</b> 
-    * fb animate in timeline, on link click open website origin
-    * twitter share multiple links 
-        * first GIF url directly that should be rendered
-        * second one origin
-        * can't test upload via tunnel (413 too large)
-        * can't test on server as twitter crawler gets HTTPConnectionTimeout (from custom port?)    
-    * potential alternative if above is not working for twitter
-        * https://twittercommunity.com/t/bug-twitter-cards-error-failed-to-fetch-page-due-to-httpconnectiontimeout/86659
-        * http://travaux.ovh.net/?do=details&id=24590        
-
-*  So can we polish the turn table, meaning change BG to black,
-    * add VFX and make it looks cool and update all the changes 
-    to the server so we can test out everything? 
-    Or you’d prefer wait till the Twitter sharing fixed to do that?    

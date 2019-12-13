@@ -1,34 +1,42 @@
+import { Observable } from 'rxjs';
+import { AuthService } from './../auth/auth.service';
 import {Component, OnInit} from '@angular/core';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {UserService} from '../user.service';
 import {LoginModalComponent} from '../login-modal/login-modal.component';
+import { LoginComponent } from '../login/login.component';
 import {NotifierService} from '../notifier.service';
-import {THREE2GIFConverter} from '../utils/GIFExport';
 import {ViewerService} from '../viewer.service';
 import {ShareModalComponent} from '../share-modal/share-modal.component';
-import {GIFExportPreview} from '../utils/GIFExportPreview';
-import {GIFUpload} from '../utils/GIFUpload';
-import { APIService } from '../../providers/api-service';
-declare var $: any;
+import {ColorPickerModalComponent} from '../color-picker-modal/color-picker-modal.component';
+import {ColorOptionInterface} from '../customizer-data.service';
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
+import { ProfileComponent } from '../profile/profile.component';
+import { FavouriteComponent } from '../favourite/favourite.component';
+import { MarketComponent } from '../market/market.component';
+import { GunwallComponent } from '../gunwall/gunwall.component';
+import { SavemodalComponent } from '../savemodal/savemodal.component';
+import { MarketmodalComponent } from '../marketmodal/marketmodal.component';
+
 
 @Component({
     selector: 'app-nav-bar',
-    templateUrl: './nav-bar.component.html',
-    styleUrls: ['./nav-bar.component.css'],
-    providers: [APIService]
+    templateUrl: './nav-bar.component_new.html',
+    styleUrls: ['./nav-bar.component_new.css']
 })
 export class NavBarComponent implements OnInit {
     public openModal: BsModalRef = null;
+    user: Observable<firebase.User>;
+    isNavOpen = false;
 
-    loggedUser = null;
     constructor(private modalService: BsModalService, private userService: UserService,
-        private apiService: APIService,
-                private notifierService: NotifierService, private viewerService: ViewerService) {
+                private notifierService: NotifierService,
+                private as: AuthService) {
     }
 
-
     ngOnInit() {
-        this.loggedUser = this.userService.retrieveUser();
+         window['NavBar'] = this;
     }
 
     /**
@@ -38,42 +46,83 @@ export class NavBarComponent implements OnInit {
     startSharing(event?: MouseEvent) {
 
         this.openShareModal(event);
-
-
-
     }
+    startMarketing(event?: MouseEvent) {
+        if (this.as.isLoggedIn) {
+            // TODO
+            this.openModal = this.modalService.show(MarketmodalComponent);
+        } else {
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+        }
+
+        return this.stopEvent(event);
+    }
+    
     openFavoriteModal(event: MouseEvent) {
-        if (this.userService.loggedIn()) {
+        if (this.as.isLoggedIn) {
+            this.openModal = this.modalService.show(FavouriteComponent, {class: 'modal-lg'});
             // TODO
         } else {
-            //this.openModal = this.modalService.show(LoginModalComponent);
-            $("#loginmodel").show();
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+        }
+
+        return this.stopEvent(event);
+    }
+    openMarketModal(event: MouseEvent) {
+        if (this.as.isLoggedIn) {
+            // TODO
+            this.openModal = this.modalService.show(MarketComponent, {class: 'modal-lg'});
+        } else {
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
 
         return this.stopEvent(event);
     }
 
-    openLoginModal(event: MouseEvent) {
-        if (this.userService.loggedIn()) {
+    openGunwallModal(event: MouseEvent) {
+        if (this.as.isLoggedIn) {
             // TODO
+            this.openModal = this.modalService.show(GunwallComponent, {class: 'modal-lg'});
         } else {
-            //this.openModal = this.modalService.show(LoginModalComponent);
-          $('#loginUsername').val('')
-          $('#loginPassword').val('')
-            $("#loginmodel").show();
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
 
         return this.stopEvent(event);
     }
 
-    logout(event: MouseEvent) {
-        this.userService.clearUser()
-        this.loggedUser = this.userService.retrieveUser();
-        window.location.reload();
+    openlogin(event: MouseEvent) {
+        if (this.as.isLoggedIn) {
+            // TODO
+            this.openModal = this.modalService.show(ProfileComponent, {class: 'modal-lg'});
+        } else {
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+        }
+
+        return this.stopEvent(event);
     }
 
     openShareModal(event: MouseEvent) {
-            this.openModal = this.modalService.show(ShareModalComponent);
+        this.openModal = this.modalService.show(ShareModalComponent);
+        return this.stopEvent(event);
+    }
+
+    openColorPickerModal(event: MouseEvent): ColorPickerModalComponent {
+        this.openModal = this.modalService.show(ColorPickerModalComponent);
+
+        const instance = <ColorPickerModalComponent>this.openModal.content;
+
+        this.stopEvent(event);
+
+        return instance;
+    }
+
+    startSave(event: MouseEvent) {
+        if (this.as.isLoggedIn) {
+            // TODO
+            this.openModal = this.modalService.show(SavemodalComponent);
+        } else {
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+        }
         return this.stopEvent(event);
     }
 
@@ -84,41 +133,21 @@ export class NavBarComponent implements OnInit {
         return this.stopEvent(event);
     }
 
+    controlNav(event: MouseEvent) {
+        if (!this.isNavOpen) {
+            console.log('isClosed')
+            document.getElementById('sideNav').classList.add('side-header-open');
+        } else {
+            console.log('isopened')
+            document.getElementById('sideNav').classList.remove('side-header-open');
+        }
+        this.isNavOpen = !this.isNavOpen;
+        return this.stopEvent(event);
+    }
+
     stopEvent(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
-
         return false;
     }
-
-
-    username='';
-  password='';
-  async login() {
-    // const output = await this.apiService.executeByURL('api/login', {
-    //   email: "user1@gmail.com", password: "user123"
-    // });
-    const output = await this.apiService.executeByURL('api/login', {
-      email: this.username, password: this.password
-    });
-    console.log(output);
-    if (output && output.isapisuccess) {
-      const res: any = output.apidata;
-      if (res.Code === "P00001") {
-        this.userService.storeUser(res.Data,res.Data._id);
-        this.loggedUser = res.Data;
-        window.location.reload();
-        $("#loginmodel").hide();
-      }
-      else {
-        alert("Invalid user name and password");
-      }
-    } else {
-      alert("Invalid user name and password");
-    }
-  }
-
-  hideLoginModel(){
-    $("#loginmodel").hide();
-  }
 }

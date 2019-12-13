@@ -1,41 +1,20 @@
+import { BaseExportPreviewwhite } from './../utils/BaseExportPreviewwhite';
 import {AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild} from '@angular/core';
 import {BsModalRef} from 'ngx-bootstrap';
 import {facebookShare} from '../utils/Facebook';
-import {GIFConverterOptions, GIFProgressCallback, GIFResult, THREE2GIFConverter} from '../utils/GIFExport';
 import {ViewerService} from '../viewer.service';
-import {GIFExportPreview} from '../utils/GIFExportPreview';
-import {GIFUpload, UploadResponseObject} from '../utils/GIFUpload';
+import {ExportPreviewFullFeatured} from '../utils/ExportPreviewFullFeatured';
+import {FileUpload, UploadResponseObject} from '../utils/FileUpload';
 import config from './config';
 
-import {updateTwitterShareButton} from '../utils/Twitter';
 import {TarExport} from '../utils/TarExport';
 
 import {socket, socketStartListening} from '../utils/Socket';
+// import {RawExportPreview} from '../utils/RawExportPreview';
+import {FileUploadProgressCallback, FileUploadResponse, IExportPreview, VideoConverterOptions} from '../utils/ExportCommon';
+import {BaseExportPreview} from '../utils/BaseExportPreview';
+import domtoimage from 'dom-to-image-more';
 
-
-import parseHTML from 'parsehtml';
-import {RawExportPreview} from '../utils/RawExportPreview';
-import {IExportPreview} from '../utils/ExportCommon';
-
-function debugTwitter() {
-    const twitterBTN = parseHTML(`
- <a id="twitter-gif-share2" class="twitter-share-button"
-               href="#"
-               data-size="large">
-                <img class="m-1" style="height: 2em;position: relative;top: -2em;"
-                     src="assets/img/share-ui/Share_TW.png" title="Continue with Twitter"/>
-            </a>
-`);
-
-    updateTwitterShareButton(twitterBTN,
-        'Nice gadget!',
-        ['pewpewcustoms'],
-        ['http://mighty-starfish-59.localtunnel.me/api/share/a8297608-b44a-4cbc-ba9e-8b1f662ab186/m4v']);
-
-    document.body.appendChild(twitterBTN);
-}
-
-window['debugTwitter'] = debugTwitter;
 
 socketStartListening();
 
@@ -49,33 +28,39 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild('canvasContainer')
     canvasContainer: ElementRef<HTMLDivElement>;
-    // --------------------
-    private displayCanvas: HTMLCanvasElement;
     public scene: BABYLON.Scene;
-
     debug = config.debug;
+    progress = false;
 
     // ---------------------
     // general progress info
-
-    progress = false;
     progressType = '';
     progressPercentage = 0;
-
     created = false;
     uploaded = false;
     // --------------------
     error = '';
-
     uploadResponse: UploadResponseObject = null;
+    availablePreviews = {
+        default: {
+            name: 'default', ctor: BaseExportPreview
+        },
+        special: {
+            name: 'plain', ctor: BaseExportPreviewwhite
+        },
+        basic: {
+            name: 'basic', ctor: BaseExportPreviewwhite
+        }
+    };
+    previewInstances = {};
+    public enableSharingButtons = false;
+    // --------------------
+    private displayCanvas: HTMLCanvasElement;
     private preview: IExportPreview;
-    private gifUpload: GIFUpload;
+    private fileUpload: FileUpload;
     private exporter: any;
     private previousCanvasContainer: HTMLElement | null;
-
-    availablePreviews = {default: {name: 'default', ctor: GIFExportPreview}, raw: {name: 'raw', ctor: RawExportPreview}};
-    previewInstances = {};
-    private enableSharingButtons = false;
+    private interval1;
 
     constructor(private modalRef: BsModalRef, private viewerService: ViewerService, private zone: NgZone) {
 
@@ -88,17 +73,16 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
                 this.setProgress(data.percentage, 100, 'Converting ' + data.format);
 
-                if (data.percentage >= 99)
-                    this.created = true;
-
+                if (data.percentage >= 99) {
+                this.created = true;
+                }
                 console.log(this.progress, this.progressType, this.progressPercentage);
 
+                // TODO @7frank work flow...
+                if (!this.progress && this.progressType === 'Converting jpg') {
 
-            // TODO @7frank work flow...
-                if (!this.progress && this.progressType=="Converting jpg") {
-
-                    // FIXME @7frank use this param to disable the overlay as soon as sockerio works through the nginx route on the server
-                    this.enableSharingButtons=true
+                    // disable the overlay as soon as sockerio returns that the jpg was converted
+                    this.enableSharingButtons = true;
 
                 }
 
@@ -123,11 +107,11 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
 
     getTwitterShareURL(data: UploadResponseObject) {
-        //TODO
+        // TODO
         return config.share.baseURL + '/twitter/video/' + data.id + '.' + data.format;
 
     }
-
+    
 
     shareWithFacebook() {
         if (!this.uploadResponse) {
@@ -135,8 +119,8 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         }
         const url = this.getShareURL(this.uploadResponse);
         facebookShare(url);
-        //TODO what to do after facebook share
-        //.then(() => this.close());
+        // TODO what to do after facebook share
+        // .then(() => this.close());
 
     }
 
@@ -154,14 +138,16 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     }
 
     setProgress(current, maximum, action: string) {
+
         this.progressPercentage = Math.round(100 * current / maximum);
         this.progress = this.progressPercentage != 100;
         this.progressType = action;
     }
 
     close() {
-        this.modalRef.hide();
+
         this.undoPreviewMode();
+        this.modalRef.hide();
 
     }
 
@@ -183,51 +169,34 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     getPreviewMesh() {
         return this.viewerService.viewer.getActiveWeapon();
-
     }
 
-    async createGIFromCanvas(progressCallback: GIFProgressCallback, overrideConfig?: GIFConverterOptions): Promise<GIFResult> {
+    async createTarFromCanvas(progressCallback: FileUploadProgressCallback, overrideConfig?: VideoConverterOptions): Promise<FileUploadResponse> {
 
-        this.exporter = new THREE2GIFConverter(config.gif.width, config.gif.height, Object.assign(config.gif.options, overrideConfig));
+
+        this.exporter = new TarExport(config.video.width, config.video.height, Object.assign(config.video.options, overrideConfig));
 
 
         const start = window.performance.now();
-        const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.getPreviewMesh(), progressCallback);
-        const stop = window.performance.now();
-
-        console.log('Creating Gif took:', (stop - start) / 1000, ' seconds');
-
-        return result;
-    }
-
-    async createTarFromCanvas(progressCallback: GIFProgressCallback, overrideConfig?: GIFConverterOptions): Promise<GIFResult> {
-
-
-        this.exporter = new TarExport(config.gif.width, config.gif.height, Object.assign(config.gif.options, overrideConfig));
-
-        window['converter'] = this.exporter.converter;
-
-
-        const start = window.performance.now();
-        const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.getPreviewMesh(), progressCallback);
-
+        ///Download image file
+       /*  domtoimage.toPng(this.displayCanvas, { quality: 0.95 })
+        .then(function (dataUrl) {
+            var link = document.createElement('a');
+            link.download = 'dragon.png';
+            link.href = dataUrl;
+            link.click();
+        }); */
+        const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.preview, progressCallback);
+        
 
         const stop = window.performance.now();
 
         console.log('Creating Tar took:', (stop - start) / 1000, ' seconds');
-
         return result;
     }
 
 
-    getGifEl(): HTMLImageElement {
-        return <HTMLImageElement> document.querySelector('#gif-preview');
-    }
-
-
-    // TODO progress bar for image after video generation gets stuck at 5% and will not highlight a success state
-
-    async initGIFExport(overrideConfig?: GIFConverterOptions, uploadImmediate: boolean = true) {
+    async initVideoExport(overrideConfig?: VideoConverterOptions, uploadImmediate: boolean = true) {
 
 
         this.uploaded = false;
@@ -235,62 +204,41 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         this.error = '';
         this.setProgress(0, 1, '');
 
-        if (!this.gifUpload) {
-            this.gifUpload = (new GIFUpload);
+        if (!this.fileUpload) {
+            this.fileUpload = (new FileUpload);
         }
 
-        this.gifUpload.cancelLastUpload();
-
-        let mType = 'tar';
+        this.fileUpload.cancelLastUpload();
 
 
         let result;
         try {
 
-            if (mType === 'gif') {
 
-                result = await this.createGIFromCanvas((val) => {
-                    this.setProgress(val, 1, 'Generating GIF...');
-                }, overrideConfig);
+            result = await this.createTarFromCanvas((val) => {
 
+                // FIXME progress is only triggered on convert not while capturing
 
-            } else if (mType === 'tar') {
+                this.setProgress(val, 1, 'Generating Tar');
+            }, overrideConfig);
 
-                result = await this.createTarFromCanvas((val) => {
-
-                    // FIXME progress is only triggered on convert not while capturing
-
-                    this.setProgress(val, 1, 'Generating Tar');
-                }, overrideConfig);
-
-
-            }
 
         } catch (e) {
             console.warn(e);
             this.error = e.message;
             return;
-        } finally {
-
-            // this.undoPreviewMode();
-
         }
 
-
-        if (mType == 'gif') {
-            const el = this.getGifEl();
-            el.src = result.url;
-        }
 
         if (!uploadImmediate) {
             return;
         }
 
-        const uploadRoute = (mType == 'gif') ? config.share.baseURL + config.share.gifUploadRoute : config.share.baseURL + config.share.tarUploadRoute;
+        const uploadRoute = config.share.baseURL + config.share.fileUploadRoute;
 
-        this.gifUpload.setRemote(uploadRoute);
+        this.fileUpload.setRemote(uploadRoute);
 
-        const gifPromise = this.gifUpload.uploadBlob(result.blob, undefined, (e) => {
+        const gifPromise = this.fileUpload.uploadBlob(result.blob, undefined, (e) => {
 
             console.log(e.loaded, e.total);
 
@@ -300,7 +248,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
 
         gifPromise.catch((e) => {
-            this.error = 'Failed to upload file. Server not resonding.';
+            this.error = 'Failed to upload file. Server not responding.';
         });
         const response = await gifPromise;
 
@@ -337,34 +285,38 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     setShareElements(data: UploadResponseObject) {
         this.uploadResponse = data;
-
-        //updateTwitterShareButton(document.querySelector('#twitter-gif-share'), 'Nice gadget!', ['pewpewcustoms'], [this.getShareURL(data)]);
     }
 
-    // FIXME @7frank remove all previews from the global scene otherwise re-opening dialog will create multiple instances of the individual objects
+    // FIXME @7frank remove all previews from the global scene otherwise re-opening dialog
+    // will create multiple instances of the individual objects
     ngOnDestroy(): void {
         this.close();
 
 
     }
+    
 
     ngAfterViewInit(): void {
 
 
         this.displayCanvas = this.viewerService.viewer.renderCanvas.nativeElement;
+
         this.scene = this.viewerService.viewer.scene;
 
         this.previousCanvasContainer = this.displayCanvas.parentElement;
         this.canvasContainer.nativeElement.appendChild(this.displayCanvas);
-
         this.viewerService.viewer.resizeOnRender = false;
-        // this.viewerService.viewer.resizeAsNeeded(true);
-
-
         this.scene.getEngine().setSize(512, 512);
-
-
-        this.preparePreview(this.availablePreviews.default);
+        this.preparePreview(this.availablePreviews.basic);
+       /*  domtoimage.toPng(this.displayCanvas)
+            .then(function (dataUrl) {
+                var img = new Image();
+                img.src = dataUrl;
+                document.body.appendChild(img);
+            })
+            .catch(function (error) {
+                console.error('oops, something went wrong!', error);
+            }); */
 
 
     }
@@ -375,15 +327,31 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         }
 
         if (!this.previewInstances[obj.name]) {
-            this.previewInstances[obj.name] = new obj.ctor(this.scene, this.displayCanvas, this.viewerService.viewer.camera);
+            this.previewInstances[obj.name] = new obj.ctor(this.scene, this.displayCanvas);
 
         }
 
-        // this.preview = new GIFExportPreview(this.scene, this.displayCanvas, this.viewerService.viewer.camera);
         this.preview = this.previewInstances[obj.name];
+        this.viewerService.viewer.previewOptions.camera.target = new BABYLON.Vector3(0, -0.05,  0);
+        this.viewerService.viewer.previewOptions.camera.upvec = new BABYLON.Vector3(0, 1, 0);
+        this.preview.enablePreview(this.getPreviewMesh(), this.viewerService.viewer.previewOptions);
 
-        this.preview.enablePreview(this.getPreviewMesh());
+    }
 
+    //TODO @7frank use as default
+    initPreviewRotationAnimation() {
+
+        // sample code for testing rotation and offsets
+
+        // that.preview.rotationOffset.x = 0.5;
+        // that.preview.setPreviewTargetRotation(0);
+        clearInterval(this.interval1);
+        let angle = 0;
+        this.interval1 = setInterval(() => {
+
+            this.preview.setPreviewTargetRotation(angle);
+            angle += 0.05;
+        }, 1000 / 60);
 
     }
 

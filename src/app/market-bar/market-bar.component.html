@@ -1,0 +1,48 @@
+<!-- For large device -->
+<div class="main-box d-none d-lg-block">
+
+
+  <div id="Profile" class="tabcontent1">
+    <div class="profile-section">
+      <div class="profile-left ">
+        <div class="profile-img"> <img src={{hero.avatarURL}} style="border-radius: 50%">
+          <h5 class="text-center">{{hero.username}}</h5>
+          
+        </div>
+      </div>
+      <div class="profile-right">
+      </div>
+      <div class="profile-end sidebar ml-auto flex-row">
+        <li>{{hero.sharecount}}&nbsp;<a href="#" (click)="increase($event,hero, 0)"><i class="fa fa-share-alt" aria-hidden="true"></i></a></li>
+        <li>{{hero.favouritecount}}&nbsp;<a href="#" (click)="increase($event,hero, 1)"><i class="fa fa-star-o" aria-hidden="true"></i></a></li>
+        <li>{{hero.likecount}}&nbsp;<a href="#" (click)="increase($event,hero, 2)"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
+      </div>
+    </div>
+
+</div>
+
+</div>
+<!-- For small device -->
+<div class="main-box d-lg-none">
+
+<div class="row display_flex">
+
+  <div id="Profile" class="tabcontent1">
+    <div class="profile-section">
+      <div class="profile-left-small" >
+        <div class="profile-img"> <img src={{hero.avatarURL}} style="border-radius: 50%"> </div>
+        <h5 class="text-center">{{hero.username}}</h5>
+      </div>
+      <div class="profile-right-small">
+      </div>
+      <div class="profile-end sidebar ml-auto flex-row" style="margin-top:1em;">
+        <li>{{hero.sharecount}}&nbsp;<a href="#" (click)="increase($event,hero, 0)"><i class="fa fa-share-alt" aria-hidden="true"></i></a></li>
+        <li>{{hero.favouritecount}}&nbsp;<a href="#" (click)="increase($event,hero, 1)"><i class="fa fa-star-o" aria-hidden="true"></i></a></li>
+        <li>{{hero.likecount}}&nbsp;<a href="#" (click)="increase($event,hero, 2)"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>

@@ -1,3 +1,5 @@
+const {getOrigin} = require("./util");
+const config0 = require('./config')
 var express = require('express');
 var path = require('path');
 
@@ -19,23 +21,22 @@ let config; //set when required //config.storageLocation
 
 // FIXME use dynamic approach instead
 // @see https://stackoverflow.com/questions/14111850/passport-facebook-how-to-dynamically-set-callbackurl
-let origin="http://goat.invision3d.org";
 
 //TODO place keys in .env some additional security
 const availKeys = {
     development: {
         consumerKey: 'GMZuCbVuuaPTUu3OaUFMvJKAr',
         consumerSecret: 'CxImVBSMDTBTQN5NaMbrvLCNoqy9KIPzBKHz9rBNVYV0c7irYu',
-        callbackURL: origin+'/twitter/return'
+        callbackURL: '/twitter/return'
     },
     production: {
         consumerKey: 'SHyL0sMzWCdrIKzyvMf91H5Pw',
         consumerSecret: 'X9rSzrql0mblaB0fqjUacFLDXj1EfANDLG9OGbejroQAkb6m5v',
-        callbackURL: origin+'/twitter/return'
+        callbackURL: '/twitter/return'
     }
 }
 
-const keys = availKeys.development
+const keys = config0.mode=="production"? availKeys.production: availKeys.development
 console.log("keys:",keys)
 
 passport.use(new Strategy(keys, function (token, tokenSecret, profile, callback) {
@@ -61,7 +62,7 @@ twitterRouter.use(logger('dev'));
 twitterRouter.use(bodyParser.json());
 twitterRouter.use(bodyParser.urlencoded({extended: false}));
 twitterRouter.use(cookieParser());
-twitterRouter.use(express.static(path.join(__dirname, 'public')));
+//twitterRouter.use(express.static(path.join(__dirname, 'public')));
 twitterRouter.use(session({secret: 'whatever', resave: true, saveUninitialized: true}))
 twitterRouter.use(passport.initialize())
 twitterRouter.use(passport.session())
@@ -86,17 +87,30 @@ twitterRouter.use('/video/:id', function (req, res) {
 })
 
 
+function passportAuthTwitterDynamic(req, res, next) {
+
+    let origin=getOrigin(req)
+
+    passport.authenticate(
+        'twitter', {
+            callbackURL: origin+ keys.callbackURL,
+            failureRedirect: '/',
+            // session: false
+        })(req, res, next);
+}
 
 
-twitterRouter.get('/login', passport.authenticate('twitter'))
+twitterRouter.get('/login', passportAuthTwitterDynamic)
 
 
-twitterRouter.get('/return', passport.authenticate('twitter', {
-    failureRedirect: '/'
-}), function (req, res) {
+twitterRouter.get('/return', passportAuthTwitterDynamic, function (req, res) {
     res.redirect('tweet')
-
 })
+
+
+
+
+
 
 twitterRouter.get('/tweet', function (req, res) {
 

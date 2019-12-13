@@ -1,0 +1,28 @@
+<div class="header header-color p-1" xmlns="http://www.w3.org/1999/html">
+
+    <h4 class="modal-title ng-binding text-center">
+        SELECT A COLOR
+        <button  (click)="close()" type="button" class="close pull-right" style="font-weight: 900;font-size: 1.5em;"  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </h4>
+
+
+</div>
+<div class="modal-body pl-5 pr-5" >
+
+
+
+        <span [style.background]="color"
+              [cpToggle]="true"
+              [cpDialogDisplay]="'inline'"
+              [cpCancelButton]="false"
+
+              [(colorPicker)]="color"
+              (colorPickerChange)="onColorPickerChange($event)">
+        </span>
+
+
+
+
+</div>

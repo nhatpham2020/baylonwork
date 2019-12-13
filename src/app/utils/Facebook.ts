@@ -1,4 +1,3 @@
-
 /**
  * Enables  the sharing of a URL.
  * Note: depends on Facebook being available globally

@@ -1,21 +1,20 @@
 import 'ccapture.js/src/tar';
 import * as CCapture from 'ccapture.js/src/CCapture.js';
-import {GIFConverterOptions, GIFProgressCallback, GIFResult} from './GIFExport';
+import {FileUploadProgressCallback, FileUploadResponse, IExportPreview, VideoConverterOptions} from './ExportCommon';
 
 
 export class TarExport {
 
-    // gif: GIF;
-    private converter: CCapture;
 
-    options: GIFConverterOptions;
+    options: VideoConverterOptions;
     debug: true;
+    private converter: CCapture;
     private sigCancel: boolean;
 
 
-    constructor(private width: number = 512, private height: number = 512, options?: GIFConverterOptions) {
+    constructor(private width: number = 512, private height: number = 512, options?: VideoConverterOptions) {
 
-        const defaults: GIFConverterOptions = {quality: 8, framesPerSecond: 30, totalFrames: 60};
+        const defaults: VideoConverterOptions = {quality: 8, framesPerSecond: 30, totalFrames: 60};
         this.options = Object.assign(defaults, options);
 
 
@@ -24,47 +23,32 @@ export class TarExport {
     }
 
     createConverter() {
-      /*  this.gif = new GIF({
-            repeat: 0,
-            workers: 2,
-            quality: this.options.quality,
-            //workerScript:"libs/gif.js/gif.worker.js"
-            workerScript: workerURL
-        });*/
-
 
         // Create a capturer that exports PNG images in a TAR file
-          this.converter = new CCapture({
-              format: 'png',
-              // framerate: 60,
-              verbose: false,
-             // timeLimit: 2
-          });
-
-
-
-
+        this.converter = new CCapture({
+            format: 'png',
+            // framerate: 60,
+            verbose: false,
+            // timeLimit: 2
+        });
+        
     }
 
     addFrame(canvasElement) {
-        // this.gif.addFrame(canvasElement, {copy: true, delay: 1000 / this.options.framesPerSecond});
-
-          this.converter.capture(canvasElement);
-
+        this.converter.capture(canvasElement);
     }
 
 
     cancel() {
         this.sigCancel = true;
-        // this.converter.stop();
+
     }
 
 
-    async grabFrames(scene: BABYLON.Scene, canvasElement: HTMLCanvasElement, mesh: BABYLON.Mesh, progessCB: GIFProgressCallback | undefined) {
+    async grabFrames(scene: BABYLON.Scene, canvasElement: HTMLCanvasElement, preview: IExportPreview, progessCB: FileUploadProgressCallback | undefined) {
 
-
+        this.converter.start();
         // --------------------------
-
 
 
         const amount = this.options.totalFrames;
@@ -83,7 +67,7 @@ export class TarExport {
 
                 scene.unregisterBeforeRender(setSize);
                 scene.unregisterAfterRender(captureNextFrame);
-
+                this.converter.stop();
             };
 
             captureNextFrame = () => {
@@ -94,29 +78,18 @@ export class TarExport {
                     reject(new Error('canceled manually'));
                 }
 
-                if (imgNm++ < amount + 1) {
+                if (imgNm <= amount) {
 
 
-                    progessCB(imgNm / amount,"capturing")
+                    progessCB(imgNm / amount, 'capturing');
 
-                    //if (imgNm !== 1) {
-                        this.addFrame(canvasElement);
-                    //}
+                    this.addFrame(canvasElement);
+
                     // Add a constant rotation per frame.
 
-                    const axis = new BABYLON.Vector3(-1, 1, 0);
-                    const angle = Math.PI / 4;
-                    const quaternionBase: BABYLON.Quaternion = BABYLON.Quaternion.RotationAxis(axis, angle);
+                    preview.setPreviewTargetRotation(imgNm * 2 * Math.PI / amount);
 
-
-                    const axis2 = new BABYLON.Vector3(0, 1, 0);
-                    const angle2 = imgNm * 2 * Math.PI / amount;
-
-                    const quaternionRotation = BABYLON.Quaternion.RotationAxis(axis2, angle2);
-
-                    mesh.rotationQuaternion = quaternionRotation.multiply(quaternionBase);
-
-
+                    imgNm++;
                 } else {
                     stopCapture();
                     resolve();
@@ -134,48 +107,35 @@ export class TarExport {
     }
 
 
-    async startRecording(canvasElement: HTMLCanvasElement, scene, mesh: BABYLON.Mesh, progessCB?: GIFProgressCallback): Promise<GIFResult> {
-        // const gif = this.gif;
+    async startRecording(canvasElement: HTMLCanvasElement, scene, preview: IExportPreview, progessCB?: FileUploadProgressCallback): Promise<FileUploadResponse> {
 
-        this.converter.start();
 
-        await this.grabFrames(scene, canvasElement, mesh, progessCB);
-
+        await this.grabFrames(scene, canvasElement, preview, progessCB).catch(console.error);
 
 
         this.converter.on('progress', progessCB);
 
-        return new Promise<GIFResult>((resolve, reject) => {
+        return new Promise<FileUploadResponse>((resolve, reject) => {
 
             this.converter.on('progress', () => {
 
-                 if (this.sigCancel) {
-                     this.converter.stop();
-                     reject(new Error('canceled manually'));
-                 }
+                if (this.sigCancel) {
 
-             });
+                    reject(new Error('canceled manually'));
+                }
 
-            //resolve({url: '', blob: new Blob()});
-            this.converter.save(function (blob) {
+            });
+
+            this.converter.save((blob) => {
                 const url = URL.createObjectURL(blob);
-                console.log("tar blob",url)
+                console.log('tar blob', url);
+
 
                 resolve({url, blob});
             });
 
 
-
-
-            /* gif.on('finished', function (blob) {
-                 const url = URL.createObjectURL(blob);
-                 resolve({url, blob});
-             });
-             gif.render();*/
-
         });
-
-
     }
 
 }

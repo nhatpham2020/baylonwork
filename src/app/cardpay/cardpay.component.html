@@ -1,0 +1,86 @@
+<div class="container">
+  <div class="row pricing bottommargin clearfix">
+
+    <div class="col-md-4">
+
+      <div class="pricing-box" id="option1">
+        <div class="pricing-title">
+          <h3>Free</h3>
+        </div>
+        <div class="pricing-price">
+          <span class="price-unit">$</span>0<span class="price-tenure">/mo</span>
+        </div>
+        <div class="pricing-features">
+          <ul>
+            <li><strong>3</strong> gun slots</li>
+            <li>&nbsp;</li>
+          </ul>
+        </div>
+        <div class="pricing-action">
+          <a href="#" class="btn btn-danger btn-block btn-lg" name="option1"
+             (click)="selectPlan($event, 'option1')">Select</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+      <div class="pricing-box best-price" id="option2">
+        <div class="pricing-title">
+          <h3>BASIC</h3>
+        </div>
+        <div class="pricing-price">
+          <span class="price-unit">$</span>2.99<span class="price-tenure">/mo</span>
+        </div>
+        <div class="pricing-features">
+          <ul>
+            <li><strong>10</strong> gun slots</li>
+            <li><strong>5</strong> textures</li>
+          </ul>
+        </div>
+        <div class="pricing-action">
+          <a href="#" class="btn btn-danger btn-block btn-lg bgcolor border-color" name="option2"
+          (click)="selectPlan($event, 'option2')">Select</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+      <div class="pricing-box" id="option3">
+        <div class="pricing-title">
+          <h3>PRO</h3>
+        </div>
+        <div class="pricing-price">
+          <span class="price-unit">$</span>7.99<span class="price-tenure">/mo</span>
+        </div>
+        <div class="pricing-features">
+          <ul>
+            <li><strong>Unlimited</strong> gun slots</li>
+            <li><strong>25</strong> textures</li>
+          </ul>
+        </div>
+        <div class="pricing-action">
+          <a href="#" class="btn btn-danger btn-block btn-lg" name='option3'
+          (click)="selectPlan($event, 'option3')">Select</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form novalidate (ngSubmit)="buy($event)" [formGroup]="stripeTest">
+    <div class="col-lg-12">
+    <input class="form-control" type="text" formControlName="name" placeholder="Account Holder Name"><br>
+  </div>
+  <div class="col-lg-12">
+    <div id="card-element" class="field"></div>
+  </div>
+  <div class="col-lg-12" id="cardPay">
+    <button class="btn btn-success btn-lg" type="submit">
+      Upgrade Membership
+    </button>
+  </div>
+  </form>
+  </div>
+  

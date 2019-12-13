@@ -47,7 +47,7 @@ async function convertVideoContent(filename = "./files/input.tar",inputConfig, o
 
     if (!outputConfig) throw new Error("No output configuration defined.")
 
-    console.log(outputConfig)
+    console.log(outputConfig);
 
 
     /**
@@ -58,6 +58,7 @@ async function convertVideoContent(filename = "./files/input.tar",inputConfig, o
     var progress = require('progress-stream');
 
     var stat = fs.statSync(filename);
+   
     var str = progress({
         length: stat.size,
         time: 50 /* ms */
@@ -78,9 +79,16 @@ async function convertVideoContent(filename = "./files/input.tar",inputConfig, o
     // ----------------------------------------
 
     const fileReadStream = fs.createReadStream(filename).pipe(str)
+    console.log(fileReadStream);
+    console.log( inputConfig );
 
 
-    const outputName = outputNameAndPathWithoutExt + "." + outputConfig.format
+
+
+
+    const outputName = outputNameAndPathWithoutExt + "." + outputConfig.format;
+    console.log(outputName);
+    console.log(outputConfig.output );
 
 
     try {

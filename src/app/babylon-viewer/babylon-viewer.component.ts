@@ -1,11 +1,12 @@
-/// <reference path="../../babylon.d.ts"/>
+
 import {AfterContentInit, Component, OnDestroy, ViewChild} from '@angular/core';
 import {ViewerService} from '../viewer.service';
-import {MaterialProperties} from '../customizer-data.service';
+
+import {MaterialProperties, PreviewOptions, Value3D} from '../customizer-data-types';
+
 import {NotifierService} from '../notifier.service';
 import {Subscription} from 'rxjs';
-import {forEach} from '@angular/router/src/utils/collection';
-import {GIFExportPreview} from '../utils/GIFExportPreview';
+import { GuneditService } from '../services/gunedit.service';
 
 @Component({
     selector: 'app-babylon-viewer',
@@ -15,20 +16,20 @@ import {GIFExportPreview} from '../utils/GIFExportPreview';
 export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
     @ViewChild('renderTarget')
     renderCanvas;
-
+    private nCnt = 0;
     public initialized = false;
-
-    private displayCanvas: HTMLCanvasElement;
     public engine: BABYLON.Engine;
     public scene: BABYLON.Scene;
     camera: BABYLON.ArcRotateCamera;
+    resizeOnRender = true;
+    previewOptions: PreviewOptions;
+    private displayCanvas: HTMLCanvasElement;
     private directionalLight: BABYLON.DirectionalLight;
-
+    private hemisphericLight: BABYLON.HemisphericLight;
     private knownWidth = 0;
     private knownHeight = 0;
     private aspectRatio = 0;
     private loadingCount = 0;
-
     private activeRoot: BABYLON.Mesh = null;
     private allAssetContainers: Map<string, BABYLON.AssetContainer> = new Map<string, BABYLON.AssetContainer>();
     private allRootMeshes: Map<string, BABYLON.Mesh> = new Map<string, BABYLON.Mesh>();
@@ -37,18 +38,17 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
     private sourceRoots: Map<string, BABYLON.Mesh> = new Map<string, BABYLON.Mesh>();
     private meshStartingMaterial: Map<number, string> = new Map<number, string>();
     private textures: Map<string, BABYLON.Texture> = new Map<string, BABYLON.Texture>();
-
     private resetSubscription: Subscription;
     private objectUnderCursor: BABYLON.AbstractMesh;
     private previousObjectUnderCursor: BABYLON.AbstractMesh;
-    resizeOnRender = true;
+    firemessage: string;
 
-
-    constructor(private viewerService: ViewerService, notifierService: NotifierService) {
+    constructor(private viewerService: ViewerService, notifierService: NotifierService,
+        private gundataService: GuneditService
+        ) {
         viewerService.viewer = this;
         this.resetSubscription = notifierService.observable('reset').subscribe(() => {
             const keys: string[] = [];
-
             this.allRootMeshes.forEach(function (v, k) {
                 keys.push(k);
             });
@@ -71,51 +71,63 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
             });
 
             this.viewerService.notifyReset();
+            this.engine.enableOfflineSupport = false;            
         });
-
-        // TODO @7frank remove debug code
-        window["that"]=this
-        window['debugPreview'] = () => {
-
-
-            const preview = new GIFExportPreview(this.scene, this.displayCanvas, this.viewerService.viewer.camera);
-
-            preview.enablePreview(this.getActiveWeapon());
-            window["preview"]=preview;
-        };
-
-
-
+        this.gundataService.firemessage.subscribe(message => this.firemessage = message);
+        
     }
 
     changeMeshMaterial(meshName: string, materialName: string) {
         if (!this.sourceMaterials.has(materialName)) {
             return;
-        }
+        } else {
 
         const newMat = <BABYLON.PBRMaterial>this.sourceMaterials.get(materialName).clone(materialName);
+        const mesh = this.getMesh(meshName);
+        //console.log("mesh", mesh);
+        const oldMat = <BABYLON.PBRMaterial>mesh.material;
+
+        newMat.sideOrientation = oldMat.sideOrientation;
+        newMat.albedoColor = oldMat.albedoColor;
+        newMat.albedoTexture = oldMat.albedoTexture;
+        mesh.material = newMat;
+        //console.log("newmat",newMat);
+    }
+    }
+    changeMeshMaterial1(meshName: string, materialName: string) {
+        if (!this.sourceMaterials.has(materialName)) {
+            return;
+        }
+        const newMat = <BABYLON.PBRMaterial>this.sourceMaterials.get(materialName).clone(materialName);
+        if (this.getMesh(meshName)) {
         const mesh = this.getMesh(meshName);
         const oldMat = <BABYLON.PBRMaterial>mesh.material;
 
         newMat.sideOrientation = oldMat.sideOrientation;
         newMat.albedoColor = oldMat.albedoColor;
         newMat.albedoTexture = oldMat.albedoTexture;
-
         mesh.material = newMat;
+        //console.log("newmat",newMat);
     }
+    }
+
 
     getActiveWeapon() {
         return this.activeRoot;
     }
 
-    changeWeapon(modelRoot: string, modelPath: string) {
+    changeWeapon(modelRoot: string, modelPath: string, previewOptions: PreviewOptions) {
         const combinedName = modelRoot + modelPath;
+        if (!previewOptions.camera) {
+            previewOptions.camera = {};
+        }
+
+        this.previewOptions = previewOptions;
 
         if (this.activeRoot) {
             this.activeRoot.setEnabled(false);
             this.activeRoot = null;
         }
-
         this.activeRoot = this.allRootMeshes.get(combinedName);
         if (this.activeRoot) {
             this.activeRoot.setEnabled(true);
@@ -159,6 +171,7 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
     }
 
     getMesh(name: string, modelFolder?: string, modelFile?: string): BABYLON.Mesh {
+
         const root = (!!modelFolder || !!modelFile) ? this.allRootMeshes.get(modelFolder + modelFile) : this.activeRoot;
         const splitName = name.split('.').reverse();
 
@@ -179,7 +192,8 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         this.getMesh(meshName, modelFolder, modelFile).setEnabled(false);
     }
 
-    load(modelRoot: string, modelPath: string, visible: boolean = false, onSuccess: () => void = null) {
+    load(modelRoot: string, modelPath: string, visible: boolean = false, meshNames: string[],
+        fireevent?: boolean,   onSuccess: () => void = null) {
         const combinedName = modelRoot + modelPath;
 
         const extractMaterial = (mesh: BABYLON.AbstractMesh) => {
@@ -190,88 +204,106 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
                 (<BABYLON.PBRMaterial>sourceMat).reflectionTexture = this.environment;
 
                 this.sourceMaterials.set(mesh.material.name, sourceMat);
-
                 mesh.material = sourceMat.clone(matName);
-
                 this.meshStartingMaterial.set(mesh.uniqueId, matName);
             }
         };
 
-        ++this.loadingCount;
-        this.engine.displayLoadingUI();
-
+// TODO have distinct variable for weapons that are loaded later
+        if (visible) {
+            ++this.loadingCount;
+            this.engine.displayLoadingUI();
+        }
         BABYLON.SceneLoader.LoadAssetContainer(modelRoot, modelPath, this.scene,
             (assets: BABYLON.Nullable<BABYLON.AssetContainer>) => {
                 this.allAssetContainers.set(combinedName, assets);
-
                 const rootMesh = assets.meshes.filter(function (mesh: BABYLON.Mesh) {
                     return !mesh.parent;
                 })[0] as BABYLON.Mesh;
 
                 assets.meshes.forEach((mesh) => {
                     extractMaterial(mesh);
-
                     mesh.getChildMeshes(false).forEach(extractMaterial);
                 });
-
-
                 rootMesh.setEnabled(false);
                 assets.addAllToScene();
-
                 this.sourceRoots.set(combinedName, rootMesh);
-
                 const meshCopy = rootMesh.clone(combinedName);
-
                 this.allRootMeshes.set(combinedName, meshCopy);
-
                 meshCopy.setEnabled(visible);
 
                 if (visible) {
                     this.activeRoot = meshCopy;
                 }
-
                 if (!!onSuccess) {
                     onSuccess();
                 }
 
                 if (--this.loadingCount === 0) {
                     this.engine.hideLoadingUI();
+                    this.engine.loadingUIText = '';
+                }
+                if ( fireevent) {
+                    console.log('loaded.');
+                    this.gundataService.fireMessage('Loaded');
+                }
+                if (meshNames) {
+                    meshNames.map(meshName => {
+                        this.changeMeshMaterial(meshName, 'Silver');
+                    });
+                }
+            }, (evt) => {
+                if (evt.lengthComputable) {
+                    this.engine.loadingUIText = 'Loading, please wait...' + (evt.loaded * 100 / evt.total).toFixed() + '%';
+                } else {
+                    const dlCount = evt.loaded / (1024 * 1024);
+                    this.engine.loadingUIText = 'Loading, please wait...' + Math.floor(dlCount * 100.0) / 100.0 + ' MB already loaded.';
                 }
             });
     }
 
     ngAfterContentInit() {
         this.displayCanvas = this.renderCanvas.nativeElement;
-
         // Note: Using preserveDrawingBuffer decreases frame rate and should only be used to render the gif feature.
         //    But must be enabled to generate GIFs.
         //    A better approach would be to render separate scenes and use separate engines for the GIF preview.
         //    But as of now this was not possible.
         this.engine = new BABYLON.Engine(this.displayCanvas, true, {preserveDrawingBuffer: true});
 
+        //create new loadingScreen (args: UIText for loading)
+        var loadingScreen = new CustomLoadingScreen("");
+            // replace the default loading screen
+            this.engine.loadingScreen = loadingScreen;
+    
+
         this.scene = new BABYLON.Scene(this.engine);
         this.scene.clearColor = new BABYLON.Color4(241 / 255, 242 / 255, 237 / 255, 1);
         this.scene.onPointerObservable.add((eventData, eventState) => {
-            this.pointerObserved(eventData, eventState);
+        this.pointerObserved(eventData, eventState);
+
         });
-
-
-
+        this.hemisphericLight = new BABYLON.HemisphericLight('mainLight', new BABYLON.Vector3(0, 1, 0), this.scene);
+        this.hemisphericLight.diffuse.set(1, 1, 1);
+        this.hemisphericLight.intensity = 1.2;
+        this.hemisphericLight.specular.set(0, 0, 0);
+        
         /*this.directionalLight = new BABYLON.DirectionalLight('mainLight', new BABYLON.Vector3(0.5, 1, 0.5), this.scene);
         this.directionalLight.diffuse.set(0.6, 0.6, 0.6);
         this.directionalLight.specular.set(0.6, 0.6, 0.6);*/
 
-        this.setupCamera();
+        this.setupCamera();  
+        
 
         this.engine.runRenderLoop(() => {
             this.render();
-           // this.updateHoverControls();
+            // this.updateHoverControls();
 
         });
 
         this.initialized = true;
 
         this.viewerService.notifyInitialized();
+
     }
 
     ngOnDestroy() {
@@ -281,8 +313,10 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
     pointerObserved(eventData: BABYLON.PointerInfo, eventState: BABYLON.EventState) {
         if (eventData.type === 1) {
             if (eventData.pickInfo.hit) {
+                // clikced mesh
                 this.viewerService.notifyClick(eventData.pickInfo.pickedMesh.name);
             }
+
         }
     }
 
@@ -310,16 +344,27 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         const cosBeta = Math.cos(camBeta);
 
         this.directionalLight.direction.set(cosBeta * Math.cos(camAlpha), Math.sin(camBeta), cosBeta * Math.sin(camAlpha));*/
-
         this.scene.render();
+
     }
 
-    setRotation(modelRoot: string, modelPath: string, rotation: number) {
+    setRotation(modelRoot: string, modelPath: string, rotation: Value3D) {
+
         const model = this.allRootMeshes.get(modelRoot + modelPath);
-        model.rotation.y = Math.PI / 180 * rotation;
+        model.rotation = new BABYLON.Vector3(Math.PI / 180 * rotation.x, Math.PI / 180 * rotation.y, Math.PI / 180 * rotation.z);
     }
 
-    replaceMaterials(modelRoot: string, modelPath: string, oldMaterialNames: string[], newMaterialName: string) {
+    setScale(modelRoot: string, modelPath: string, scale: Value3D) {
+        const model = this.allRootMeshes.get(modelRoot + modelPath);
+        model.scaling = new BABYLON.Vector3(scale.x*1.5, scale.y*1.5, scale.z*1.5);
+    }
+
+    setPosition3(modelRoot: string, modelPath: string, position: Value3D) {
+        const model = this.allRootMeshes.get(modelRoot + modelPath);
+        model.position = new BABYLON.Vector3(position.x, position.y, position.z);
+    }
+
+    public replaceMaterials(modelRoot: string, modelPath: string, oldMaterialNames: string[], newMaterialName: string) {
         const newMat = this.sourceMaterials.get(newMaterialName);
         const sourceRoot = this.sourceRoots.get(modelRoot + modelPath);
         const rootModel = this.allRootMeshes.get(modelRoot + modelPath);
@@ -347,7 +392,7 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         rootModel.getChildMeshes(false).forEach(replaceOldMat);
     }
 
-    resetMaterial(meshName: string) {
+    public resetMaterial(meshName: string) {
         this.resetMeshMaterial(this.getMesh(meshName));
     }
 
@@ -372,7 +417,7 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         }
     }
 
-    resetMeshMaterial(mesh: BABYLON.AbstractMesh) {
+    public resetMeshMaterial(mesh: BABYLON.AbstractMesh) {
         if (!this.meshStartingMaterial.has(mesh.uniqueId)) {
             return;
         }
@@ -383,6 +428,7 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         matClone.sideOrientation = mesh.material.sideOrientation;
 
         mesh.material = matClone;
+
     }
 
     resizeAsNeeded(force?: boolean) {
@@ -390,9 +436,9 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         const measuredHeight = this.displayCanvas.parentElement.clientHeight;
 
         if (!force)
-        if (  (measuredWidth === this.knownWidth) && (measuredHeight === this.knownHeight)) {
-            return;
-        }
+            if ((measuredWidth === this.knownWidth) && (measuredHeight === this.knownHeight)) {
+                return;
+            }
 
 
         this.knownWidth = measuredWidth;
@@ -406,16 +452,54 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
 
     }
 
-    setEnvironment(textureBaseName: string) {
+
+    /**
+     * Set up the environment. ATM only a reflection texture is set.
+     *
+     *  Note: you can convert hdr files into set of cubemaps online
+     *  {@link https://matheowis.github.io/HDRI-to-CubeMap/}
+     *  {@link https://github.com/matheowis/HDRI-to-CubeMap}
+     *
+     *  This method makes following assumptions:
+     * - You can either use .dds .hdr or any other texture for the reflections.
+     * - In case the string is a path (ending with either '/' or '\\') it is assumed that the path contains following
+     *   files by default ['xp.png', 'yp.png', 'zp.png', 'xn.png', 'yn.png', 'zn.png']
+     * - if the string is not a hdr or dds image it is assumed that the actual set of 6 images has a similar nonation
+     *  e. g. skybox.jpg  => skybox_nx.jpg, skybox_ny.jpg, skybox_nz.jpg, skybox_px.jpg, skybox_py.jpg, skybox_pz.jpg
+     *
+     */
+    setEnvironment(textureBaseName: string = '') {
+
+        const isDir = (str) => {
+            const char = str[str.length - 1];
+            return char === '\\' || char === '/';
+        };
+
         let envTex = null;
+
 
         if (textureBaseName.indexOf('.dds') !== -1) {
             envTex = BABYLON.CubeTexture.CreateFromPrefilteredData(textureBaseName, this.scene);
         } else if (textureBaseName.indexOf('hdr') !== -1) {
             envTex = new BABYLON.HDRCubeTexture(textureBaseName, this.scene, 512);
-        } else {
+        } else if (isDir(textureBaseName)) {
+            envTex = new BABYLON.CubeTexture(
+                textureBaseName,
+                this.scene,
+                ['xp.png', 'yp.png', 'zp.png', 'xn.png', 'yn.png', 'zn.png']
+            );
+        } else if (textureBaseName != '') {
             envTex = new BABYLON.CubeTexture(textureBaseName, this.scene);
+        } else {
+
+            // fallback to white environment
+            envTex = new BABYLON.Texture('/assets/textures/environments/white-pixel.png', this.scene);
+            // envTex.coordinatesMode = BABYLON.Texture.PLANAR_MODE;
         }
+
+
+        // this.scene.createDefaultSkybox(envTex, false, 10000);
+
 
         this.sourceMaterials.forEach(function (mat: BABYLON.PBRMaterial) {
             mat.reflectionTexture = envTex;
@@ -424,17 +508,20 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         const setEnv = function (mesh: BABYLON.Mesh) {
             if (!!mesh.material) {
                 (<BABYLON.PBRMaterial>mesh.material).reflectionTexture = envTex;
+           
             }
         };
 
         this.allRootMeshes.forEach(function (mesh) {
             setEnv(mesh);
-
+            
             mesh.getChildMeshes(false).forEach(setEnv);
         });
 
         this.environment = envTex;
     }
+    
+    
 
     setMeshMaterialProperty(meshName: string, propertyName: string, propertyValue: any) {
         const material = <BABYLON.PBRMaterial>this.getMesh(meshName).material;
@@ -449,20 +536,27 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         }
     }
 
+
     setupCamera() {
         this.camera = new BABYLON.ArcRotateCamera('mainCam', 0, Math.PI / 2, 2,
             new BABYLON.Vector3(0, 0, 0), this.scene, true);
         this.camera.useFramingBehavior = true;
-        this.camera.wheelPrecision = 500;
+        this.camera.wheelPrecision = 1000;
         this.camera.pinchPrecision = 200;
         this.camera.minZ = 0.01;
-        this.camera.lowerRadiusLimit = 0.01;
+        this.camera.lowerRadiusLimit = 1;
         this.camera.upperRadiusLimit = 5;
         this.camera.attachControl(this.displayCanvas);
+      
     }
 
     showMesh(meshName: string, modelFolder?: string, modelFile?: string) {
         this.getMesh(meshName, modelFolder, modelFile).setEnabled(true);
+        
+    }
+
+    setPosition(meshName: string, position: Value3D) {
+        this.getMesh(meshName).position = new BABYLON.Vector3(position.x, position.y, position.z);
     }
 
     texture(url: string): BABYLON.Texture {
@@ -492,3 +586,32 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         }
     }
 }
+
+interface ILoadingScreen {
+    //What happens when loading starts
+    displayLoadingUI: () => void;
+    //What happens when loading stops
+    hideLoadingUI: () => void;
+    //default loader support. Optional!
+    loadingUIBackgroundColor: string;
+    loadingUIText: string;
+  }
+
+class CustomLoadingScreen implements ILoadingScreen {
+    //DOM QUERIES
+    public customScreen = document.getElementById("loadingScreen");
+    public UIText = document.getElementById("loadingScreenText");
+
+    public loadingUIBackgroundColor: string;
+  
+    constructor(public loadingUIText: string) {
+        this.UIText.innerHTML = loadingUIText;
+    }
+    public displayLoadingUI() {
+      this.customScreen.style.display = "flex";
+    }
+  
+    public hideLoadingUI() {
+        this.customScreen.style.display = "none";
+    }
+  }

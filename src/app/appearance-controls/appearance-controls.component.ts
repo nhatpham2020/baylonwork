@@ -1,69 +1,91 @@
-import { Component, HostListener , OnDestroy, ViewChild, NgZone } from '@angular/core';
+import {AfterContentInit, OnInit, Component, OnDestroy, ViewChild, } from '@angular/core';
+import {ColorOptionInterface, CustomizerDataService} from '../customizer-data.service';
+import {ViewerService} from '../viewer.service';
+import {Subscription, Observable} from 'rxjs';
+import {UndoMgr} from './undo-manager';
+import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+
+
 import {
     AppearanceOption,
     AppearanceOptionGroup,
     AppearanceSection,
-    CustomizerDataService,
     MaterialProperties,
     WeaponCustomization,
-    WeaponCustomizationData
-} from '../customizer-data.service';
-import { ViewerService } from '../viewer.service';
-import { Subscription } from 'rxjs';
-import { UndoMgr } from './undo-manager';
-import { APIService } from '../../providers/api-service';
-import { FormsModule } from '@angular/forms';
-import { ColorPickerModule } from 'ngx-color-picker';
-declare var $: any;
-import { environment } from '../../environments/environment';
-import { UserService } from '../user.service';
-import { _ } from 'underscore';
-
+    WeaponCustomizationData,
+    WeaponDesignData,
+    WeaponAttachData
+} from '../customizer-data-types';
+import { DraggableItemService, BsModalService, BsModalRef } from 'ngx-bootstrap';
+import { GuneditService } from '../services/gunedit.service';
+import { containsElement } from '@angular/animations/browser/src/render/shared';
+import { OptionBarComponent } from '../option-bar/option-bar.component';
+import { GunvisibleService } from '../services/gunvisible.service'
+import { UploadFile } from 'src/model/UploadFile';
+import { Http } from '@angular/http';
+import { PatternService } from '../services/pattern.service';
+import { AuthService } from '../auth/auth.service';
+import { Pattern } from 'src/model/pattern';
+import { ShareModalComponent } from '../share-modal/share-modal.component';
+import { SavemodalComponent } from '../savemodal/savemodal.component';
+import { LoginComponent } from '../login/login.component';
+import { MarketmodalComponent } from '../marketmodal/marketmodal.component';
+import { DeployService } from '../services/deploy.service';
+import { DeployVar } from 'src/model/deployVar';
 export interface DeepActiveAppearanceTracking {
     activeSection: AppearanceSection;
     resetActive: boolean;
     chosenGroupOption: Map<AppearanceOptionGroup, AppearanceOption>;
 }
 
+
 @Component({
     selector: 'app-appearance-controls',
-    templateUrl: './appearance-controls.component.html',
+    templateUrl: './appearance-controls.component.v2.html',
     styleUrls: ['./appearance-controls.component.css'],
-    providers: [APIService]
-    //directives: [FORM_DIRECTIVES]
+
 })
 export class AppearanceControlsComponent implements OnDestroy {
+    @ViewChild(OptionBarComponent) child;
     @ViewChild('optionsContainer')
     public optionsContainer;
-
+    currentFileUpload: UploadFile
+    public designData: WeaponDesignData[] = [];
+    public attachData: WeaponAttachData[] = [];
     public allSections: AppearanceSection[] = [];
     public chosenWeapon: WeaponCustomization;
+    public replayedWeapon: WeaponCustomization;
     public customizationData: WeaponCustomizationData;
     public hideWeaponChoices = true;
     public selectedItems: Map<WeaponCustomization, DeepActiveAppearanceTracking> =
         new Map<WeaponCustomization, DeepActiveAppearanceTracking>();
+    
+    public weaponsLoaded: Map<WeaponCustomization, boolean> =
+        new Map<WeaponCustomization, boolean>();
+
 
     private clickSubscription: Subscription;
     private initializeSubscription: Subscription;
     private viewerResetSubscription: Subscription;
     private lastClickedOption: Map<AppearanceSection, AppearanceOption> = new Map<AppearanceSection, AppearanceOption>();
-
-
-    packArray = [];
-    newPackArray = [];
-    loggedUser = null;
+    message: any;
+    messagefromchild: any;
+    public weaponvisible: any[];
+    public patterns: Pattern[];
+    public currentPatternVisible = false;
     isAdmin = false;
-    place_holder_image = 'assets/img/image-placeholder-png-4.png';
-    constructor(private customizerDataService: CustomizerDataService,
-        private apiService: APIService, private _ngZone: NgZone,
-        private viewerService: ViewerService, private userService: UserService) {
-        this.loggedUser = this.userService.retrieveUser();
-        //this.isAdmin = this.userService.isAdmin();
-        this.isAdmin = true;
+    isFirst = true;
+    public openModal: BsModalRef = null;
+    constructor(private customizerDataService: CustomizerDataService, private viewerService: ViewerService,
+        private gundata: GuneditService, private gunVisibleService: GunvisibleService,
+        private patternService: PatternService, private http: HttpClient, private modalService: BsModalService,
+        private auth: AuthService, private deployService: DeployService
+        ) {
         this.initializeSubscription = viewerService.initialized.subscribe(() => {
             this.viewerInitialized();
         });
-
+        this.isAdmin = this.auth.isAdmin();
         this.clickSubscription = this.viewerService.meshClicked.subscribe((meshName: string) => {
             this.meshClicked(meshName);
         });
@@ -71,91 +93,232 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.viewerResetSubscription = this.viewerService.reset.subscribe(() => {
             this.viewerReset();
         });
-        this.getPacks();
-
-        //document.addEventListener("click", function () {
-        //  $('a').removeClass('active')
-        //  console.log(this)
-        //});
-    }
-    ngOninit() {
+        this.gundata.currentMessage.subscribe( (message) => {
+            this.message = message;
+            if (message !== 'Dragon') {
+                console.log('replaying');
+                 this.replayGun(message);
+            }
+        });
         
+       
+       this.getVisible();
+       this.getPatterns();
+       this.getDeploy();
+       
     }
 
-    @HostListener('document:click', ['$event'])
-    documentClick(event: MouseEvent) {
-      var currentTarget: any = event.currentTarget;
-      if (this.outside && currentTarget.activeElement.nodeName === 'BODY') {
-        $('a').removeClass('active');
-        this.selectedItem = null;
-      } else {
-        this.outside = true;
-      }
+    public getCommonSections() {
+
     }
-
-    name: any;
-    colorCode: any = "#000";
-    type: any = 'MATERIALS';
-    interactionValue: any = "new material";
-    image: any = this.place_holder_image;
-    isMetal: boolean = false;
-    visible: boolean = false;
-    roughness: any = 0.5;
-    visibleInColor: boolean = false;
-    colorCodeInColor: any = "#000";
-    colorName: any;
-    visibleInPattern: boolean = false;
-    patternName: any;
-    isEdit: boolean = true;
-    packName: any;
-    packtype: any = "MATERIALS";
-    packid: any;
-    arrid: any;
-    color: any = "#000";
-    imagePath: any;
-    patternImage: any = "";
-    Packs: any = [];
-    deletedPack = [];
-    outside = true;
-
-
-    undoManagerLimit() {
+   public undoManagerIndex() {
         return UndoMgr.getInstance().getIndex() + 1;
     }
-
-    activeTracking(): DeepActiveAppearanceTracking {
-      if (this.chosenWeapon) {
-        return this.selectedItems.get(this.chosenWeapon);
-      }
+    openShareModal(event: MouseEvent) {
+        this.openModal = this.modalService.show(ShareModalComponent);
+        return this.stopEvent(event);
     }
+    startSharing(event?: MouseEvent) {
 
-    activeSection(): AppearanceSection {
-      if (this.activeTracking() && this.activeTracking().activeSection) {
-        return this.activeTracking().activeSection;
-      }
+        this.openShareModal(event);
     }
-
-
-    allitemSelected = true;
-    sectionIndex = 0;
-    changeSection(event: MouseEvent, section: AppearanceSection) {
-        this.activeTracking().activeSection = section;
-        console.log(section.name)
-        if (section.name == "Material") {
-            this.sectionIndex = 0;
-            this.type = 'MATERIALS'
-        } else if (section.name === "Color") {
-            this.type = 'COLORS';
-            this.sectionIndex = 1;
-        } else if (section.name === "Patterns") {
-            this.type = 'PATTERNS';
-            this.sectionIndex = 2;
+    startSave(event: MouseEvent) {
+        if (this.auth.isLoggedIn) {
+            // TODO
+            this.openModal = this.modalService.show(SavemodalComponent);
+        } else {
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
-        this.packtype = this.type;
-        this.packArray = this.allpacks.filter((p) => p.type === this.packtype);
-        //this.selectedPack = null;
-        //this.selectedItem = null;
-        this.allitemSelected = true;
+        return this.stopEvent(event);
+    }
+    startMarketing(event?: MouseEvent) {
+        if (this.auth.isLoggedIn) {
+            // TODO
+            this.openModal = this.modalService.show(MarketmodalComponent);
+        } else {
+            this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+        }
+
+        return this.stopEvent(event);
+    }
+
+    public getVisible() {
+        this.gunVisibleService.getVisible().snapshotChanges().pipe(
+            map(changes =>
+              changes.map(c =>
+                ({ key: c.payload.key, ...c.payload.val() })
+              )
+            )
+          ).subscribe(weaponvisible => {
+              this.weaponvisible = weaponvisible;
+           
+          });
+    }
+    public getDeploy() {
+        this.deployService.getdeployList().snapshotChanges().pipe(
+            map(changes =>
+              changes.map(c =>
+                ({ key: c.payload.key, ...c.payload.val() })
+              )
+            )
+          ).subscribe(weaponvisible => {
+            localStorage.setItem('deployedPatternData', JSON.stringify(this.patterns));
+            if(!!!this.isAdmin && !this.isFirst) {
+                window.alert('New features are available\n Will automatically refresh to get changes');
+                window.location.reload();
+            }
+            this.isFirst = false;
+          });
+    }
+    public getPatterns() {
+            this.patternService.getPatternList().snapshotChanges().pipe(
+                map(changes =>
+                  changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+                )
+              ).subscribe(patterns => {
+                this.patterns = patterns;
+                console.log('Changing here');
+                console.log(this.patterns);
+              });
+    }
+    deployPackData() {
+        if(!!this.weaponvisible) {
+            this.weaponvisible.map(visibleData => {
+                this.gunVisibleService.updateVisible(visibleData.key, visibleData);
+            });
+        }
+        const deploy = new DeployVar;
+        deploy.number = Math.random();
+        this.deployService.createDeploy(deploy);
+    }
+    setVisibleofWeapon (index: number, visible: boolean) {
+        this.weaponvisible[index].visibility = visible; 
+        //this.gunVisibleService.updateVisible(visibledata.key, visibledata);
+    }
+    setVisibleofPattern ( visible: boolean) {
+        const lastClickedOption = this.lastClickedOption.has(this.activeSection()) ? this.lastClickedOption.get(this.activeSection()) : null;
+        console.log(lastClickedOption);
+        const  currentPattern = this.patterns.filter(pattern => pattern.index === lastClickedOption.index).pop();
+        currentPattern.visibility = visible;
+        this.currentPatternVisible = currentPattern.visibility;
+        this.patternService.updatePattern(currentPattern.key, currentPattern);
+        
+    }
+    deleteTexture () {
+        const lastClickedOption = this.lastClickedOption.has(this.activeSection()) ? this.lastClickedOption.get(this.activeSection()) : null;
+        console.log(lastClickedOption);
+        this.patternService.deleteFileDatabase(lastClickedOption.key);
+        
+    }
+    uploadTexture(event) {
+        if (!this.chosenWeapon.interactionBlacklist) {
+            const activeSection = this.activeSection();
+            if(activeSection.affectedParameter == 'texture') {
+        const lastClickedOption = this.lastClickedOption.has(activeSection) ? this.lastClickedOption.get(activeSection) : null;
+        console.log(activeSection);
+        console.log(event.target.files[0]);
+        const file = event.target.files[0];
+        this.currentFileUpload = new UploadFile(file);
+        let formData = new FormData();
+        const  patterns: AppearanceOption[]  =  JSON.parse(localStorage.getItem('patternsData'));
+        const { index } = patterns.pop();
+
+        
+        formData.append("uploads", file, (index + 1).toString()+ '.jpg');
+        console.log(formData);
+        if (file.type.includes('image')) {
+            this.patternService.pushFileToStorage(this.currentFileUpload).subscribe((response) => {
+            console.log('filestorage ', response);
+                console.log('filestorage type', typeof(response));
+                if(response == 100) {
+                    console.log(1000)
+                    window.alert("Texture File Uploaded Sucessfully!!\n Will reload automatically to apply changes");
+                  
+                }
+            });
+            this.http.post('/upload', formData).
+            subscribe((response) => {
+               
+            });
+     
+        
+        }
+      }
+     }
+        return this.stopEvent(event);
+    }
+      makeFileRequest(url: string, params: Array<string>, files: Array<File>) {
+        return new Promise((resolve, reject) => {
+            var formData: any = new FormData();
+            var xhr = new XMLHttpRequest();
+            for(var i = 0; i < files.length; i++) {
+                formData.append("uploads[]", files[i], files[i].name);
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        resolve(JSON.parse(xhr.response));
+                    } else {
+                        reject(xhr.response);
+                    }
+                }
+            }
+            xhr.open("POST", url, true);
+
+            xhr.send(formData);
+        });
+    }
+   public undoManagerLimit() {
+        return UndoMgr.getInstance().getLimit();
+    }
+   
+    public changeTexture(event) {
+        if (!this.chosenWeapon.interactionBlacklist) {
+            const activeSection = this.activeSection();
+            if(activeSection.affectedParameter == 'texture') {
+        const lastClickedOption = this.lastClickedOption.has(activeSection) ? this.lastClickedOption.get(activeSection) : null;
+        console.log(event.target.files[0]);
+        const file = event.target.files[0];
+        this.currentFileUpload = new UploadFile(file);
+        let formData = new FormData();
+        
+        formData.append("uploads", file, lastClickedOption.index.toString()+ '.jpg');
+        if (file.type.includes('image')) {
+            this.patternService.pushFileToStorage(this.currentFileUpload, lastClickedOption).subscribe((response) => {
+            console.log('filestorage ', response);
+                console.log('filestorage type', typeof(response));
+                if(response == 100) {
+                    window.alert("Texture File Uploaded Sucessfully!!\n Will reload automatically to apply changes");
+                }
+            });
+            this.http.post('/upload', formData).
+            subscribe((response) => {
+                console.log(response);
+            });
+        }
+    }
+}
+        return this.stopEvent(event);
+    }
+
+
+
+    public undoButtonVisiblity() {
+        return (this.undoManagerIndex() + 3) / (this.undoManagerLimit() + 3);
+    }
+
+
+    public activeSection(): AppearanceSection {
+        return this.activeTracking().activeSection;
+    }
+
+   public activeTracking(): DeepActiveAppearanceTracking {
+        return this.selectedItems.get(this.chosenWeapon);
+    }
+
+    // Parent Option
+    public changeSection(event: MouseEvent, section: AppearanceSection) {
+        this.activeTracking().activeSection = section;
         return this.stopEvent(event);
     }
 
@@ -163,22 +326,32 @@ export class AppearanceControlsComponent implements OnDestroy {
     /**
      * @param {string} meshName
      */
-    chooseWeapon(event: MouseEvent, weapon: WeaponCustomization) {
+    public  chooseWeapon(event: MouseEvent, weapon: WeaponCustomization) {
+        try {
+            if (!this.weaponsLoaded.get(weapon)) {
+                this.loadWeapon(weapon, true);
+                this.weaponsLoaded.set(weapon, true);
+            }
+            localStorage.setItem('weapon', JSON.stringify(weapon.name));
+            localStorage.setItem('DesignData', JSON.stringify(null));
+            localStorage.setItem('AttachData', JSON.stringify(null));
+            // localStorage.setItem('custom', JSON.stringify(this.selectedItems));
+            UndoMgr.getInstance().clear();
+            // this.designData = [];
+            this.chosenWeapon = weapon;
+            this.hideWeaponChoices = true;
+            this.allSections = this.customizationData.commonSections.slice() ///
+                .concat(this.chosenWeapon.customizations.slice());
+            this.viewerService.viewer.changeWeapon(weapon.modelFolder, weapon.modelFile, weapon.preview);
+            return this.stopEvent(event);
+        } catch {
 
-        UndoMgr.getInstance().clear();
-        this.chosenWeapon = weapon;
-        this.hideWeaponChoices = true;
-        this.allSections = this.customizationData.commonSections.slice()
-            .concat(this.chosenWeapon.customizations.slice());
-
-        this.viewerService.viewer.changeWeapon(weapon.modelFolder, weapon.modelFile);
-
-        return this.stopEvent(event);
+        }
     }
 
     clampScrollValue(scroll: number) {
         const ne: HTMLDivElement = this.optionsContainer.nativeElement;
-
+        
         return Math.max(0, Math.min(scroll, ne.scrollWidth - ne.clientWidth));
     }
 
@@ -187,8 +360,9 @@ export class AppearanceControlsComponent implements OnDestroy {
      *  @param {string} meshName
      */
     meshClicked(meshName: string) {
-        if (meshName === 'assets/models/assault-rifle/assault-rifle.gltf.honey_badger.trigger') return;
-
+        // if (meshName === 'assets/models/assault-rifle/assault-rifle.gltf.honey_badger.trigger') return;
+        if (this.message == 'Dragon') {
+        if (meshName.includes('trigger')) { return; }
         if (!this.chosenWeapon.interactionBlacklist || (this.chosenWeapon.interactionBlacklist.indexOf(meshName) === -1)) {
             const activeSection = this.activeSection();
 
@@ -210,37 +384,63 @@ export class AppearanceControlsComponent implements OnDestroy {
                     case 'alterMaterial':
                         UndoMgr.setMaterialProperty(this.viewerService.viewer, meshName,
                             activeSection.affectedParameter, lastClickedOption.interactionValue);
+                            console.log('setmaterialproperty');
+                            const weaponName = JSON.parse(localStorage.getItem('weapon'));
+                            const design = {
+                                weaponName: weaponName,
+                                meshname: meshName,
+                                affectedParameter: activeSection.affectedParameter,
+                                interactionValue: lastClickedOption.interactionValue
+                            };
+                            this.designData.push(design);
+                            console.log(this.designData);
+                        localStorage.setItem('DesignData', JSON.stringify(this.designData));
                         // this.viewerService.viewer.setMeshMaterialProperty(meshName, activeSection.affectedParameter,
                         //  lastClickedOption.interactionValue);
                         break;
                     case 'swapMaterial':
                         // this.viewerService.viewer.changeMeshMaterial(meshName, lastClickedOption.interactionValue);
                         UndoMgr.setMaterialTexture(this.viewerService.viewer, meshName, lastClickedOption.interactionValue);
+                        console.log('setmaterialtexture');
+                        console.log( 'meshname', meshName);
+                        console.log( 'inteactionValue', lastClickedOption.interactionValue);
                         break;
                 }
             }
         }
         // }
+        }
     }
 
     ngOnDestroy() {
         this.initializeSubscription.unsubscribe();
         this.clickSubscription.unsubscribe();
         this.viewerResetSubscription.unsubscribe();
+        
+
+          this.messagefromchild = this.child.message;
+        console.log(this.messagefromchild);
+
     }
 
-    /**
+
+        /**
      * @param {string} meshName
      */
     optionClicked(event: MouseEvent, optionGroup: AppearanceOptionGroup, option: AppearanceOption) {
-        this.selectedItem = option;
         const currentlySelectedOption = this.selectedOption(optionGroup);
+        console.log(optionGroup);
+        console.log(option);
         const activeTracking = this.activeTracking();
         activeTracking.resetActive = false;
-
         const prevChosenGroupOption = activeTracking.chosenGroupOption;
-
         const lastClickedOption = this.lastClickedOption;
+        if(!!option && !!option.index) {
+            const  currentPattern = this.patterns.filter(pattern => pattern.index === option.index).pop();
+            //const currentPattern = this.patterns[option.index];
+            console.log('----->'+ currentPattern);
+            this.currentPatternVisible = currentPattern.visibility;
+        }
 
         // keep a handle to previous values
         const prevOption = lastClickedOption.get(this.activeSection());
@@ -250,18 +450,37 @@ export class AppearanceControlsComponent implements OnDestroy {
         if (option === currentlySelectedOption) {
 
             if (optionGroup.allowNone) {
-
+                const  weapon  =  JSON.parse(localStorage.getItem('weapon'));
+                console.log('atttachment option');
                 const redoFunction = () => {
+                    console.log('remove');
                     this.optionOff(option);
+                    const removeattach = {
+                        weaponName: weapon,
+                        isAdding: false,
+                        option: option,
+                        section: this.activeSection()
+                    };
+                    this.attachData.push(removeattach);
+                    console.log(this.attachData);
+                    localStorage.setItem('AttachData', JSON.stringify(this.attachData));
                     prevChosenGroupOption.set(optionGroup, null);
                     lastClickedOption.set(section, null);
 
                 };
-                if (section.interactionType == 'toggleMesh') {
-
+                if (section.interactionType === 'toggleMesh') {
                     UndoMgr.add({
                         undo: () => {
                             this.optionOn(option);
+                            const addattach = {
+                                weaponName: weapon,
+                                isAdding: true,
+                                option: option,
+                                section: this.activeSection()
+                            };
+                            this.attachData.push(addattach);
+                            console.log(this.attachData);
+                            localStorage.setItem('AttachData', JSON.stringify(this.attachData));
                             prevChosenGroupOption.set(optionGroup, prevGroupOption);
                             lastClickedOption.set(section, prevOption);
                         },
@@ -274,20 +493,52 @@ export class AppearanceControlsComponent implements OnDestroy {
 
             }
         } else {
-
             const redoFunction = () => {
                 this.optionOff(currentlySelectedOption);
+                const  weapon  =  JSON.parse(localStorage.getItem('weapon'));
+                const removeattach = {
+                    weaponName: weapon,
+                    isAdding: false,
+                    option: currentlySelectedOption,
+                    section: this.activeSection()
+                };
+                this.attachData.push(removeattach);
                 prevChosenGroupOption.set(optionGroup, option);
+                const addattach = {
+                    weaponName: weapon,
+                    isAdding: true,
+                    option: option,
+                    section: this.activeSection()
+                };
+                this.attachData.push(addattach);
+                console.log(this.attachData);
                 this.optionOn(option);
+                localStorage.setItem('AttachData', JSON.stringify(this.attachData));
                 lastClickedOption.set(section, option);
             };
-            if (section.interactionType === 'toggleMesh') {
-
+        if (section.interactionType === 'toggleMesh') {
+                const  weapon  =  JSON.parse(localStorage.getItem('weapon'));
                 UndoMgr.add({
                     undo: () => {
                         this.optionOff(option, section);
+                        const removeattach = {
+                            weaponName: weapon,
+                            isAdding: false,
+                            option: option,
+                            section: section
+                        };
+                        this.attachData.push(removeattach);
                         prevChosenGroupOption.set(optionGroup, prevGroupOption);
                         this.optionOn(currentlySelectedOption, section);
+                        const addattach = {
+                            weaponName: weapon,
+                            isAdding: true,
+                            option: currentlySelectedOption,
+                            section: section
+                        };
+                        this.attachData.push(addattach);
+                        console.log(this.attachData);
+                        localStorage.setItem('AttachData', JSON.stringify(this.attachData));
                         lastClickedOption.set(section, prevOption);
 
                     },
@@ -311,6 +562,25 @@ export class AppearanceControlsComponent implements OnDestroy {
         switch (section.interactionType) {
             case 'toggleMesh':
                 this.viewerService.viewer.hideMesh(option.interactionValue);
+                if (option.include) {
+                    let hideIncludedMesh = true;
+                    section.optionGroups.forEach((optionGroup) => {
+                        const selectedOption = this.selectedOption(optionGroup);
+                        if (!selectedOption) { return; }
+                        if (!selectedOption.include) { return; }
+                        if (selectedOption.name === option.name) { return; }
+                        if (selectedOption.include !== option.include) { return; }
+                        hideIncludedMesh = false;
+                    });
+                    if (hideIncludedMesh) {
+                        this.viewerService.viewer.hideMesh(option.include);
+                    }
+                }
+                if (option.exclude) {
+                    option.exclude.forEach((obj) => {
+                        this.viewerService.viewer.showMesh(obj);
+                    });
+                }
                 break;
         }
     }
@@ -323,6 +593,33 @@ export class AppearanceControlsComponent implements OnDestroy {
         switch (section.interactionType) {
             case 'toggleMesh':
                 this.viewerService.viewer.showMesh(option.interactionValue);
+                if (option.include) {
+                    this.viewerService.viewer.showMesh(option.include);
+                }
+                if (option.exclude) {
+                    option.exclude.forEach((obj) => {
+                        this.viewerService.viewer.hideMesh(obj);
+                    });
+
+                }
+                if (option.ajustment) {
+                    option.ajustment.forEach((obj) => {
+                        this.viewerService.viewer.setPosition(obj.interactionValue, obj.position);
+                    });
+                }
+                section.optionGroups.forEach((optionGroup) => {
+                    const selectedOption = this.selectedOption(optionGroup);
+                    if (selectedOption) {
+                        if (selectedOption.ajustment) {
+                            selectedOption.ajustment.forEach((obj) => {
+                                if (obj.interactionValue === option.interactionValue) {
+                                    this.viewerService.viewer.setPosition(obj.interactionValue, obj.position);
+                                }
+                            });
+
+                        }
+                    }
+                });
                 break;
         }
     }
@@ -332,6 +629,7 @@ export class AppearanceControlsComponent implements OnDestroy {
 
         // tracking.resetActive = !tracking.resetActive;
         UndoMgr.undo();
+
         return this.stopEvent(event);
     }
 
@@ -344,7 +642,8 @@ export class AppearanceControlsComponent implements OnDestroy {
         const ne: HTMLDivElement = this.optionsContainer.nativeElement;
 
         ne.scrollLeft = this.clampScrollValue(ne.scrollLeft - (ne.clientWidth - 64));
-
+        
+        
         return this.stopEvent(event);
     }
 
@@ -357,22 +656,7 @@ export class AppearanceControlsComponent implements OnDestroy {
     }
 
     selectedOption(optionGroup: AppearanceOptionGroup): AppearanceOption {
-      var toreturn = this.activeTracking().chosenGroupOption.get(optionGroup);
-      //console.log(toreturn);
-      return toreturn;
-    }
-
-
-    selectedOption1(option, optionGroup) {
-      if (this.selectedItem) {
-        if (this.selectedItem._id && this.selectedItem._id === option._id) {
-          return true;
-        } else {
-          return this.selectedItem.name === option.name && this.selectedItem.displayImg === option.displayImg;
-        }
-      } else {
-        return false;
-      }
+        return this.activeTracking().chosenGroupOption.get(optionGroup);
     }
 
     setupOptionTracking(commonSections: AppearanceSection[], weapon: WeaponCustomization) {
@@ -395,45 +679,18 @@ export class AppearanceControlsComponent implements OnDestroy {
             });
 
         this.selectedItems.set(weapon, {
-            activeSection: (commonSections.length !== 0) ? commonSections[0] : weapon.customizations[0],
+            activeSection: (commonSections.length !== 0) ? commonSections[1] : weapon.customizations[1], ////[0]->[1]
             resetActive: false,
             chosenGroupOption: groupOptionTracking
         });
-    }
-
-    setupOptionTrackingByCommonSection(commonSections: AppearanceSection[], weapon: WeaponCustomization, resetIndex) {
-        const groupOptionTracking = new Map<AppearanceOptionGroup, AppearanceOption>();
-
-        commonSections.slice()
-            .concat(weapon.customizations.slice())
-            .forEach(function (customization) {
-                customization.optionGroups.forEach(function (optionGroup) {
-                    let defaultSelected: AppearanceOption = null;
-
-                    if (typeof optionGroup.defaultSelected === 'number') {
-                        defaultSelected = optionGroup.options[optionGroup.defaultSelected];
-                    } else if (!optionGroup.allowNone && (optionGroup.options.length > 0)) {
-                        defaultSelected = optionGroup.options[0];
-                    }
-
-                    groupOptionTracking.set(optionGroup, defaultSelected);
-                });
-            });
-
-
-        var item = this.selectedItems.get(weapon);
-        item.activeSection = (commonSections.length !== 0) ? commonSections[resetIndex] : weapon.customizations[0];
-        item.resetActive = true;
-        //item.chosenGroupOption = item.chosenGroupOption;
-        console.log(item);
-        this.selectedItems.set(weapon, item);
     }
 
     stopEvent(event: MouseEvent) {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
-      }
+        }
+
         return false;
     }
 
@@ -443,84 +700,129 @@ export class AppearanceControlsComponent implements OnDestroy {
         return this.stopEvent(event);
     }
 
+
+    /**
+     * Helper function to load materials via the viewer service.
+     * @param matProps
+     */
+    createMaterial(matProps: MaterialProperties) {
+        this.viewerService.viewer.createMaterial(matProps);
+    }
+    public textureGenerate():AppearanceOption[] {
+        const urls: string[] = ['https://cdn.pixabay.com/photo/2016/01/08/11/57/butterfly-1127666_960_720.jpg', 
+            'https://image.shutterstock.com/image-photo/beautiful-butterfly-metamorpha-stelenes-nature-600w-653284645.jpg',
+            'https://cdn.pixabay.com/photo/2016/01/08/11/57/butterfly-1127666_960_720.jpg'];
+        const options: AppearanceOption[] = [];
+
+        urls.map((url, index) => {
+            options.push({
+                name: index.toString(),
+                displayImg: url,
+                interactionValue: url
+            });
+        })
+        
+
+        return options;
+    }
     viewerInitialized() {
-        const createMaterial = (matProps: MaterialProperties) => {
-            this.viewerService.viewer.createMaterial(matProps);
-        };
 
-        this.customizerDataService.weaponsData().then((customizationData) => {
 
+        this.customizerDataService.weaponsData().subscribe((customizationData) => {
             this.customizationData = customizationData;
-
-            if (!!customizationData.environment) {
-                this.viewerService.viewer.setEnvironment(customizationData.environment);
-            }
+           /*  this.textureGenerate().map( texture => {
+                this.customizationData.commonSections[1].optionGroups[0].options.push(texture);
+            })
+             */
+            // if (!!customizationData.environment) {
+            console.log(this.customizationData);
+            this.viewerService.viewer.setEnvironment(customizationData.environment);
+            // }
 
             if (!!customizationData.commonMaterials) {
-                customizationData.commonMaterials.forEach(createMaterial);
+                customizationData.commonMaterials.forEach((matProps) => this.createMaterial(matProps));
             }
+
+            //  customizationData.weapons= [customizationData.weapons[0]]
+
+            // this.loadWeapon(customizationData.weapons[0], true);
+            this.chooseWeapon(null, customizationData.weapons[0]);
 
             customizationData.weapons.forEach((weapon, wIdx) => {
                 this.setupOptionTracking(customizationData.commonSections || [], weapon);
 
-                this.viewerService.viewer.load(weapon.modelFolder, weapon.modelFile, wIdx === 0, () => {
-                    if (!!weapon.materials) {
-                        weapon.materials.forEach(createMaterial);
-                    }
 
-                    this.weaponSetup(weapon);
-                });
+                //  this.loadWeapon(weapon, wIdx === 0);
+
+
             });
-
-            this.chooseWeapon(null, customizationData.weapons[0]);
         });
     }
 
 
-    viewerUpdated(api_response) {
-        const createMaterial = (matProps: MaterialProperties) => {
-            this.viewerService.viewer.createMaterial(matProps);
-        };
+    /**
+     * This starts the actual loading of the meshes and materials.
+     * TODO @7frank detect desktop or mobile. Then set interval at which desktop caches weapons in advance in the background
+     *
+     * @param weapon
+     * @param visible
+     */
+   public loadWeapon(weapon: WeaponCustomization, visible: boolean, eventfire?: boolean) {
 
-        //this.customizerDataService.weaponsData().subscribe((api_response) => {
-        const customizationData = api_response;
-
-        this.customizationData = customizationData;
-
-        if (!!customizationData.environment) {
-            this.viewerService.viewer.setEnvironment(customizationData.environment);
-        }
-
-        if (!!customizationData.commonMaterials) {
-            customizationData.commonMaterials.forEach(createMaterial);
-        }
-
-        customizationData.weapons.forEach((weapon, wIdx) => {
-            this.setupOptionTrackingByCommonSection(customizationData.commonSections || [], weapon, this.sectionIndex);
-        });
-
-        this.chooseWeapon(null, customizationData.weapons[0]);
-    }
-
-    viewerReset() {
-        this.customizationData.weapons.forEach((weapon) => {
-            this.setupOptionTracking(this.customizationData.commonSections || [], weapon);
-
+        this.viewerService.viewer.load(weapon.modelFolder, weapon.modelFile, visible,  weapon.meshNames, eventfire, () => {
             this.weaponSetup(weapon);
         });
+
+        if (!!weapon.materials) {
+            weapon.materials.forEach((matProps) => {
+                this.createMaterial(matProps);
+            });
+        }
     }
 
-    weaponSetup(weapon: WeaponCustomization) {
+    /**
+     * Rest the already loaded and possibly changed weapons to default.
+     */
+  public  viewerReset(event?: MouseEvent) {
+        this.weaponsLoaded.forEach((loaded, weapon) => {
+            console.log(weapon);
+           this.setupOptionTracking(this.customizationData.commonSections || [], weapon);
+            this.weaponSetup(weapon);
+            
+        });
+        for (let i =0; i < 10 ; i++) {
+            UndoMgr.undo();
+        }
+        
+        UndoMgr.getInstance().clear();
+        return this.stopEvent(event);
+    }
+
+
+    /**
+     * Set up materials and weapon options as well as position, scale and other properties.
+     * @param weapon
+     */
+    public weaponSetup(weapon: WeaponCustomization) {
         if (!!weapon.replaceMaterials) {
+           
             weapon.replaceMaterials.forEach((replacement) => {
-                console.log('reset-part', replacement);
                 this.viewerService.viewer.replaceMaterials(weapon.modelFolder, weapon.modelFile,
                     replacement.oldMaterialNames, replacement.newMaterialName);
             });
         }
 
-        if (weapon['rotation']) {
-            this.viewerService.viewer.setRotation(weapon.modelFolder, weapon.modelFile, weapon['rotation']);
+
+        if (weapon.rotation) {
+            this.viewerService.viewer.setRotation(weapon.modelFolder, weapon.modelFile, weapon.rotation);
+        }
+
+        if (weapon.scale) {
+            this.viewerService.viewer.setScale(weapon.modelFolder, weapon.modelFile, weapon.scale);
+        }
+
+        if (weapon.position) {
+            this.viewerService.viewer.setPosition3(weapon.modelFolder, weapon.modelFile, weapon.position);
         }
 
         if (!!weapon.setupActions) {
@@ -534,7 +836,7 @@ export class AppearanceControlsComponent implements OnDestroy {
                             optionGroup.options.forEach((option) => {
                                 if (setupAction.target === option.name) {
                                     this.optionOn(option);
-                                    this.selectedItems.get(weapon).chosenGroupOption.set(optionGroup, option)
+                                    this.selectedItems.get(weapon).chosenGroupOption.set(optionGroup, option);
                                 }
                             });
                         });
@@ -543,543 +845,125 @@ export class AppearanceControlsComponent implements OnDestroy {
             });
         }
     }
-    openAddPackModel() {
-      this.outside = false
-        this.packName = "";
-        this.isEdit = false;
-        this.showModal('addPack')
-    }
 
-    hideModal(id) {
-      this.outside = false
-        this.manageModel(id, false);
-        this.isEdit = false
-    }
+    onVeryLongPress($event, optionGroup, option: ColorOptionInterface) {
+        /*
+             (click)="optionClicked($event, optionGroup, option)"
 
-    showModal(id) {
-      this.outside = false
-        this.manageModel(id, true);
-    }
-
-    manageModel(id, visible) {
-      this.outside = false
-        visible ? $('#' + id).show() : $('#' + id).hide()
-    }
-
-    allpacks = [];
-    async getPacks() {
-      var self = this;
-        const input = await this.apiService.prepareNodeJSRequestObject("packs", "getpacks", null)
-        const totalPacksArray: any = await this.apiService.execute(input, false)
-        this.allpacks = totalPacksArray.apidata.Data;
-        if (this.Packs.length >0) {
-          for (let i = 0; i < this.Packs.length; i++) {
-            this.allpacks.push(this.Packs[i])
-          }
+                   [longPress]="500"
+         */
+        // FIXME window reference and eq
+        // tslint:disable-next-line: triple-equals
+        if (optionGroup.itemCustomClasses == 'color-select-button') {
+            window['NavBar'].openColorPickerModal($event, option).colorPickerChange.subscribe((color) => {
+            option.displayColor = color;
+            option.interactionValue = color;
+            option.name = 'Custom';
+            });
         }
-
-        if (this.deletedPack.length > 0) {
-          for (let i = 0; i < this.deletedPack.length; i++) {
-
-            let j = _.findIndex(this.allpacks, function (t) { return t._id == self.deletedPack[i].packid})
-              this.allpacks.splice(j, 1);
-          }
-        }
-
-        this.packArray = this.allpacks.filter((p) => p.type == this.packtype);
-        this.packArray.sort(this.customizerDataService.compare);
     }
-
-    selectedPack = null;
-    selectPack(pack) {
-      this.outside = false
-        this._ngZone.run(() => {
-            if (pack) {
-                this.selectedPack = pack;
-                this.selectedItem = null;
-                this.allitemSelected = false;
-            } else {
-                this.allitemSelected = true;
-                this.selectedPack = null
+    receiveMessage($event) {
+        this.message = $event;
+      }
+    async replayGun(file: any) {
+        try {
+            const  weapon  =  file.weaponName;
+            const  attachData  =  file.weaponAttachData;
+            const  designData  =  file.weaponDesignData;
+            //await this.chooseWeapon(null, weapon);
+            
+            localStorage.setItem('weapon', JSON.stringify(weapon));
+            localStorage.setItem('DesignData', JSON.stringify(designData));
+            localStorage.setItem('AttachData', JSON.stringify(attachData));
+            switch (weapon) {
+                case 'M1 Garand':
+                    this.chosenWeapon = this.customizationData.weapons[2];
+                    this.replayedWeapon = this.customizationData.weapons[2];
+                    console.log(weapon);
+                 break;
+                case 'KAR98K':
+                    this.chosenWeapon = this.customizationData.weapons[3];
+                    this.replayedWeapon = this.customizationData.weapons[3];
+                    console.log(weapon);
+                 break;
+                case 'Assault Rifle':
+                    this.chosenWeapon = this.customizationData.weapons[0];
+                    this.replayedWeapon = this.customizationData.weapons[0];
+                    console.log(weapon);
+                 break;
+                case 'AK47':
+                    this.chosenWeapon = this.customizationData.weapons[1];
+                    this.replayedWeapon = this.customizationData.weapons[1];
+                    console.log(weapon);
+                 break;
+                case 'M1911':
+                    this.chosenWeapon = this.customizationData.weapons[4];
+                    this.replayedWeapon = this.customizationData.weapons[4];
+                    console.log(weapon);
+                 break;
+                case 'M16A4':
+                    this.chosenWeapon = this.customizationData.weapons[5];
+                    this.replayedWeapon = this.customizationData.weapons[5];
+                    console.log(weapon);
+                 break;
+                case 'PPSH':
+                    this.chosenWeapon = this.customizationData.weapons[6];
+                    this.replayedWeapon = this.customizationData.weapons[6];
+                    console.log(weapon);
+                 break;
+                case 'AA12':
+                    this.chosenWeapon = this.customizationData.weapons[7];
+                    this.replayedWeapon = this.customizationData.weapons[7];
+                    console.log(weapon);
+                 break;
+                case 'M14':
+                    this.chosenWeapon = this.customizationData.weapons[8];
+                    this.replayedWeapon = this.customizationData.weapons[8];
+                    console.log(weapon);
+                 break;
+                 case 'Steyr Aug':
+                    this.chosenWeapon = this.customizationData.weapons[9];
+                    this.replayedWeapon = this.customizationData.weapons[9];
+                    console.log(weapon);
+                 break;
+              }
+            if (!this.weaponsLoaded.get(this.chosenWeapon)) {
+                this.loadWeapon(this.chosenWeapon, true, true);
+                this.weaponsLoaded.set(this.chosenWeapon, true);
             }
-        });
-    }
-
-
-    async addPack() {
-      this.outside = false
-      let order = this.customizerDataService.getOrder(this.packArray)
-        var obj: any = {
-            name: this.packName,
-            type: this.packtype,
-            _id: new Date().getTime(),
-            colors: [],
-            patterns: [],
-            metarials: [],
-            visible: true,
-            opname: "ADD",
-            order : order
-        }
-        this.customizerDataService.dbData.push(obj);
-        this.Packs.push(obj)
-        this.getPacks();
-        this.hideModal("addPack");
-        this.packName = ""
-
-    }
-
-
-    openModel() {
-      this.outside = false
-        if (this.selectedPack === null) {
-            alert("please select at pack before adding ");
-            return;
-        }
-        this.isEdit = false
-        if (this.type == "MATERIALS") {
-            this.name = ''
-            this.colorCode = "#000"
-            this.color = "#000"
-            this.interactionValue = ""
-            this.roughness = 0.5
-            this.image = this.place_holder_image;
-            this.isMetal = true
-            this.visible = true
-            this.imagePath = null
-            $('#image')
-                .attr('src', this.place_holder_image)
-                .width(150)
-                .height(150);
-            this.showModal('my-modal');
-        }
-        else if (this.type == "COLORS") {
-            this.colorName = '';
-            this.colorCodeInColor = "#000";
-            this.color = "#000"
-            this.visibleInColor = true;
-            this.showModal('addColor');
-        }
-        else if (this.type == "PATTERNS") {
-          this.patternName = '';
-          this.imagePath = null
-            this.visibleInPattern = true;
-            this.patternImage = this.place_holder_image;
-            this.showModal('patterns');
-
-            $('#image1')
-                .attr('src', this.place_holder_image)
-                .width(150)
-                .height(150);
-        }
-    }
-
-    onAddAndUpdate() {
-        const api_response = this.customizerDataService.weaponsDataLocal();
-        this.viewerUpdated(api_response);
-    }
-
-    colorChanged(data) {
-        console.log(data)
-        this.colorCode = data
-    }
-
-    async fileEvent(data) {
-
-        this.imagePath = await this.sendFile(data.target.files[0]);
-        var reader = new FileReader();
-
-        reader.onload = function (e) {
-            var tfg: any = e.target;
-            $('#image')
-                .attr('src', tfg.result)
-                .width(150)
-                .height(150);
-
-            $('#image1')
-                .attr('src', tfg.result)
-                .width(150)
-                .height(150);
-        };
-
-
-
-        reader.readAsDataURL(data.target.files[0]);
-    }
-
-    sendFile(file) {
-
-        return new Promise(function (resolve, reject) {
-
-            const apiUrl = environment.apiBaseURL + 'profile';
-            var self = this
-            var formData = new FormData();
-            var xhr = new XMLHttpRequest();
-
-            formData.append("avatar", file, file.name);
-
-            xhr.open("POST", apiUrl, true);
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        resolve(JSON.parse(xhr.responseText).path);
-                    } else {
-                        console.error(xhr.statusText);
-                    }
+            // localStorage.setItem('custom', JSON.stringify(this.selectedItems));
+            UndoMgr.getInstance().clear();
+            // this.designData = [];
+            this.hideWeaponChoices = true;
+           /*  this.allSections = this.customizationData.commonSections.slice() ///
+                .concat(this.chosenWeapon.customizations.slice()); */
+            this.viewerService.viewer.changeWeapon(this.replayedWeapon.modelFolder,
+                 this.replayedWeapon.modelFile, this.replayedWeapon.preview);
+            this.viewerReset();
+            this.replayedWeapon.meshNames.map( meshName => {
+                    this.viewerService.viewer.resetMaterial(meshName);
+                });
+            this.replayedWeapon.meshNames.map( meshName => {
+                this.viewerService.viewer.changeMeshMaterial(meshName, 'Silver');
+            });
+            await attachData.map(item => {
+                if (item.weaponName === weapon) {
+                   
+                    if (item.isAdding) {
+                        this.optionOn(item.option, item.section);
+                       } else {
+                        this.optionOff(item.option, item.section);
+                       }
                 }
-            };
+            });
+            await designData.map(item => {
+                if (item.weaponName === weapon ) {
+                    UndoMgr.setMaterialProperty(this.viewerService.viewer, item.meshname,
+                        item.affectedParameter, item.interactionValue);
+                }
+             });
+        } catch {
 
-            xhr.send(formData);
-        })
-    }
-
-
-    async addMaterial() {
-      this.outside = false
-        var obj: any = {};
-        var metarials = [];
-        obj.packid = this.selectedPack._id;
-
-        if (this.name == "" || !this.imagePath || this.imagePath == null) {
-          alert("All field are mandatory ");
-        } else {
-
-          metarials = [{
-            name: this.name,
-            colors: this.colorCode,
-            interactionValue: this.name,
-            roughness: this.roughness,
-            image: this.imagePath,
-            metal: this.isMetal,
-            visible: this.visible,
-            opname: "ADD",
-            _id: new Date().getTime()
-          }]
-          obj.metarials = metarials;
-          this.customizerDataService.addDataOnPacks(obj);
-          this.onAddAndUpdate();
-          this.hideModal('my-modal');
-          //this.selectedItem = null
         }
-    }
-
-    colorModelChanged(data) {
-        this.colorCodeInColor = data
-    }
-
-    async addColor() {
-      this.outside = false
-      var obj: any = {};
-      var colors = [];
-      obj.packid = this.selectedPack._id;
-
-      if (this.colorName == "") {
-        alert("All field are mandatory ");
-      } else {
-        colors = [{
-          name: this.colorName,
-          code: this.colorCodeInColor,
-          visible: this.visibleInColor,
-          opname: "ADD",
-          _id: new Date().getTime()
-        }]
-
-        obj.colors = colors;
-        this.customizerDataService.addDataOnPacks(obj);
-        this.onAddAndUpdate();
-        this.hideModal("addColor");
-        //this.selectedItem = null
-      }
-    }
-
-    async addPatternse() {
-      this.outside = false
-      var obj: any = {};
-      var patterns = [];
-      obj.packid = this.selectedPack._id;
-      if (this.patternName == "" || !this.imagePath || this.imagePath == null) {
-        alert("All field are mandatory ");
-      } else {
-
-        patterns = [{
-          name: this.patternName,
-          visible: this.visibleInPattern,
-          image: this.imagePath,
-          opname: "ADD",
-          _id: new Date().getTime()
-        }]
-
-        obj.patterns = patterns;
-        this.customizerDataService.addDataOnPacks(obj);
-        this.onAddAndUpdate();
-        this.hideModal('patterns')
-        //this.selectedItem = null
-      }
-    }
-    selectedItem = null;
-    async editOption() {
-      this.outside = false
-        this.isEdit = true
-        this.packid = this.selectedItem.pack_id;
-        var type = this.packtype;
-        var obj = this.selectedItem;
-        this.arrid = obj._id
-        this.imagePath = "";
-        if (type == "MATERIALS") {
-            this.name = obj.name
-            this.colorCode = obj.displayColor
-            this.interactionValue = obj.interactionValue
-            this.roughness = obj.roughness
-            this.image = obj.displayImg
-            this.isMetal = obj.metal
-            this.visible = obj.visible
-            $('#my-modal').show()
-        }
-        else if (type == "COLORS") {
-            this.colorName = obj.name;
-            this.colorCodeInColor = obj.displayColor;
-            this.color = obj.displayColor;
-            this.visibleInColor = obj.visible;
-            $('#addColor').show()
-        }
-        else if (type == "PATTERNS") {
-            this.patternName = obj.name;
-            this.visibleInPattern = obj.visible
-            this.patternImage = obj.displayImg
-            $('#patterns').show()
-        }
-    }
-
-    async editMaterial() {
-      this.outside = false
-        var metarials: any = [
-            {
-                name: this.name,
-                colors: this.colorCode,
-                interactionValue: this.name,
-                roughness: this.roughness,
-                image: this.image,
-                metal: this.isMetal,
-                visible: this.visible,
-                opname: "EDIT",
-                _id: this.arrid
-            }
-        ]
-        if (this.imagePath && this.imagePath != '') {
-            metarials[0].image = this.imagePath
-        }
-
-        var obj: any = { packid: this.selectedItem.pack_id, metarials: metarials, arrId: this.arrid };
-        this.customizerDataService.editDataOnPacks(obj);
-        this.onAddAndUpdate();
-        this.hideModal('my-modal');
-        //this.selectedItem = null
-    }
-
-    async editColor() {
-      this.outside = false
-        var colors: any = [{
-            name: this.colorName,
-            code: this.colorCodeInColor,
-            visible: this.visibleInColor,
-            opname: "EDIT",
-            _id: this.arrid
-        }]        
-        var obj: any = { packid: this.selectedItem.pack_id, colors: colors, arrId: this.arrid };
-        this.customizerDataService.editDataOnPacks(obj);
-
-        this.onAddAndUpdate();
-        this.hideModal('addColor');
-        //this.selectedItem = null
-    }
-
-    async editPatternse() {
-      this.outside = false
-        var patterns: any = [{
-            name: this.patternName,
-            visible: this.visibleInPattern,
-            image: this.patternImage,
-            opname: "EDIT",
-            _id: this.arrid
-        }]
-
-        if (this.imagePath && this.imagePath != '') {
-            patterns[0].image = this.imagePath
-        }
-
-        var obj: any = { packid: this.selectedItem.pack_id, patterns: patterns, arrId: this.arrid };
-        this.customizerDataService.editDataOnPacks(obj);
-        this.onAddAndUpdate();
-        this.hideModal('patterns');
-        //this.selectedItem = null
-    }
-
-    openDeleteModel() {
-      this.outside = false
-        $('#deletModel').show()
-    }
-
-
-
-    async deleteData() {
-      this.outside = false
-        var obj: any = { packid: this.selectedItem.pack_id, type: this.type, arrId: this.selectedItem._id };
-        this.customizerDataService.deleteDataOnPack(obj);
-        this.onAddAndUpdate();
-        this.hideModal("deletModel");
-        //this.selectedItem = null
-    }
-
-    async setVisible(value) {
-      this.outside = false
-        var obj: any = { packid: this.selectedItem.pack_id, type: this.type, value: value, arrId: this.selectedItem._id };
-        this.customizerDataService.setVisibleOfPackData(obj);
-        this.selectedItem.visible = value;
-        this.onAddAndUpdate();
-        //this.selectedItem = null
-    }
-
-    async setVisibleofPack(pack: any, b) {
-      this.outside = false
-        var obj: any = {};
-        obj.packid = pack._id
-        obj.value = b
-        const input = this.apiService.prepareNodeJSRequestObject("packs", "setVisibleOfPack", obj)
-        await this.apiService.execute(input, false);
-        this.getPacks();
-    }
-
-    openEditPack(pack) {
-      this.outside = false
-        this.isEdit = true;
-        this.packid = pack._id
-        this.packName = pack.name
-        this.showModal('addPack');
-    }
-
-    async editPack() {
-      this.outside = false
-        var obj: any = {};
-        obj.packid = this.packid
-        obj.name = this.packName
-        let k = _.findIndex(this.packArray, function (t) { return t._id == obj.packid })
-        this.packArray[k].name = obj.name
-
-        let j = _.findIndex(this.customizerDataService.dbData, function (t) { return t._id == obj.packid })
-        this.customizerDataService.dbData[j].name = obj.name
-        this.customizerDataService.dbData[j].opname = "EDIT"
-        //this.getPacks();
-        this.onAddAndUpdate();
-        this.hideModal("addPack");
-        this.isEdit = false;
-    }
-
-    async movePackLeft(data) {
-      this.outside = false
-      let order = data.order
-      var self = this
-
-      let k = _.findIndex(this.packArray, function (t) { return t._id == data._id })
-
-      if (k > -1 && k != 0) {
-        this.packArray[k].order = this.packArray[k - 1].order
-        this.packArray[k - 1].order = order
-        this.packArray.sort(this.customizerDataService.compare);
-      }
-
-      let j = _.findIndex(this.customizerDataService.dbData, function (t) { return t._id == data._id })
-      let l = _.findIndex(this.customizerDataService.dbData, function (t) { return t._id == self.packArray[k]._id })
-
-      if (j > -1 && j != 0) {
-        this.customizerDataService.dbData[j].order = this.customizerDataService.dbData[l].order
-        this.customizerDataService.dbData[l].order = order
-        this.customizerDataService.dbData[l].opname = "EDIT"
-        this.customizerDataService.dbData[j].opname = "EDIT"
-        this.customizerDataService.dbData.sort(this.customizerDataService.compare);
-      }
-      this.onAddAndUpdate();
-      this.hideModal("addPack");
-      this.isEdit = false;
-    }
-
-    async movePackRight(data) {
-      this.outside = false
-      let order = data.order
-      var self = this
-
-      let k = _.findIndex(this.packArray, function (t) { return t._id == data._id })
-      let max = this.customizerDataService.getOrder(this.packArray)
-
-      if (k > -1 && order < max - 1) {
-        this.packArray[k].order = this.packArray[k + 1].order
-        this.packArray[k + 1].order = order
-        this.packArray.sort(this.customizerDataService.compare);
-      }
-
-      let j = _.findIndex(this.customizerDataService.dbData, function (t) { return t._id == data._id })
-      let l = _.findIndex(this.customizerDataService.dbData, function (t) { return t._id == self.packArray[k]._id })
-
-      if (j > -1 && order < max - 1) {
-        this.customizerDataService.dbData[j].order = this.customizerDataService.dbData[l].order
-        this.customizerDataService.dbData[l].order = order
-        this.customizerDataService.dbData[l].opname = "EDIT"
-        this.customizerDataService.dbData[j].opname = "EDIT"
-        this.customizerDataService.dbData.sort(this.customizerDataService.compare);
-      }
-      this.onAddAndUpdate();
-      this.hideModal("addPack");
-      this.isEdit = false;
-    }
-
-    openDeletePack(pack) {
-      this.outside = false
-        this.packid = pack._id
-        this.showModal('deletPackModel');
-    }
-
-    async deletePack() {
-      this.outside = false
-        var obj: any = {};
-        obj.packid = this.packid;
-        let i = _.findIndex(this.customizerDataService.dbData, function (t) { return t._id == obj.packid })
-        this.customizerDataService.dbData.splice(i, 1)
-        this.deletedPack.push(obj)
-        this.getPacks();
-        this.onAddAndUpdate();
-        this.hideModal("deletPackModel");
-        this.isEdit = false;
-    }
-
-    async deployPackData() {
-      this.outside = false
-      var obj: any = { dbData: this.customizerDataService.dbData, deleted: this.customizerDataService.deleted, weapons: this.customizerDataService.dbWeapons, deletedPack: this.deletedPack }
-        const input = this.apiService.prepareNodeJSRequestObject("packs", "deployPack", obj)
-        await this.apiService.execute(input, false);
-        this.onAddAndUpdate();
-        window.location.reload();
-    }
-
-    setVisibleofWeapon(weapons, value) {
-      this.outside = false
-      var obj: any = { weapons: weapons, value: value }
-      this.customizerDataService.setVisibleofWeapon(obj);
-      this.onAddAndUpdate();
-    }
-
-    moveLeft(data) {
-      this.outside = false
-      console.log(this.selectedItem)
-      var obj: any = { packid: data.pack_id, order: data.order, type: this.type, arrId: data._id };
-      var selectedItemTemp =  this.customizerDataService.moveLeft(obj);
-      this.onAddAndUpdate();
-      this.selectedItem = this.customizerDataService.getUIFORMATDATA(selectedItemTemp._id);
-    }
-
-    moveRight(data) {
-      this.outside = false
-      var obj: any = { packid: data.pack_id, order: data.order, type: this.type, arrId: data._id };
-      var selectedItemTemp =this.customizerDataService.moveRight(obj);
-      this.onAddAndUpdate();
-      this.selectedItem = this.customizerDataService.getUIFORMATDATA(selectedItemTemp._id);
     }
 }

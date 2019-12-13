@@ -1,0 +1,144 @@
+<h5 class="text-center" style="margin: 1%;" *ngIf="!fileUploads">Loading data from database...</h5>
+<h4 class="text-center" style="margin: 1%;" *ngIf="isPaid&&fileUploads">{{fileUploads.length}}/10</h4>
+<h4 class="text-center" style="margin: 1%;" *ngIf="!isPaid&&fileUploads">{{fileUploads.length}}/3</h4>
+<div class="container">
+  
+
+  <div class="row display_flex">
+
+    <div class="tab d-none d-lg-block">
+      <div class="tabcc" *ngFor="let file of fileUploads">
+        
+        <div class="tabb2 gun">
+          <div style="width: 200px; height: 200px">
+            <a href="#" (click)="Edit($event, file)"><img
+              src= "{{file.url}}"
+              class="img2 mask"
+            />
+            </a>
+          </div>
+        </div>
+      <!--   <div class="tabb3">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" class = "threedot">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" >
+            <button mat-menu-item (click)="Edit(file)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="List(file)">
+              <mat-icon>list</mat-icon>
+              <span>List</span>
+            </button>
+            <button mat-menu-item (click)="Delete(file.key)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div> -->
+      </div>
+      <div class="tabcc" *ngFor="let number of numbers">
+       
+        <div class="tabb2" style = "margin-left : 10% ">
+          <div style="width: 200px; height: 200px">
+            <img
+              src= "../../assets/img/gunwall/grey-cross.png"
+              class="img2 mask"
+            />
+          </div>
+        </div>
+        
+      </div>
+      <div class="tabcc" *ngFor="let inactive of inactiveNumbers" >
+       
+        <div class="tabb2" style = "margin-left : 10% ">
+          <div style="width: 200px; height: 200px">
+            <a href="#" (click)="Upgrade($event)"><img
+              src= "../../assets/img/gunwall/grey-cross.png"
+              class="img2 mask"
+            />
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="tabsmall d-lg-none">
+      <div class="tabcc" *ngFor="let file of fileUploads">
+        
+        <div class="tabb2 gun">
+          <div style="width: 200px; height: 200px">
+            <a href="#" (click)="Edit($event, file)"><img
+              src= "{{file.url}}"
+              class="img2 mask"
+            />
+            </a>
+          </div>
+        </div>
+       <!--  <div class="tabb3">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" class = "threedot-small">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" >
+            <button mat-menu-item (click)="Edit(file)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="List(file)">
+              <mat-icon>list</mat-icon>
+              <span>List</span>
+            </button>
+            <button mat-menu-item (click)="Delete(file.key)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div> -->
+      </div>
+      <div class="tabcc" *ngFor="let number of numbers">
+       
+        <div class="tabb2" style = "margin-left : 10% ">
+          <div style="width: 200px; height: 200px">
+            <img
+              src= "../../assets/img/gunwall/grey-cross.png"
+              class="img2 mask"
+            />
+          </div>
+        </div>
+        
+      </div>
+      <div class="tabcc" *ngFor="let inactive of inactiveNumbers" >
+       
+        <div class="tabb2" style = "margin-left : 10% ">
+          <div style="width: 200px; height: 200px">
+            <a href="#" (click)="Upgrade($event)"><img
+              src= "../../assets/img/gunwall/grey_lock.png"
+              class="img2 mask"
+            />
+            </a>
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    
+
+  </div>
+  <!-- <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1">Previous</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#">Next</a>
+    </li>
+  </ul>
+</nav> -->
+</div>

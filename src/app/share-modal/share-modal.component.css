@@ -1,7 +1,10 @@
-.gif-preview-viewer {
-    width: 640px;
-    height: 480px;
-    touch-action: none;
+.header {
+
+
+    border-radius: 0.5em 0.5em 0 0 !important;
+    background-color: #FFA942;
+    color: white;
+
 }
 
 
@@ -10,20 +13,16 @@
 
 }
 
-
 .header-shadow {
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.5)!important;
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .5) !important;
 }
 
-
-.overlay-parent{
-    position:relative !important;
-
+.overlay-parent {
+    position: relative !important;
 
 }
 
-.overlay
-{
+.overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -34,3 +33,19 @@
     color: white;
     display: inline-block;
 }
+
+
+
+.modal-content  {
+    width: 100%;
+    -webkit-border-radius:2em !important;
+    -moz-border-radius: 2em !important;
+    border-radius: 2em !important;
+    border: 0px;
+  }
+  
+  .modal-dialog {
+    border: 2em !important;
+  }
+
+ 

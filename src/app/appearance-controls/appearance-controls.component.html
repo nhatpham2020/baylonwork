@@ -1,443 +1,132 @@
-<div class="mt-2 mb-2 col-12" style="text-align: right;padding-right: 20px;" *ngIf="!!!!isAdmin">
-  <button style="background: #444444; border: #444444;" (click)="deployPackData()" type="button" class="btn btn-danger">Deploy</button>
-</div>
 <div class="container-fluid">
-  <div class="row section-selector">
-    <div class="col-auto gun-selector d-flex">
-      <a href="#" (click)="toggleChoices($event)">
-        <i class="material-icons">{{hideWeaponChoices ? 'expand_less' : 'expand_more'}}</i>
-        <div class="weapon-icon contain-svg" *ngIf="chosenWeapon && chosenWeapon.svgPath" [inlineSVG]="chosenWeapon.svgPath"></div>
-        <div class="p-2 weapon-name" *ngIf="chosenWeapon && chosenWeapon.name">{{chosenWeapon.name}}</div>
-      </a>
-    </div>
-    <div class="vertical-divider"></div>
-    <div class="mt-2 mb-2 col-auto" *ngFor="let section of allSections">
-      <a [class.active]="section == activeSection()" href="#" (click)="changeSection($event, section)">
-        <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
-        <div>{{section.name}}</div>
-      </a>
-    </div>
-    <div class="col-auto all-options" [class.put-away]="hideWeaponChoices">
-      <div class="weapon-option" *ngFor="let weapon of (customizationData || {}).weapons">
-        <i style="cursor: pointer;margin-right:5px" *ngIf="weapon.visible && !!isAdmin" (click)="setVisibleofWeapon(weapon ,false)" class="material-icons md-inherit">visibility</i>
-        <i style="cursor: pointer;margin-right:5px" *ngIf="!weapon.visible  && !!isAdmin" (click)="setVisibleofWeapon(weapon ,true)" class="material-icons md-inherit">visibility_off</i>
-        <a class="d-inline-block" href="#" [class.active]="weapon == chosenWeapon" (click)="chooseWeapon($event, weapon)">
-          <div class="weapon-icon contain-svg" [inlineSVG]="weapon.svgPath"></div>
-          <div class="p-2 weapon-name">{{weapon.name}}</div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="row pack-selector">
-    <ul>
-      <li [class.active]="allitemSelected">
-        <a href="#" (click)="selectPack(null)">ALL</a>
-      </li>
-      <li *ngFor="let pack of packArray" [class.active]="pack == selectedPack">
-        <ng-container>
-          <a style="float: left;padding-right: 5px;" href="#" (click)="selectPack(pack)">
-            {{pack.name}}
-          </a>
-          <!--<a href="#">edit </a>
-          <a href="#">delete </a>
-          <a href="#">visible </a>-->
-          <div style="display:inline-flex" *ngIf="selectedPack && selectedPack._id == pack._id && !!isAdmin" class="option-editor-options">
-
-            <a style="padding-left: 4px;padding-right: 0px;" (click) ="movePackLeft(pack)" >
-              <i style="cursor: pointer;" class="material-icons md-inherit">keyboard_arrow_left</i>
+       
+    <div class="row section-selector">
+        <div class="col-auto gun-selector d-flex">
+            <div class="row undo-container  d-lg-none" *ngIf="activeSection().globalReset">
+                <a class="m-auto" href="#" title="undo"
+                   (click)="resetPressed($event)"
+                   [class.disabled]="undoManagerIndex() === 0">
+                    <i class="material-icons md-inherit custom-md-size">arrow_left</i>
+                </a>
+                <a class="m-auto" href="#" title="redo"
+                   (click)="redoPressed($event)"
+                   [class.disabled]="undoManagerIndex() == undoManagerLimit()">
+                    <i class="material-icons md-inherit custom-md-size">arrow_right</i>
+                </a>
+                <a class="nav-option undo-item" href="#" title="reset"
+                   (click)="viewerReset($event)">
+                    <div class="display position-relative">
+                        <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
+                             style="background-image: url('assets/img/nav-icons/spin.svg');">
+                        </div>
+                        <span class="undo-button">{{ undoManagerIndex() }}</span>
+                    </div>
+                </a>
+            </div>
+        
+            <div class="row undo-container-lg  d-none d-lg-block" *ngIf="activeSection().globalReset">
+        
+        
+                <a class="m-auto" href="#" title="undo"
+                   (click)="resetPressed($event)"
+                   [class.disabled]="undoManagerIndex() == 0">
+                    <i class="material-icons md-inherit custom-lg-size">arrow_left</i>
+        
+                </a>
+                <a class="m-auto" href="#" title="redo"
+                   (click)="redoPressed($event)"
+                   [class.disabled]="undoManagerIndex() == undoManagerLimit()">
+                    <i class="material-icons md-inherit custom-lg-size">arrow_right</i>
+                </a>
+        
+                <a class="nav-option undo-item-lg" href="#" title="reset"
+                   (click)="viewerReset($event)">
+                    <div class="display position-relative">
+                        <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
+                             style="background-image: url('assets/img/nav-icons/spin.svg');">
+                        </div>
+                        <span class="undo-button-lg">{{ undoManagerIndex() }}</span>
+                    </div>
+                </a>
+        
+        
+            </div>
+            <a href="#" (click)="toggleChoices($event)">
+                <i class="material-icons">{{hideWeaponChoices ? 'expand_less' : 'expand_more'}}</i>
+                <div class="weapon-icon contain-svg" [inlineSVG]="chosenWeapon.svgPath"></div>
+                <div class="p-2 weapon-name">{{chosenWeapon.name}}</div>
             </a>
-
-            <a style="padding-left: 4px;padding-right: 0px;" (click) ="movePackRight(pack)">
-              <i style="cursor: pointer;" class="material-icons md-inherit">keyboard_arrow_right</i>
+        </div>
+        <div class="vertical-divider d-none d-md-block"></div>
+        <div class="mt-2 mb-2 col-auto d-none d-md-block" *ngFor="let section of allSections">
+            <a [class.active]="section == activeSection()" href="#" (click)="changeSection($event, section)">
+                <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
+                <div>{{section.name}}</div>
             </a>
-
-
-            <a style="padding-left: 4px;padding-right: 0px;">
-              <i style="cursor: pointer;" *ngIf="pack.visible" (click)="setVisibleofPack(pack ,false)" class="material-icons md-inherit">visibility</i>
-              <i style="cursor: pointer;" *ngIf="!pack.visible" (click)="setVisibleofPack(pack ,true)" class="material-icons md-inherit">visibility_off</i>
-            </a>
-            <a style="padding-left: 4px;padding-right: 0px;" (click)="openEditPack(pack)">
-              <i style="cursor: pointer;" class="material-icons md-inherit">edit</i>
-            </a>
-            <a style="padding-left: 4px;padding-right: 0px;" (click)="openDeletePack(pack)">
-              <i style="cursor: pointer;" class="material-icons md-inherit">close</i>
-            </a>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="!userLoggedIn">
-          <a *ngIf="pack.status==='V'" href="#" (click)="selectPack(pack)">{{pack.name}}</a>
-        </ng-container>
-      </li>
-
-      <li *ngFor="let pack of newPackArray" [class.newPack]="true">
-        <a (click)="newPackClicked($event)">
-          {{pack.name}}
-          <i class="material-icons md-inherit delNewPack" (click)="delNewPack(pack)">close</i>
-        </a>
-      </li>
-
-    </ul>
-    <div class="addPack" (click)="openAddPackModel()" *ngIf="!!isAdmin">
-      <i class="material-icons md-inherit">add</i>
-    </div>
-  </div>
-
-  <div class="row option-editor" >
-    <div class="option-editor-options">
-
-      <a  class="editor-option editOption" style="cursor: pointer;">
-        <i style="cursor: pointer;" (click)="moveLeft(selectedItem)" class="material-icons md-inherit">keyboard_arrow_left</i>
-      </a>
-
-      <a  class="editor-option editOption" style="cursor: pointer;">
-        <i style="cursor: pointer;" (click)="moveRight(selectedItem)" class="material-icons md-inherit">keyboard_arrow_right</i>
-      </a>
-
-      <a  class="editor-option toggleOptionVisibility" style="cursor: pointer;">
-        <i *ngIf="selectedItem.visible" (click)="setVisible(false)" class="material-icons md-inherit">visibility</i>
-        <i (click)="setVisible(true)" class="material-icons md-inherit">visibility_off</i>
-      </a>
-      <a  (click)="editOption()" class="editor-option editOption" style="cursor: pointer;">
-        <i class="material-icons md-inherit">edit</i>
-      </a> 
-      <a   (click)="openDeleteModel()" class="editor-option delOption" style="cursor: pointer;">
-        <i class="material-icons md-inherit">close</i>
-      </a>
-    </div>
-  </div>
-
-
-  <div class="row option-browser">
-    <div class="mt-3 mb-3 col-auto" *ngIf="(activeSection() || {}).globalReset">
-      <!-- [class.active]="activeTracking().resetActive" -->
-      <a class="section-option" href="#" title="undo"
-         (click)="resetPressed($event)">
-        <div class="display" [style.opacity]="(undoManagerLimit()+3)/(9+3)" style="background-image: url('assets/img/nav-icons/arrow.png');">
-          <span class="undo-button">{{ undoManagerLimit() }}</span>
         </div>
-      </a>
-      <!-- <a class="section-option" href="#" title="redo"
-          (click)="redoPressed($event)">
-         <div class="display" style="background-image: url('assets/img/nav-icons/arrow.png');"></div>
-       </a> -->
-    </div>
-    <div #optionsContainer class="mt-3 mb-3 col options-container">
-      <ng-container *ngFor="let optionGroup of (activeSection() || {}).optionGroups">
-        <ng-container *ngFor="let option of optionGroup.options; let isFirst = first">
-          <a class="section-option" href="#"
-             *ngIf="allitemSelected || (selectedPack && selectedPack._id === option.pack_id)"
-             [class.first-of-set]="isFirst"
-             [class.active1]=" (option === selectedOption(optionGroup))"
-             [class.active]="selectedOption1(option, optionGroup)"
-             (click)="optionClicked($event, optionGroup, option)">
-            <div *ngIf="option.type != 'MAT' && option.type != 'PAT'" class="display" [id]="option.displayImg ? ('url(\'' + option.displayImg + '\')') : ''" [style.backgroundColor]="option.displayColor || ''"></div>
-            <img *ngIf="option.type == 'MAT' || option.type == 'PAT'" [src]="option.displayImg" style="height: 4em;      width: 4em;" />
-          </a>
-        </ng-container>
-        <!-- allitemSelected -->
 
-      </ng-container>
-    </div>
-    <div class="mt-3 mb-3 col-auto arrow-controls d-flex">
-      <a class="m-auto" *ngIf="!!isAdmin"
-         (click)="openModel()">
-        <i class="material-icons md-inherit addOption">add</i>
-      </a>
-      <a class="m-auto" href="#"
-         (click)="scrollOptionsLeft($event)"
-         [class.disabled]="optionsContainer.scrollLeft === 0">
-        <i class="material-icons md-inherit">arrow_left</i>
-      </a>
-      <a class="m-auto" href="#"
-         (click)="scrollOptionsRight($event)"
-         [class.disabled]="(optionsContainer.scrollLeft + optionsContainer.clientWidth) >= optionsContainer.scrollWidth">
-        <i class="material-icons md-inherit">arrow_right</i>
-      </a>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="modal" style=" overflow-y: scroll;" id="my-modal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 *ngIf="!isEdit">Add New Material</h4>
-        <h4 *ngIf="isEdit">Edit Material</h4>
-        <button (click)="hideModal('my-modal')" type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div _ngcontent-c6="" class="row">
-          <div _ngcontent-c6="" class="col-12">
-            <p> Please fill in the fields to add new material. </p>
-          </div>
-          <div class="col-12 form-group">
-            <label _ngcontent-c6="">Name</label>
-            <input _ngcontent-c6="" class="form-control ng-untouched ng-pristine ng-valid" [(ngModel)]="name" type="text">
-          </div>
-          <div class="col-12 form-group">
-            <label>Color</label>
-            <!--<input class="form-control ng-untouched ng-pristine ng-valid" type="text" [(ngModel)]="colorCode" ng-reflect-model="#000000">-->
-            <input class="colorSample" [value]="color" style="width: 100%;color: white;padding-left: 5px;" [(colorPicker)]="color" [style.background]="color" (colorPickerChange)="colorChanged($event)" />
-          </div>
-          <!--<div class="col-12 form-group">
-            <label>interactionValue</label>
-            <input _ngcontent-c6="" class="form-control" [(ngModel)]="name" type="text" disabled="">
-          </div>-->
-          <div class="col-12 form-group">
-            <label for="formControlRange">Roughness</label>&nbsp;&nbsp;&nbsp;<b>{{roughness}}</b>
-            <div class="row">
-              <div class="col-12"><input class="form-control-range ng-untouched ng-pristine ng-valid" id="formControlRange" max="1" min="0" step="0.01" [(ngModel)]="roughness" type="range" ng-reflect-model="0.32"></div>
-              <!--<div class="col-4"><input class="form-control-range ng-untouched ng-pristine ng-valid" id="formControlRange" max="1" min="0" step="0.01" [(ngModel)]="roughness" type="number" ng-reflect-model="0.32"></div>-->
-            </div>
-          </div>
-          <div class="col-12 form-group">
-            <div class="row">
-              <div class="col-md-6 col-12">
-                <label _ngcontent-c6="">Display image</label>&nbsp;
-              </div>
-              <div class="col-md-6 col-12" style="position:relative">
-                <input accept="image/*" (change)="fileEvent($event)" style="position:absolute;width:115px;height:40px;opacity:0" type="file">
-                <button class="btn btn-success" type="button">Select image</button>
-              </div>
-              <div class="col-12 imgHolder text-center mt-3">
-
-                <img id="image" width="128" class="imageSample" src="{{image}}">
-              </div>
-            </div>
-          </div>
-          <div _ngcontent-c6="" class="col-md-6 col-12 form-group tcenter">
-            <div _ngcontent-c6="" class="checkbox">
-              <label _ngcontent-c6="">
-                <input _ngcontent-c6="" type="checkbox" [(ngModel)]="isMetal"> Is Metal
-              </label>
-            </div>
-          </div>
-          <div _ngcontent-c6="" class="col-md-6 col-12 form-group tcenter">
-            <div _ngcontent-c6="" class="checkbox">
-              <label _ngcontent-c6=""><input _ngcontent-c6="" type="checkbox" [(ngModel)]="visible"> Visible</label>
-            </div>
-          </div>
-          <div _ngcontent-c6="" class="col-12 form-group">
-            <button _ngcontent-c6="" *ngIf="!isEdit" (click)="addMaterial()" class="btn btn-primary">Add New Material</button>
-            <button _ngcontent-c6="" *ngIf="isEdit" (click)="editMaterial()" class="btn btn-primary">Edit Material</button>
-          </div>
-        </div>
-      </div>
-      <!-- <div class="modal-footer">
-         <button (click)="closemodal()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div> -->
-    </div>
-  </div>
-</div>
-
-
-
-
-
-<div class="modal" style=" overflow-y: scroll;" id="addColor" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 *ngIf="!isEdit">Add New Color</h4>
-        <h4 *ngIf="isEdit">Edit Color</h4>
-        <button (click)="hideModal('addColor')" type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div _ngcontent-c6="" class="row">
-          <div _ngcontent-c6="" class="col-12">
-            <p> Please fill in the fields to add new Color. </p>
-          </div>
-          <div class="col-12 form-group">
-            <label _ngcontent-c6="">Name</label>
-            <input _ngcontent-c6="" placeholder="New Color" [(ngModel)]="colorName" class="form-control ng-untouched ng-pristine ng-valid" type="text">
-          </div>
-
-          <div class="col-12 form-group">
-            <label>Display color</label>
-            <!--<input class="form-control ng-untouched ng-pristine ng-valid" type="text" [(ngModel)]="colorCodeInColor" ng-reflect-model="#000000">-->
-            <input class="colorSample" [value]="color" style="width: 100%;color: white;padding-left: 5px;" [(colorPicker)]="color" [style.background]="color" (colorPickerChange)="colorModelChanged($event)" />
-          </div>
-
-          <!--<div class="col-12 form-group">
-            <label>interactionValue</label>
-            <input placeholder="new color" _ngcontent-c6="" class="form-control" type="text" disabled="">
-            <div class="colorSample" style="background-color: rgb(0, 0, 0);">&nbsp;</div>
-          </div>-->
-
-
-
-          <div _ngcontent-c6="" class="col-md-6 col-12 form-group tcenter">
-            <div _ngcontent-c6="" class="checkbox">
-              <label _ngcontent-c6=""><input _ngcontent-c6="" [(ngModel)]="visibleInColor" type="checkbox"> Visible</label>
-            </div>
-          </div>
-          <div _ngcontent-c6="" class="col-12 form-group">
-            <button _ngcontent-c6="" *ngIf="!isEdit" (click)="addColor()" class="btn btn-primary">Add New Color</button>
-            <button _ngcontent-c6="" *ngIf="isEdit" (click)="editColor()" class="btn btn-primary">Edit Color</button>
-          </div>
-        </div>
-      </div>
-      <!-- <div class="modal-footer">
-         <button (click)="closemodal()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div> -->
-    </div>
-  </div>
-</div>
-
-
-
-<div class="modal" style=" overflow-y: scroll;" id="patterns" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 *ngIf="!isEdit">Add New Pattern</h4>
-        <h4 *ngIf="isEdit">Edit Pattern</h4>
-        <button (click)="hideModal('patterns')" type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div _ngcontent-c6="" class="row">
-          <div _ngcontent-c6="" class="col-12">
-            <p> Please fill in the fields to add new Texture. </p>
-          </div>
-          <div class="col-12 form-group">
-            <label _ngcontent-c6="">Name</label>
-            <input _ngcontent-c6="" placeholder="New Pattern" [(ngModel)]="patternName" class="form-control ng-untouched ng-pristine ng-valid" type="text">
-          </div>
-
-          <div style="position: relative;" class="col-12 imgHolder text-center mt-3">
-            <input style="position: absolute;opacity: 0;  line-height: 121px;width: 128px;" (change)="fileEvent($event)" accept="image/*" type="file">
-            <img width="128" id="image1" class="imageSample" src="{{patternImage}}">
-          </div>
-
-          <!--<div class="col-12 form-group">
-            <label>interactionValue</label>
-            <input placeholder="new color" _ngcontent-c6="" class="form-control" type="text" disabled="">
-            <div class="colorSample" style="background-color: rgb(0, 0, 0);">&nbsp;</div>
-          </div>-->
-          <div _ngcontent-c6="" class="col-md-6 col-12 form-group tcenter">
-            <div _ngcontent-c6="" class="checkbox">
-              <label _ngcontent-c6=""><input _ngcontent-c6="" [(ngModel)]="visibleInPattern" type="checkbox"> Visible</label>
-            </div>
-          </div>
-
-
-
-          <div _ngcontent-c6="" class="col-12 form-group">
-            <button _ngcontent-c6="" *ngIf="!isEdit" (click)="addPatternse()" class="btn btn-primary">Add New Texture</button>
-            <button _ngcontent-c6="" *ngIf="isEdit" (click)="editPatternse()" class="btn btn-primary">Edit Texture</button>
-          </div>
-        </div>
-      </div>
-      <!-- <div class="modal-footer">
-         <button (click)="closemodal()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div> -->
-    </div>
-  </div>
-</div>
-
-<div class="modal" style=" overflow-y: scroll;" id="addPack" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 *ngIf="!isEdit">Add New Pack</h4>
-        <h4 *ngIf="isEdit">Edit Pack</h4>
-        <button (click)="hideModal('addPack')" type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-12">
-            <p> Please fill in the fields to add new Pack. </p>
-          </div>
-          <div class="col-12 form-group">
-            <input placeholder="Name of the pack" name="packname" [(ngModel)]="packName" class="form-control" type="text">
-          </div>
-
-          <!-- <div class="col-12 form-group">
-            <select class="form-control ng-untouched ng-pristine ng-valid" [(ngModel)]="packtype">
-              <option value="MATERIALS">Material</option>
-              <option value="COLORS">Colors</option>
-              <option value="PATTERNS">Patterns</option>
-            </select>
-          </div> -->
-
-
-
-
-          <div class="col-12 form-group">
-            <button *ngIf="!isEdit" (click)="addPack()" class="btn btn-primary">Add New Pack</button>
-            <button *ngIf="isEdit" (click)="editPack()" class="btn btn-primary">Edit Pack</button>
-          </div>
-        </div>
-      </div>
-      <!-- <div class="modal-footer">
-         <button (click)="closemodal()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div> -->
-    </div>
-  </div>
-</div>
-
-
-<div class="modal " id="deletModel" role="dialog" style="background-color: rgba(0,0,0,0.4);">
-  <div class="modal-dialog modal-img ">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-center" style="color:black"><b>Are you sure want to delete ?</b></h5>
-        <button type="button" class="close" data-dismiss="modal" (click)="hideModal('deletModel')">&times;</button>
-      </div>
-      <div class="modal-body">
-
-        <div class="row">
-          <div class="col-4">
-            <button type="button" style="margin-left:86%;" class="btn btn-round btn-info" (click)="deleteData()">
-              Yes
+        <div class="dropdown dropup d-md-none">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Options
             </button>
-          </div>
-          <div class="col-4">
-            <button type="button" style="float:right;background:#ce4747;color: white;" (click)="hideModal('deletModel')" class="btn btn-round ">
-              Cancel
-            </button>
-          </div>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <div class="dropdown-item mt-2 mb-2 col-auto" *ngFor="let section of allSections">
+                <a [class.active]="section == activeSection()" href="#" (click)="changeSection($event, section)">
+                    <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
+                    <div>{{section.name}}</div>
+                </a>
+            </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="modal " id="deletPackModel" role="dialog" style="background-color: rgba(0,0,0,0.4);">
-  <div class="modal-dialog modal-img ">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-center" style="color:black"><b>Are you sure want to delete ?</b></h5>
-        <button type="button" class="close" data-dismiss="modal" (click)="hideModal('deletPackModel')">&times;</button>
-      </div>
-      <div class="modal-body">
-
-        <div class="row">
-          <div class="col-4">
-            <button type="button" style="margin-left:86%;" class="btn btn-round btn-info" (click)="deletePack()">
-              Yes
-            </button>
-          </div>
-          <div class="col-4">
-            <button type="button" style="float:right;background:#ce4747;color: white;" (click)="hideModal('deletPackModel')" class="btn btn-round ">
-              Cancel
-            </button>
-          </div>
+        <div class="col-auto all-options ac-dropdown-scrollbar" [class.put-away]="hideWeaponChoices">
+            <div class="weapon-option" *ngFor="let weapon of customizationData.weapons">
+                <a class="d-inline-block" href="#" [class.active]="weapon == chosenWeapon"
+                   (click)="chooseWeapon($event, weapon)">
+                    <div class="weapon-icon contain-svg" [inlineSVG]="weapon.svgPath"></div>
+                    <div class="p-2 weapon-name">{{weapon.name}}</div>
+                </a>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+    <div class="row option-browser">
+        <div class="mt-3 mb-3 col-auto" *ngIf="activeSection().globalReset">
+            <!-- [class.active]="activeTracking().resetActive" -->
+            <a class="section-option" href="#" title="undo"
+               (click)="resetPressed($event)">
+                <div class="display" [style.opacity]="(undoManagerLimit()+3)/(9+3)"
+                     style="background-image: url('assets/img/nav-icons/arrow.png');">
+                    <span class="undo-button">{{ undoManagerLimit() }}</span>
+                </div>
+            </a>
+            <!-- <a class="section-option" href="#" title="redo"
+                (click)="redoPressed($event)">
+               <div class="display" style="background-image: url('assets/img/nav-icons/arrow.png');"></div>
+             </a> -->
+        </div>
+        <div #optionsContainer class="mt-3 mb-3 col options-container">
+            <ng-container *ngFor="let optionGroup of activeSection().optionGroups">
+                <a class="section-option" href="#"
+                   *ngFor="let option of optionGroup.options; let isFirst = first"
+                   [class.first-of-set]="isFirst"
+                   [class.active]=" (option === selectedOption(optionGroup))"
+                   (click)="optionClicked($event, optionGroup, option)">
+                    <div class="display" [style.backgroundColor]="option.displayColor || ''"
+                         [style.backgroundImage]="option.displayImg ? ('url(\'' + option.displayImg + '\')') : ''"></div>
+                </a>
+            </ng-container>
+        </div>
+        <div class="mt-3 mb-3 col-auto arrow-controls d-flex">
+            <a class="m-auto" href="#"
+               (click)="scrollOptionsLeft($event)"
+               [class.disabled]="optionsContainer.scrollLeft === 0">
+                <i class="material-icons md-inherit">arrow_left</i>
+            </a>
+            <a class="m-auto" href="#"
+               (click)="scrollOptionsRight($event)"
+               [class.disabled]="(optionsContainer.scrollLeft + optionsContainer.clientWidth) >= optionsContainer.scrollWidth">
+                <i class="material-icons md-inherit">arrow_right</i>
+            </a>
+        </div>
+    </div>
 </div>
