@@ -94,6 +94,21 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     }
 
+    ngAfterViewInit(): void {
+
+
+        this.displayCanvas = this.viewerService.viewer.renderCanvas.nativeElement;
+
+        this.scene = this.viewerService.viewer.scene;
+
+        this.previousCanvasContainer = this.displayCanvas.parentElement;
+        this.canvasContainer.nativeElement.appendChild(this.displayCanvas);
+        this.viewerService.viewer.resizeOnRender = false;
+        this.scene.getEngine().setSize(512, 512);
+        this.preparePreview(this.availablePreviews.basic);
+        this.initVideoExport();
+    }
+
     // TODO @7frank add "format" parameter
     getShareURL(data: UploadResponseObject) {
         return config.share.baseURL + config.share.shareRoute + data.id + '/' + data.format;
@@ -295,32 +310,6 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     }
     
-
-    ngAfterViewInit(): void {
-
-
-        this.displayCanvas = this.viewerService.viewer.renderCanvas.nativeElement;
-
-        this.scene = this.viewerService.viewer.scene;
-
-        this.previousCanvasContainer = this.displayCanvas.parentElement;
-        this.canvasContainer.nativeElement.appendChild(this.displayCanvas);
-        this.viewerService.viewer.resizeOnRender = false;
-        this.scene.getEngine().setSize(512, 512);
-        this.preparePreview(this.availablePreviews.basic);
-       /*  domtoimage.toPng(this.displayCanvas)
-            .then(function (dataUrl) {
-                var img = new Image();
-                img.src = dataUrl;
-                document.body.appendChild(img);
-            })
-            .catch(function (error) {
-                console.error('oops, something went wrong!', error);
-            }); */
-
-
-    }
-
     preparePreview(obj: { name: string, ctor: any }) {
         if (this.preview) {
             this.preview.disablePreview();
