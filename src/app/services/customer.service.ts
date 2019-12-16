@@ -1,13 +1,12 @@
-import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
-import { Customer } from '../../model/customer';
+import { Injectable } from "@angular/core";
+import { AngularFireDatabase, AngularFireList } from "@angular/fire/database";
+import { Customer } from "../../model/customer";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class CustomerService {
-
-  private dbPath = '/goatgun';
+  private dbPath = "/membership";
 
   customersRef: AngularFireList<Customer> = null;
 

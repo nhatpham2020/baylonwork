@@ -20,7 +20,7 @@ const isDebugMode = (<any>window).location.hash === '#debug';
 
 export const defaults: Config = {
     share: {
-        baseURL: 'http://goat.invision3d.org',
+        baseURL: window.location.origin,
         shareRoute: '/api/share/',
 
         fileUploadRoute: '/api/uploadTar',
@@ -36,7 +36,7 @@ export const defaults: Config = {
 
 export const debug: Config = {
     share: {
-        baseURL: 'http://goat.invision3d.org',
+        baseURL: window.location.origin,
         shareRoute: '/api/share/',
         fileUploadRoute: '/api/uploadTar',
         imagesRoute: '/images/'
@@ -51,7 +51,7 @@ export const debug: Config = {
 // TODO @7frank do we need mobile settings?
 export const mobile: Config = {
     share: {
-        baseURL: 'http://goat.invision3d.org',
+        baseURL: window.location.origin,
         shareRoute: '/api/share/',
         fileUploadRoute: '/api/uploadTar',
         imagesRoute: '/images/'

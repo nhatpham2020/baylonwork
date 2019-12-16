@@ -3,7 +3,7 @@
 
     <div class="col-md-4">
 
-      <div class="pricing-box" id="option1">
+      <div class="pricing-box" id="goatgunfree">
         <div class="pricing-title">
           <h3>Free</h3>
         </div>
@@ -17,8 +17,8 @@
           </ul>
         </div>
         <div class="pricing-action">
-          <a href="#" class="btn btn-danger btn-block btn-lg" name="option1"
-             (click)="selectPlan($event, 'option1')">Select</a>
+          <a href="#" class="btn btn-danger btn-block btn-lg" name="goatgunfree"
+             (click)="selectPlan($event, 'goatgunfree')">Select</a>
         </div>
       </div>
 
@@ -26,7 +26,7 @@
 
     <div class="col-md-4">
 
-      <div class="pricing-box best-price" id="option2">
+      <div class="pricing-box best-price" id="goatgunbasic">
         <div class="pricing-title">
           <h3>BASIC</h3>
         </div>
@@ -40,8 +40,8 @@
           </ul>
         </div>
         <div class="pricing-action">
-          <a href="#" class="btn btn-danger btn-block btn-lg bgcolor border-color" name="option2"
-          (click)="selectPlan($event, 'option2')">Select</a>
+          <a href="#" class="btn btn-danger btn-block btn-lg bgcolor border-color" name="goatgunbasic"
+          (click)="selectPlan($event, 'goatgunbasic')">Select</a>
         </div>
       </div>
 
@@ -49,7 +49,7 @@
 
     <div class="col-md-4">
 
-      <div class="pricing-box" id="option3">
+      <div class="pricing-box" id="goatgunpro">
         <div class="pricing-title">
           <h3>PRO</h3>
         </div>
@@ -63,13 +63,13 @@
           </ul>
         </div>
         <div class="pricing-action">
-          <a href="#" class="btn btn-danger btn-block btn-lg" name='option3'
-          (click)="selectPlan($event, 'option3')">Select</a>
+          <a href="#" class="btn btn-danger btn-block btn-lg" name='goatgunpro'
+          (click)="selectPlan($event, 'goatgunpro')">Select</a>
         </div>
       </div>
     </div>
   </div>
-  <form novalidate (ngSubmit)="buy($event)" [formGroup]="stripeTest">
+  <form novalidate (ngSubmit)="changeMembership($event, pricingPlan)" [formGroup]="stripeTest">
     <div class="col-lg-12">
     <input class="form-control" type="text" formControlName="name" placeholder="Account Holder Name"><br>
   </div>
@@ -78,7 +78,7 @@
   </div>
   <div class="col-lg-12" id="cardPay">
     <button class="btn btn-success btn-lg" type="submit">
-      Upgrade Membership
+      Change Membership
     </button>
   </div>
   </form>

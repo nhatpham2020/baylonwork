@@ -1,6 +1,8 @@
 <h5 class="text-center" style="margin: 1%;" *ngIf="!fileUploads">Loading data from database...</h5>
-<h4 class="text-center" style="margin: 1%;" *ngIf="isPaid&&fileUploads">{{fileUploads.length}}/10</h4>
-<h4 class="text-center" style="margin: 1%;" *ngIf="!isPaid&&fileUploads">{{fileUploads.length}}/3</h4>
+<h4 class="text-center" style="margin: 1%;" *ngIf="membership == 'goatgunbasic' &&fileUploads">{{fileUploads.length}}/10</h4>
+<h4 class="text-center" style="margin: 1%;" *ngIf="membership == 'goatgunfree'&&fileUploads">{{fileUploads.length}}/3</h4>
+<h4 class="text-center" style="margin: 1%;" *ngIf="membership == 'goatgunpro'&&fileUploads">{{fileUploads.length}}/ &infin;</h4>
+
 <div class="recipe-itmes bg-light">
     <div class="row no-gutters clearfix">
         <!-- Item 1 -->

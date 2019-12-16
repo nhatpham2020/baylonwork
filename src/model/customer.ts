@@ -1,5 +1,6 @@
 export class Customer {
-    key: string;
-    email: string;
-    membership = true;
-  }
+  key: string;
+  planId: string;
+  planName: string;
+  subscriptionId: string;
+}
