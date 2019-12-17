@@ -140,11 +140,11 @@ export class GunwallComponent implements OnInit {
         const membership = customers.filter(
           customer => customer.key === this.uid
         );
-
-        const { planName } = membership[0];
-        this.membership = planName.toLowerCase();
-        console.log(this.membership);
-        switch (planName.toLowerCase()) {
+        if ( !!membership[0]) {
+          const { planName } = membership[0];
+          this.membership = planName.toLowerCase();
+        }       
+        switch (this.membership) {
           case "goatgunfree":
             this.limit = 3;
             break;

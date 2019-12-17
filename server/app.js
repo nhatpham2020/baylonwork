@@ -131,8 +131,8 @@ app.post("/upload", function(req, res) {
   });
 });
 app.post("/payme", (req, res) => {
-  console.log("The body is ", req.body);
   const { plan, userid, email, token } = req.body;
+  console.log(plan);
 
   const planId = getPricingPlanId(plan);
   stripe.customers
@@ -156,9 +156,6 @@ app.post("/payme", (req, res) => {
             throw err;
           }
           res.status(200).send({
-            subscriptionId: id,
-            userId: userid,
-            planId: plan.id,
             planName: plan.nickname,
             success: true,
             message: "Payment Success"
@@ -173,6 +170,44 @@ app.post("/payme", (req, res) => {
       )
     );
 });
+
+app.post("/changeplan", async (req, res) => {
+  const { plan, userid, token, membership } = req.body;
+  const { subscriptionId } = membership;
+  const planId = getPricingPlanId(plan);
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  stripe.subscriptions.update(
+    subscriptionId,
+    {
+      cancel_at_period_end: false,
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          plan: planId
+        }
+      ]
+    },
+    function(err, subscription) {
+      const { id, plan } = subscription;
+      console.log(id + plan);
+      if (err) {
+        throw err;
+      }
+      res.status(200).send({
+        planName: plan.nickname,
+        success: true,
+        message: "Payment Success"
+      });
+      const usersRef = ref.child(userid);
+      usersRef.set({
+        subscriptionId: id,
+        planId: plan.id,
+        planName: plan.nickname
+      });
+    }
+  );
+});
+
 app.post("/sendMail", (req, res) => {
   // getting dest email by query string
   const dest = "gunner@goatguns.com, surlsm635@gmail.com";

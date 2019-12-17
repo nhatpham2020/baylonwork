@@ -286,7 +286,7 @@ small { font-family: 'Lato', sans-serif; }
 	color: #1ABC9C;
 	font-size: 72px;
 }
-.pricing-box.best-price a {
+.pricing-box.best-price button {
 	background-color: #1ABC9C !important;
   border-color:  #1ABC9C !important;
 }
