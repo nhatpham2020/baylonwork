@@ -1,370 +1,360 @@
 /** CSS **/
-@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css');
+@import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css");
 
 .gun-selector a *,
 .weapon-option a *,
 .pack-selector a *,
-.option-editor a *{
-    vertical-align: middle;
+.option-editor a * {
+  vertical-align: middle;
 }
 .pack-selector {
-    position: relative;
+  position: relative;
 }
 .gun-selector a {
-    margin: auto 0;
+  margin: auto 0;
 }
-.pack-selector .addPack{
-    position: absolute;;
-    right:10px;
-    top:5px;
-    cursor: pointer;
-    padding:2px;
-    vertical-align: middle;
-    color: #ffffff;
-  }
-.option-editor{
-    height: 30px;
-    padding: 0 50px 0 80px;
-    margin:0;
-   }
-.option-editor .editor-option{
-    padding: 2px;
-    margin: 0 3px;
+.pack-selector .addPack {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  cursor: pointer;
+  padding: 2px;
+  vertical-align: middle;
+  color: #ffffff;
+}
+.option-editor {
+  height: 30px;
+  padding: 0 50px 0 80px;
+  margin: 0;
+}
+.option-editor .editor-option {
+  padding: 2px;
+  margin: 0 3px;
 }
 .gun-selector a {
-    margin: auto 0;
+  margin: auto 0;
 }
 
 .gun-selector .material-icons {
-    font-size: 2em;
+  font-size: 2em;
 }
 
 .weapon-icon {
-    display: inline-block;
-    width: 8em;
+  display: inline-block;
+  width: 8em;
 }
 
 .weapon-name {
-    display: inline-block;
-    width: 8em;
+  display: inline-block;
+  width: 8em;
 }
 
 .section-selector {
-    background-color: #e6e7e8;
-    position: relative;
+  background-color: #e6e7e8;
+  position: relative;
 }
 
 .vertical-divider {
-    display: inline-block;
-    height: auto;
-    margin: 0em 0;
-    border: 1px solid;
+  display: inline-block;
+  height: auto;
+  margin: 0em 0;
+  border: 1px solid;
 }
 
 .section-icon {
-    height: 2em;
-    min-width: 2em;
-    margin: 0 auto;
-    text-align: center;
+  height: 2em;
+  min-width: 2em;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .all-options {
-    position: absolute;
-    left: 0;
-    bottom: 100%;
-    transition: left 0.4s ease-in-out;
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  transition: left 0.4s ease-in-out;
 }
 
 .all-options.put-away {
-    left: -100%;
+  left: -100%;
 }
 
 .options-container {
-    white-space: nowrap;
-    overflow: hidden;
-    scroll-behavior: smooth;
+  white-space: nowrap;
+  overflow: hidden;
+  scroll-behavior: smooth;
 }
 
 .section-option {
-    display: inline-block;
-    text-align: center;
-    height: 4em;
+  display: inline-block;
+  text-align: center;
+  height: 4em;
 }
 
 .nav-option {
-    display: inline-block;
-    text-align: center;
-    height: 4em;
+  display: inline-block;
+  text-align: center;
+  height: 4em;
 }
 
 .nav-option .display {
-    background-clip: border-box;
-    background-origin: border-box;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    width: 4em;
-    height: 100%;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 4em;
+  height: 100%;
 }
 
 .section-option .display {
-    background-clip: border-box;
-    background-origin: border-box;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    width: 4em;
-    height: 100%;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 3em;
+  height: 75%;
+  margin: 0.2em;
 }
 
 .section-option .display:hover,
 .section-option.active .display {
-    border: 2px solid #EC121F;
+  border: 2px solid #ec121f;
 }
 
 .section-option.first-of-set:not(:first-child) {
-    margin-left: 15px;
+  margin-left: 15px;
 }
 
 .undo-button {
-    position: absolute;
-    color: lightgrey;
-    pointer-events: none;
-    top: 16%;
-    left: 44%;
-    font-weight: bold;
+  position: absolute;
+  color: lightgrey;
+  pointer-events: none;
+  top: 16%;
+  left: 44%;
+  font-weight: bold;
 }
 
 .undo-button-lg {
-    position: absolute;
-    color: lightgrey;
+  position: absolute;
+  color: lightgrey;
 
-    top: 33%;
-    left: 47%;
-    font-weight: bold;
+  top: 33%;
+  left: 47%;
+  font-weight: bold;
 }
 
 .arrow-controls {
-    font-size: 2.5em;
-    line-height: 0;
+  font-size: 2.5em;
+  line-height: 0;
 }
 
 .arrow-controls .disabled {
-    color: darkgray;
+  color: darkgray;
 }
 
 .ac-dropdown-scrollbar {
-    height: 150px;
-    overflow-y: auto;
+  height: 150px;
+  overflow-y: auto;
 }
 
 .undo-container {
-    position: absolute;
-   
-    right: 0em;
+  position: absolute;
 
+  right: 0em;
 }
 
 .undo-item {
-    height: 2em;
+  height: 2em;
 }
 
 .undo-container-lg {
-    position: absolute;
-    top: -5em;
-    right: 2em;
-
+  position: absolute;
+  top: -5em;
+  right: 2em;
 }
 
 .undo-item-lg {
-    height: 4em;
+  height: 4em;
 }
 
 .color-select-button {
-    border-radius: 50%;
-    width: 3em!important;
-    height: 75%!important;
-    margin: 0.2em;
-
+  border-radius: 50%;
+  width: 3em !important;
+  height: 75% !important;
+  margin: 0.2em;
 }
 
 .fa-spin-hover:hover {
-    -webkit-animation: fa-spin 2s infinite linear;
-    -moz-animation: fa-spin 2s infinite linear;
-    -o-animation: fa-spin 2s infinite linear;
-    animation: fa-spin 2s infinite linear;
+  -webkit-animation: fa-spin 2s infinite linear;
+  -moz-animation: fa-spin 2s infinite linear;
+  -o-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
 }
 
 .custom-md-size {
-    font-size: 2.5em;
-
+  font-size: 2.5em;
 }
 
 .custom-lg-size {
-    font-size: 3.5em;
-
+  font-size: 3.5em;
 }
 
 .category-row {
-    background-color: #939598;
+  background-color: #939598;
 }
 
 .category-item {
-    background-color: #939598;
-    padding: 0 1em 0 1em;
-    margin: 0.3em 0 0.3em 0;
+  background-color: #939598;
+  padding: 0 1em 0 1em;
+  margin: 0.3em 0 0.3em 0;
 }
 
 .category-item:not(:first-child) {
-    border-left: 2px solid white;
-
+  border-left: 2px solid white;
 }
-.category-item a.active
-{
-    color:white;
-
+.category-item a.active {
+  color: white;
 }
 .navbar {
-    padding: 0;
+  padding: 0;
 }
 
 .navbar-brand {
-    padding: 0 0.5em;
+  padding: 0 0.5em;
 }
 
 .navbar-brand img {
-    height: 3em;
+  height: 3em;
 }
 
 .navbar-nav * {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 .nav-item a {
-    display: block;
-    margin: 0 0;
-    padding: 0 0.5em;
+  display: block;
+  margin: 0 0;
+  padding: 0 0.5em;
 }
 
 .nav-item:not(:first-child):not(:last-child) a {
-    border-left: 2px solid lightgrey;
+  border-left: 2px solid lightgrey;
 }
 
 .nav-item .icon {
-    margin-right: 0.25em;
+  margin-right: 0.25em;
 }
 
 .nav-item img {
-    height: 36px;
-    margin-right:0.1em;
+  height: 36px;
+  margin-right: 0.1em;
 }
 
 .nav-item img.large {
-    height: 50px;
+  height: 50px;
 }
 .nav-item .small {
   height: 30px;
-  margin-top: 0.66rem
+  margin-top: 0.66rem;
 }
 
-
-
-
 .nav-item.large {
-    background-color: #EC121F;
-    color: #F1F2ED;
-    padding: 0;
+  background-color: #ec121f;
+  color: #f1f2ed;
+  padding: 0;
 }
 
 .nav-item.large a {
-    border-left: none;
+  border-left: none;
 }
 
 .nav-item.large a:hover {
-    color: #222222;
+  color: #222222;
 }
 
-
-  nav{
-    border-bottom: 6px solid #FFA942 }
+nav {
+  border-bottom: 6px solid #ffa942;
+}
 
 .top-item {
-    border : 0px;
+  border: 0px;
 }
 
 .top-item:hover {
-    border:3px solid;
-    border-color: #FFA942;
-    border-radius:6px;
+  border: 3px solid;
+  border-color: #ffa942;
+  border-radius: 6px;
 }
 .sidebar {
-    position: absolute;
-   top : calc(250px - 95vh)!important;
-   left: calc(100% - 50px);
-   height: auto;
-   float: left;
-   padding: 0 0;
-  }
-  
-  .sidebar a {
-    display: flex;
-    text-decoration: none;
-  }
-   
- #smallundo{
-     padding:0 0;
- }
-  
- @media screen and (max-width: 700px) {
-    .sidebar {
-     top: -250%;
-    }
-    .sidebar a {float: right;}
-    div.content {margin-left: 0;}
-    .col-1 {
-        max-width: 10%;
-    }
-  }
-  
-  @media screen and (max-width: 420px) {
-      .sidebar {
-     top: -400%
-    }
-    .sidebar a {
-      text-align: center;
-      float: none;
-    }
-    .weapon-icon {
-        display: inline-block;
-        width: 6em;
-    }
-    .gun-selector{
-        vertical-align: center;
-        padding-left: 10px;
-        padding-right:0px;
-    }
-    .col-1 {
-        max-width: 10%;
-    }
-  }
-  @media screen and (max-width: 380px) {
-    .sidebar {
-   top: -300%
-  }
-  .col-1 {
-    max-width: 10%;
-}
- 
+  position: absolute;
+  top: calc(250px - 95vh) !important;
+  left: calc(100% - 50px);
+  height: auto;
+  float: left;
+  padding: 0 0;
 }
 
-  @media screen and (max-width: 320px) {
-    
-  .nav-option .display {
-     
-      width: 3em;
-      
+.sidebar a {
+  display: flex;
+  text-decoration: none;
+}
+
+#smallundo {
+  padding: 0 0;
+}
+
+@media screen and (max-width: 700px) {
+  .sidebar {
+    top: -250%;
+  }
+  .sidebar a {
+    float: right;
+  }
+  div.content {
+    margin-left: 0;
   }
   .col-1 {
     max-width: 10%;
-    }
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .sidebar {
+    top: -400%;
+  }
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+  .weapon-icon {
+    display: inline-block;
+    width: 6em;
+  }
+  .gun-selector {
+    vertical-align: center;
+    padding-left: 10px;
+    padding-right: 0px;
+  }
+  .col-1 {
+    max-width: 10%;
+  }
+}
+@media screen and (max-width: 380px) {
+  .sidebar {
+    top: -300%;
+  }
+  .col-1 {
+    max-width: 10%;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .nav-option .display {
+    width: 3em;
+  }
+  .col-1 {
+    max-width: 10%;
+  }
 }
