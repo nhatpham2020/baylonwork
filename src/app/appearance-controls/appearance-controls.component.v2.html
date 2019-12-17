@@ -2,8 +2,8 @@
 <app-option-bar (messageEvent)="receiveMessage($event)" *ngIf="(message != 'Dragon')&& (!message.likeMembers)" [hero]="message"></app-option-bar>
 <app-market-bar (messageEvent)="receiveMessage($event)" *ngIf="(message != 'Dragon')&& message.likeMembers"  [hero]="message"></app-market-bar>
 <div *ngIf="message == 'Dragon'">
-<div class="mt-2 mb-2 col-12" style="text-align: right;padding-right: 20px;" >
-        <button style="background: #444444; border: #444444;" (click)="deployPackData()" type="button" class="btn btn-danger" *ngIf="!!isAdmin">Deploy</button>
+<div class="col-12" style="text-align: right;padding-right: 20px;" >
+    <button style="background: #444444; border: #444444;" (click)="deployPackData()" type="button" class="btn btn-danger" *ngIf="!!isAdmin">Deploy</button>
 </div>
 <div class="container-fluid position-relative">
   <!--   <div class="sidebar ml-auto flex-row" >

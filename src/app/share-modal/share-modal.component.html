@@ -1,17 +1,19 @@
 <div class="header  p-1" xmlns="http://www.w3.org/1999/html">
-
-
-    <h4 class="modal-title ng-binding text-center">
-        SHARE YOUR BUILD
-        <button  (click)="close()" type="button" class="close pull-right" style="font-weight: 900;font-size: 1.5em;"  aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </h4>
-
+  <h4 class="modal-title ng-binding text-center">
+    SHARE YOUR BUILD
+    <button
+      (click)="close()"
+      type="button"
+      class="close pull-right"
+      style="font-weight: 900;font-size: 1.5em;"
+      aria-label="Close"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </h4>
 </div>
 <div class="modal-body pl-5 pr-5">
-
-    <!--
+  <!--
      <nav aria-label="breadcrumb">
          <ol class="breadcrumb">
              <li class="breadcrumb-item"><a href="#">Preset</a></li>
@@ -20,28 +22,30 @@
          </ol>
      </nav>
      -->
-    <!-- <input type="range" min="0" max="100" value="90">  for pitch-->
+  <!-- <input type="range" min="0" max="100" value="90">  for pitch-->
 
-    <div [style.display]="error ? 'block' : 'none'" class="alert alert-danger">
-        <strong>Error: </strong> {{error}}
+  <div [style.display]="error ? 'block' : 'none'" class="alert alert-danger">
+    <strong>Error: </strong> {{ error }}
+  </div>
+
+  <div class="text-center" [style.display]="progress ? 'block' : 'none'">
+    <div class="progress">
+      <div
+        class="progress-bar"
+        role="progressbar"
+        [style.width]="progressPercentage + '%'"
+        [attr.aria-valuenow]="progressPercentage"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        {{ progressPercentage }}%
+      </div>
     </div>
 
+    <span>{{ progressType }} </span>
+  </div>
 
-    <div class="text-center" [style.display]="progress? 'block' : 'none'">
-        <div class="progress">
-            <div class="progress-bar" role="progressbar" [style.width]="progressPercentage +'%'"
-                 [attr.aria-valuenow]="progressPercentage" aria-valuemin="0" aria-valuemax="100">{{ progressPercentage
-                }}%
-            </div>
-        </div>
-
-        <span>{{ progressType }} </span>
-    </div>
-
-    <div id="canvascontainer" #canvasContainer>
-
-    </div>
-
+  <div id="canvascontainer" #canvasContainer style="border-style: solid; border-color: #969696;"></div>
 
   <!--   <div class="d-flex p-1 pt-4">
 
@@ -50,47 +54,77 @@
         </div>
     </div> -->
 
-    <div class="d-flex p-1 pt-4">
-        <div class="ml-auto m-1 overlay-parent">
-            <input class="m-1" type="image" (click)="shareWithFacebook()" style="height: 2em;"
-                   src="assets/img/share-ui/Share_FB.png" title="Continue with Facebook"/>
-            <a id="twitter-gif-share"
-               (click)="initTwitterShare()"
-               href="#"
-               data-size="large">
-                <img class="m-1" style="height: 2em;position: relative;top: -1em;"
-                     src="assets/img/share-ui/Share_TW.png" title="Continue with Twitter"/>
-            </a>
+  <div class="d-flex p-1 pt-4">
+    <div class="ml-auto m-1 overlay-parent">
+      <input
+        class="m-1"
+        type="image"
+        (click)="shareWithFacebook()"
+        style="height: 2em;"
+        src="assets/img/share-ui/Share_FB.png"
+        title="Continue with Facebook"
+      />
+      <a
+        id="twitter-gif-share"
+        (click)="initTwitterShare()"
+        href="#"
+        data-size="large"
+      >
+        <img
+          class="m-1"
+          style="height: 2em;position: relative;top: -1em;"
+          src="assets/img/share-ui/Share_TW.png"
+          title="Continue with Twitter"
+        />
+      </a>
 
+      <input
+        class="m-1"
+        type="image"
+        (click)="download()"
+        style="height: 2em;"
+        src="assets/img/share-ui/Save_Icon.png"
+        title="Download"
+      />
 
-            <input class="m-1" type="image" (click)="download()" style="height: 2em;"
-                   src="assets/img/share-ui/Save_Icon.png" title="Download"/>
+      <div
+        class="overlay"
+        [style.display]="!enableSharingButtons ? 'block' : 'none'"
+        data-toggle="tooltip"
+        data-placement="top"
+        title="First select an option and click - Start -"
+      ></div>
+    </div>
 
-            <div class="overlay" [style.display]="!enableSharingButtons ? 'block' : 'none'" data-toggle="tooltip"
-                 data-placement="top" title="First select an option and click - Start -"></div>
-        </div>
-
-       <!-- <div class="ml-auto m-1">
+    <!-- <div class="ml-auto m-1">
 
         </div>
         -->
+  </div>
 
-    </div>
+  <div [style.display]="debug ? 'block' : 'none'">
+    <input
+      class="m-1"
+      type="image"
+      (click)="initVideoExport({}, false)"
+      style="height: 2em;"
+      src="assets/img/nav-icons/reload-circular-arrow.svg"
+      title="Reload GIF"
+    />
+    <input
+      class="m-1"
+      type="image"
+      (click)="
+        initVideoExport(
+          { quality: 1, totalFrames: 240, framesPerSecond: 60 },
+          false
+        )
+      "
+      style="height: 2em;"
+      src="assets/img/nav-icons/reload-circular-arrow.svg"
+      title="Reload GIF"
+    />
 
-
-    <div [style.display]="debug ? 'block' : 'none'">
-
-        <input class="m-1" type="image" (click)="initVideoExport({},false)" style="height: 2em;"
-               src="assets/img/nav-icons/reload-circular-arrow.svg" title="Reload GIF"/>
-        <input class="m-1" type="image"
-               (click)="initVideoExport( {quality: 1, totalFrames: 240, framesPerSecond: 60},false)"
-               style="height: 2em;"
-               src="assets/img/nav-icons/reload-circular-arrow.svg" title="Reload GIF"/>
-
-        <div></div>
-
-
-    </div>
-
-
+    <div></div>
+  </div>
 </div>
