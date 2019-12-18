@@ -27,8 +27,9 @@ socketStartListening();
 export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild('canvasContainer')
+    @ViewChild('shareLink')
     canvasContainer: ElementRef<HTMLDivElement>;
-    shareLink: ElementRef<HTMLInputElement>
+    shareLink: ElementRef<HTMLInputElement>;
     public scene: BABYLON.Scene;
     debug = config.debug;
     progress = false;
@@ -146,7 +147,6 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
         const link = <HTMLAnchorElement>document.createElement('a');
         link.href = this.getVideoURL(this.uploadResponse); // this.getGifEl().src;
-        this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
         link.download = 'Download.' + this.uploadResponse.format;
         document.body.appendChild(link);
         link.click();
@@ -300,6 +300,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     setShareElements(data: UploadResponseObject) {
         this.uploadResponse = data;
+        this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
     }
 
     // FIXME @7frank remove all previews from the global scene otherwise re-opening dialog
