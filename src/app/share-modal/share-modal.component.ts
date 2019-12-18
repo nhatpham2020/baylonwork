@@ -26,10 +26,8 @@ socketStartListening();
 })
 export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
-    @ViewChild('canvasContainer')
-    @ViewChild('shareLink')
-    canvasContainer: ElementRef<HTMLDivElement>;
-    shareLink: ElementRef<HTMLInputElement>;
+    @ViewChild('canvasContainer') canvasContainer: ElementRef<HTMLDivElement>;
+    @ViewChild('shareLink') shareLink: ElementRef<HTMLInputElement>;
     public scene: BABYLON.Scene;
     debug = config.debug;
     progress = false;
@@ -301,6 +299,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     setShareElements(data: UploadResponseObject) {
         this.uploadResponse = data;
         this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
+        this.shareLink.nativeElement.disabled = false;
     }
 
     // FIXME @7frank remove all previews from the global scene otherwise re-opening dialog
@@ -351,5 +350,13 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         const url = this.getTwitterShareURL(this.uploadResponse);
         console.log('initTwitterShare', url);
         window.open(url);
+    }
+
+    copyShareLink() {
+      const shareLinBox = this.shareLink.nativeElement;
+      shareLinBox.select();
+      shareLinBox.setSelectionRange(0, 99999)
+      document.execCommand("copy");
+      alert("Copied the text: " + shareLinBox.value);
     }
 }
