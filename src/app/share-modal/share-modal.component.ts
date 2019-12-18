@@ -83,6 +83,8 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
                     // disable the overlay as soon as sockerio returns that the jpg was converted
                     this.enableSharingButtons = true;
+                    this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
+                    this.shareLink.nativeElement.disabled = false;
 
                 }
 
@@ -298,8 +300,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     setShareElements(data: UploadResponseObject) {
         this.uploadResponse = data;
-        this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
-        this.shareLink.nativeElement.disabled = false;
+
     }
 
     // FIXME @7frank remove all previews from the global scene otherwise re-opening dialog
