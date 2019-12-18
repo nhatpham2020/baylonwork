@@ -28,6 +28,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild('canvasContainer')
     canvasContainer: ElementRef<HTMLDivElement>;
+    shareLink: ElementRef<HTMLInputElement>
     public scene: BABYLON.Scene;
     debug = config.debug;
     progress = false;
@@ -126,7 +127,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         return config.share.baseURL + '/twitter/video/' + data.id + '.' + data.format;
 
     }
-    
+
 
     shareWithFacebook() {
         if (!this.uploadResponse) {
@@ -144,9 +145,8 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     download() {
 
         const link = <HTMLAnchorElement>document.createElement('a');
-
-
         link.href = this.getVideoURL(this.uploadResponse); // this.getGifEl().src;
+        this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
         link.download = 'Download.' + this.uploadResponse.format;
         document.body.appendChild(link);
         link.click();
@@ -202,7 +202,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
             link.click();
         }); */
         const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.preview, progressCallback);
-        
+
 
         const stop = window.performance.now();
 
@@ -309,7 +309,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
 
     }
-    
+
     preparePreview(obj: { name: string, ctor: any }) {
         if (this.preview) {
             this.preview.disablePreview();
