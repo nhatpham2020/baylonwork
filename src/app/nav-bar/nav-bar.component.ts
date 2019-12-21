@@ -23,13 +23,13 @@ import { MarketmodalComponent } from '../marketmodal/marketmodal.component';
 @Component({
     selector: 'app-nav-bar',
     templateUrl: './nav-bar.component_new.html',
-    styleUrls: ['./nav-bar.component_new.css']
+    styleUrls: ['./nav-bar.component_new1.scss']
 })
 export class NavBarComponent implements OnInit {
     public openModal: BsModalRef = null;
     user: Observable<firebase.User>;
     isNavOpen = false;
-
+    isTopNavOpen = false;
     constructor(private modalService: BsModalService, private userService: UserService,
                 private notifierService: NotifierService,
                 private as: AuthService) {
@@ -137,13 +137,29 @@ export class NavBarComponent implements OnInit {
         if (!this.isNavOpen) {
             console.log('isClosed')
             document.getElementById('sideNav').classList.add('side-header-open');
+            document.getElementById('primary-menu').style.display = 'block';
         } else {
             console.log('isopened')
             document.getElementById('sideNav').classList.remove('side-header-open');
+            document.getElementById('primary-menu').style.display = 'none';
         }
         this.isNavOpen = !this.isNavOpen;
         return this.stopEvent(event);
     }
+
+    // controlTopNav(event: MouseEvent) {
+
+    //     if (!this.isTopNavOpen) {
+    //         console.log('isClosed11', document.getElementById('primary-menu'))
+    //         document.getElementById('primary-menu').style.display = 'block';
+    //     } else {
+    //         console.log('isopened')
+    //         // document.getElementById('primary-menu').classList.remove('side-header-open');
+    //         document.getElementById('primary-menu').style.display = 'none';
+    //     }
+    //     this.isTopNavOpen = !this.isTopNavOpen;
+    //     return this.stopEvent(event);
+    // }
 
     stopEvent(event: MouseEvent) {
         event.preventDefault();

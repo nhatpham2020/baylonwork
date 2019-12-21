@@ -1,4 +1,12 @@
 <div id = "sideNav" class="stretched side-header side-header-right open-header close-header-on-scroll">
+<!-- <div id="header-trigger1">
+    <a href="#" (click)="controlTopNav($event)"  *ngIf="!isTopNavOpen">
+        <i class="fa fa-bars fa-lg"></i>
+    </a>
+    <a href="#" (click)="controlTopNav($event)" *ngIf="isTopNavOpen">
+        <i class="fa fa-times fa-lg" *ngIf="isTopNavOpen"></i>
+    </a>
+</div> -->
 <div id="header-trigger">
     <a href="#" (click)="controlNav($event)"  *ngIf="!isNavOpen">
         <i class="fa fa-bars fa-lg"></i>
@@ -7,7 +15,6 @@
         <i class="fa fa-times fa-lg" *ngIf="isNavOpen"></i>
     </a>
 </div>
-
 <!-- Header
 ============================================= -->
 <header id="header" class="no-sticky">
