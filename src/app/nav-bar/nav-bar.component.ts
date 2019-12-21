@@ -147,20 +147,6 @@ export class NavBarComponent implements OnInit {
         return this.stopEvent(event);
     }
 
-    // controlTopNav(event: MouseEvent) {
-
-    //     if (!this.isTopNavOpen) {
-    //         console.log('isClosed11', document.getElementById('primary-menu'))
-    //         document.getElementById('primary-menu').style.display = 'block';
-    //     } else {
-    //         console.log('isopened')
-    //         // document.getElementById('primary-menu').classList.remove('side-header-open');
-    //         document.getElementById('primary-menu').style.display = 'none';
-    //     }
-    //     this.isTopNavOpen = !this.isTopNavOpen;
-    //     return this.stopEvent(event);
-    // }
-
     stopEvent(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
