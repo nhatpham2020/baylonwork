@@ -2,7 +2,7 @@
 	Side Header
 -----------------------------------------------------------------*/
 
-@media (min-width: 992px) {
+@media (min-width: 200px) {
   .container {
     padding-left: 0px !important;
   }
