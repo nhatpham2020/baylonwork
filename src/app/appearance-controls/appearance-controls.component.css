@@ -161,7 +161,7 @@
 
 .undo-container {
   position: absolute;
-
+  top: -3em;
   right: 0em;
 }
 
