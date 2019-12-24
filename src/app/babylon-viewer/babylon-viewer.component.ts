@@ -71,10 +71,10 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
             });
 
             this.viewerService.notifyReset();
-            this.engine.enableOfflineSupport = false;            
+            this.engine.enableOfflineSupport = false;
         });
         this.gundataService.firemessage.subscribe(message => this.firemessage = message);
-        
+
     }
 
     changeMeshMaterial(meshName: string, materialName: string) {
@@ -274,10 +274,10 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         var loadingScreen = new CustomLoadingScreen("");
             // replace the default loading screen
             this.engine.loadingScreen = loadingScreen;
-    
+
 
         this.scene = new BABYLON.Scene(this.engine);
-        this.scene.clearColor = new BABYLON.Color4(241 / 255, 242 / 255, 237 / 255, 1);
+        this.scene.clearColor = new BABYLON.Color4(255 / 255, 255 / 255, 255 / 255, 1);
         this.scene.onPointerObservable.add((eventData, eventState) => {
         this.pointerObserved(eventData, eventState);
 
@@ -286,13 +286,13 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         this.hemisphericLight.diffuse.set(1, 1, 1);
         this.hemisphericLight.intensity = 1.2;
         this.hemisphericLight.specular.set(0, 0, 0);
-        
+
         /*this.directionalLight = new BABYLON.DirectionalLight('mainLight', new BABYLON.Vector3(0.5, 1, 0.5), this.scene);
         this.directionalLight.diffuse.set(0.6, 0.6, 0.6);
         this.directionalLight.specular.set(0.6, 0.6, 0.6);*/
 
-        this.setupCamera();  
-        
+        this.setupCamera();
+
 
         this.engine.runRenderLoop(() => {
             this.render();
@@ -508,20 +508,20 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         const setEnv = function (mesh: BABYLON.Mesh) {
             if (!!mesh.material) {
                 (<BABYLON.PBRMaterial>mesh.material).reflectionTexture = envTex;
-           
+
             }
         };
 
         this.allRootMeshes.forEach(function (mesh) {
             setEnv(mesh);
-            
+
             mesh.getChildMeshes(false).forEach(setEnv);
         });
 
         this.environment = envTex;
     }
-    
-    
+
+
 
     setMeshMaterialProperty(meshName: string, propertyName: string, propertyValue: any) {
         const material = <BABYLON.PBRMaterial>this.getMesh(meshName).material;
@@ -547,12 +547,12 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
         this.camera.lowerRadiusLimit = 1;
         this.camera.upperRadiusLimit = 5;
         this.camera.attachControl(this.displayCanvas);
-      
+
     }
 
     showMesh(meshName: string, modelFolder?: string, modelFile?: string) {
         this.getMesh(meshName, modelFolder, modelFile).setEnabled(true);
-        
+
     }
 
     setPosition(meshName: string, position: Value3D) {
@@ -603,14 +603,14 @@ class CustomLoadingScreen implements ILoadingScreen {
     public UIText = document.getElementById("loadingScreenText");
 
     public loadingUIBackgroundColor: string;
-  
+
     constructor(public loadingUIText: string) {
         this.UIText.innerHTML = loadingUIText;
     }
     public displayLoadingUI() {
       this.customScreen.style.display = "flex";
     }
-  
+
     public hideLoadingUI() {
         this.customScreen.style.display = "none";
     }
