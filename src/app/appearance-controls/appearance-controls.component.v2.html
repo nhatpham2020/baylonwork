@@ -163,8 +163,6 @@
                        [class.active]=" (option === selectedOption(optionGroup))"
                        (click)="optionClicked($event, optionGroup, option)"
                        (dblclick)="onVeryLongPress($event, optionGroup, option)"
-
-
                     >
                         <!--   [longPress]="500" (onRelease)="onVeryLongPress($event)" -->
                         <div  class="display" [className]="'display '+optionGroup.itemCustomClasses || 'display'"

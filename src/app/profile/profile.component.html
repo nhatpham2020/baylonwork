@@ -13,7 +13,7 @@
       <div class="tab">
         <button class="tablinks " onclick="openCity(event, 'London')" id="defaultOpen"><img
             src="../../assets/img/profile/Profile.png"><span class="d-none d-md-inline "> PROFILE</span></button>
-        
+
         <button class="tablinks" onclick="openCity(event, 'Tokyo')"><img
             src="../../assets/img/profile/Support.png"><span class="d-none d-md-inline "> SUPPORT</span></button>
         <button class="tablinks logout" (click)="logout()"><img src="../../assets/img/profile/Log_Out.png"><span
@@ -36,17 +36,17 @@
                   <i class="icon-text">{{profile.myMarket}}</i> </div>
                 <div class="input-container">
                   <input class="input-field" type="text" placeholder="MY WALL" name="" disabled>
-                  <i class="icon-text">{{profile.myWall}}/10</i> </div>
+                  <i class="icon-text">{{profile.myWall}}</i> </div>
                 <div class="input-container">
                   <input class="input-field" type="text" placeholder="MY FAVORITE" name="" disabled>
                   <i class="icon-text">{{profile.myFavourite}}</i> </div>
-                 
+
               </form>
             </div>
           </div>
           <div class="profile-right">
             <div class="progrss">
-             
+
               <div class="clearfix"></div>
             </div>
             <div class="input-container">
@@ -71,7 +71,7 @@
             <div class="profile-img"> <img src="{{profile.avatarURL}}" style=" border-radius: 50%;"></div>
             <input type="file" (change)="uploadAvatar($event)" class="form-control form-control-sm">
             <div class="progrss">
-              
+
               <div class="clearfix"></div>
             </div>
             <div class="form-profile">
@@ -86,7 +86,7 @@
                   <i class="icon-text">{{profile.myMarket}}</i> </div>
                 <div class="input-container">
                   <input class="input-field" type="text" placeholder="MY WALL" name="" disabled>
-                  <i class="icon-text">{{profile.myWall}}/10</i> </div>
+                  <i class="icon-text">{{profile.myWall}}</i> </div>
                 <div class="input-container">
                   <input class="input-field" type="text" placeholder="MY FAVORITE" name="" disabled>
                   <i class="icon-text">{{profile.myFavourite}}</i> </div>
@@ -95,7 +95,7 @@
             <div class="input-container">
               <input class="input-field" type="text" placeholder={{email}} disabled>
               <i class="fa fa-edit icon"></i> </div>
-              
+
             <div class="container">
               <form action="/action_page.php">
                 <label for="subject">BIO</label>

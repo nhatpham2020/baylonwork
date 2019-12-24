@@ -19,7 +19,7 @@ export function undoFactory(name: string) {
 
     const undoManager =  new UndoManager();
 
-    const mLimit = 9;
+    const mLimit = 99;
     undoManager.getLimit = () => mLimit;
 
     undoManager.setLimit(mLimit);

@@ -395,3 +395,10 @@ ol.list-preparation li:not(:first-child) { padding-top: 18px; }
 	.section { padding: 80px 0; }
 
 }
+
+@media (max-width: 320px) {
+  img {
+    width: 250px;
+    height: 250px;
+  }
+}

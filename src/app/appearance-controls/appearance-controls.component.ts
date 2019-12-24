@@ -33,6 +33,7 @@ import { LoginComponent } from '../login/login.component';
 import { MarketmodalComponent } from '../marketmodal/marketmodal.component';
 import { DeployService } from '../services/deploy.service';
 import { DeployVar } from 'src/model/deployVar';
+import { CustomerService } from '../services/customer.service';
 export interface DeepActiveAppearanceTracking {
     activeSection: AppearanceSection;
     resetActive: boolean;
@@ -60,7 +61,7 @@ export class AppearanceControlsComponent implements OnDestroy {
     public hideWeaponChoices = true;
     public selectedItems: Map<WeaponCustomization, DeepActiveAppearanceTracking> =
         new Map<WeaponCustomization, DeepActiveAppearanceTracking>();
-    
+
     public weaponsLoaded: Map<WeaponCustomization, boolean> =
         new Map<WeaponCustomization, boolean>();
 
@@ -76,16 +77,17 @@ export class AppearanceControlsComponent implements OnDestroy {
     public currentPatternVisible = false;
     isAdmin = false;
     isFirst = true;
+    membership: string;
     public openModal: BsModalRef = null;
     constructor(private customizerDataService: CustomizerDataService, private viewerService: ViewerService,
         private gundata: GuneditService, private gunVisibleService: GunvisibleService,
         private patternService: PatternService, private http: HttpClient, private modalService: BsModalService,
-        private auth: AuthService, private deployService: DeployService
+        private authService: AuthService, private deployService: DeployService, private customerService: CustomerService
         ) {
         this.initializeSubscription = viewerService.initialized.subscribe(() => {
             this.viewerInitialized();
         });
-        this.isAdmin = this.auth.isAdmin();
+        this.isAdmin = this.authService.isAdmin();
         this.clickSubscription = this.viewerService.meshClicked.subscribe((meshName: string) => {
             this.meshClicked(meshName);
         });
@@ -100,12 +102,12 @@ export class AppearanceControlsComponent implements OnDestroy {
                  this.replayGun(message);
             }
         });
-        
-       
+
+
        this.getVisible();
        this.getPatterns();
        this.getDeploy();
-       
+
     }
 
     public getCommonSections() {
@@ -123,7 +125,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.openShareModal(event);
     }
     startSave(event: MouseEvent) {
-        if (this.auth.isLoggedIn) {
+        if (this.authService.isLoggedIn) {
             // TODO
             this.openModal = this.modalService.show(SavemodalComponent);
         } else {
@@ -132,7 +134,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         return this.stopEvent(event);
     }
     startMarketing(event?: MouseEvent) {
-        if (this.auth.isLoggedIn) {
+        if (this.authService.isLoggedIn) {
             // TODO
             this.openModal = this.modalService.show(MarketmodalComponent);
         } else {
@@ -151,7 +153,7 @@ export class AppearanceControlsComponent implements OnDestroy {
             )
           ).subscribe(weaponvisible => {
               this.weaponvisible = weaponvisible;
-           
+
           });
     }
     public getDeploy() {
@@ -192,7 +194,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.deployService.createDeploy(deploy);
     }
     setVisibleofWeapon (index: number, visible: boolean) {
-        this.weaponvisible[index].visibility = visible; 
+        this.weaponvisible[index].visibility = visible;
         //this.gunVisibleService.updateVisible(visibledata.key, visibledata);
     }
     setVisibleofPattern ( visible: boolean) {
@@ -202,13 +204,13 @@ export class AppearanceControlsComponent implements OnDestroy {
         currentPattern.visibility = visible;
         this.currentPatternVisible = currentPattern.visibility;
         this.patternService.updatePattern(currentPattern.key, currentPattern);
-        
+
     }
     deleteTexture () {
         const lastClickedOption = this.lastClickedOption.has(this.activeSection()) ? this.lastClickedOption.get(this.activeSection()) : null;
         console.log(lastClickedOption);
         this.patternService.deleteFileDatabase(lastClickedOption.key);
-        
+
     }
     uploadTexture(event) {
         if (!this.chosenWeapon.interactionBlacklist) {
@@ -223,7 +225,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         const  patterns: AppearanceOption[]  =  JSON.parse(localStorage.getItem('patternsData'));
         const { index } = patterns.pop();
 
-        
+
         formData.append("uploads", file, (index + 1).toString()+ '.jpg');
         console.log(formData);
         if (file.type.includes('image')) {
@@ -233,15 +235,15 @@ export class AppearanceControlsComponent implements OnDestroy {
                 if(response == 100) {
                     console.log(1000)
                     window.alert("Texture File Uploaded Sucessfully!!\n Will reload automatically to apply changes");
-                  
+
                 }
             });
             this.http.post('/upload', formData).
             subscribe((response) => {
-               
+
             });
-     
-        
+
+
         }
       }
      }
@@ -271,7 +273,7 @@ export class AppearanceControlsComponent implements OnDestroy {
    public undoManagerLimit() {
         return UndoMgr.getInstance().getLimit();
     }
-   
+
     public changeTexture(event) {
         if (!this.chosenWeapon.interactionBlacklist) {
             const activeSection = this.activeSection();
@@ -281,7 +283,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         const file = event.target.files[0];
         this.currentFileUpload = new UploadFile(file);
         let formData = new FormData();
-        
+
         formData.append("uploads", file, lastClickedOption.index.toString()+ '.jpg');
         if (file.type.includes('image')) {
             this.patternService.pushFileToStorage(this.currentFileUpload, lastClickedOption).subscribe((response) => {
@@ -351,7 +353,7 @@ export class AppearanceControlsComponent implements OnDestroy {
 
     clampScrollValue(scroll: number) {
         const ne: HTMLDivElement = this.optionsContainer.nativeElement;
-        
+
         return Math.max(0, Math.min(scroll, ne.scrollWidth - ne.clientWidth));
     }
 
@@ -416,7 +418,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.initializeSubscription.unsubscribe();
         this.clickSubscription.unsubscribe();
         this.viewerResetSubscription.unsubscribe();
-        
+
 
           this.messagefromchild = this.child.message;
         console.log(this.messagefromchild);
@@ -642,8 +644,8 @@ export class AppearanceControlsComponent implements OnDestroy {
         const ne: HTMLDivElement = this.optionsContainer.nativeElement;
 
         ne.scrollLeft = this.clampScrollValue(ne.scrollLeft - (ne.clientWidth - 64));
-        
-        
+
+
         return this.stopEvent(event);
     }
 
@@ -709,7 +711,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.viewerService.viewer.createMaterial(matProps);
     }
     public textureGenerate():AppearanceOption[] {
-        const urls: string[] = ['https://cdn.pixabay.com/photo/2016/01/08/11/57/butterfly-1127666_960_720.jpg', 
+        const urls: string[] = ['https://cdn.pixabay.com/photo/2016/01/08/11/57/butterfly-1127666_960_720.jpg',
             'https://image.shutterstock.com/image-photo/beautiful-butterfly-metamorpha-stelenes-nature-600w-653284645.jpg',
             'https://cdn.pixabay.com/photo/2016/01/08/11/57/butterfly-1127666_960_720.jpg'];
         const options: AppearanceOption[] = [];
@@ -721,42 +723,52 @@ export class AppearanceControlsComponent implements OnDestroy {
                 interactionValue: url
             });
         })
-        
+
 
         return options;
     }
     viewerInitialized() {
+      this.customizerDataService.weaponsData().subscribe((customizationData) => {
+        this.getCustomersList();
+        const membership = localStorage.getItem('membership') || null;
+        this.customizationData = customizationData;
+        const temp_textures = this.customizationData.commonSections[1].optionGroups[0].options;
+        let textures;
+        console.log(temp_textures);
 
+        /*  this.textureGenerate().map( texture => {
+            this.customizationData.commonSections[1].optionGroups[0].options.push(texture);
+        })
+          */
+        // if (!!customizationData.environment) {
+        console.log(this.customizationData);
+        this.viewerService.viewer.setEnvironment(customizationData.environment);
+        // }
 
-        this.customizerDataService.weaponsData().subscribe((customizationData) => {
-            this.customizationData = customizationData;
-           /*  this.textureGenerate().map( texture => {
-                this.customizationData.commonSections[1].optionGroups[0].options.push(texture);
-            })
-             */
-            // if (!!customizationData.environment) {
-            console.log(this.customizationData);
-            this.viewerService.viewer.setEnvironment(customizationData.environment);
-            // }
+        if (!!customizationData.commonMaterials) {
+            customizationData.commonMaterials.forEach((matProps) => this.createMaterial(matProps));
+        }
 
-            if (!!customizationData.commonMaterials) {
-                customizationData.commonMaterials.forEach((matProps) => this.createMaterial(matProps));
-            }
+        //  customizationData.weapons= [customizationData.weapons[0]]
 
-            //  customizationData.weapons= [customizationData.weapons[0]]
-
-            // this.loadWeapon(customizationData.weapons[0], true);
-            this.chooseWeapon(null, customizationData.weapons[0]);
-
-            customizationData.weapons.forEach((weapon, wIdx) => {
-                this.setupOptionTracking(customizationData.commonSections || [], weapon);
-
-
-                //  this.loadWeapon(weapon, wIdx === 0);
-
-
-            });
+        // this.loadWeapon(customizationData.weapons[0], true);
+        this.chooseWeapon(null, customizationData.weapons[0]);
+        switch (membership) {
+          case 'goatgunbasic':
+            textures = temp_textures.slice(-5);
+            break;
+          case 'goatgunpro':
+            textures = temp_textures.slice(-25);
+            break;
+          default:
+            textures = temp_textures.slice(-1);
+        }
+        this.customizationData.commonSections[1].optionGroups[0].options = textures;
+        customizationData.weapons.forEach((weapon, wIdx) => {
+            this.setupOptionTracking(this.customizationData.commonSections || [], weapon);
+            //  this.loadWeapon(weapon, wIdx === 0);
         });
+      });
     }
 
 
@@ -788,12 +800,12 @@ export class AppearanceControlsComponent implements OnDestroy {
             console.log(weapon);
            this.setupOptionTracking(this.customizationData.commonSections || [], weapon);
             this.weaponSetup(weapon);
-            
+
         });
-        for (let i =0; i < 10 ; i++) {
+        for (let i =0; i < 100 ; i++) {
             UndoMgr.undo();
         }
-        
+
         UndoMgr.getInstance().clear();
         return this.stopEvent(event);
     }
@@ -805,7 +817,7 @@ export class AppearanceControlsComponent implements OnDestroy {
      */
     public weaponSetup(weapon: WeaponCustomization) {
         if (!!weapon.replaceMaterials) {
-           
+
             weapon.replaceMaterials.forEach((replacement) => {
                 this.viewerService.viewer.replaceMaterials(weapon.modelFolder, weapon.modelFile,
                     replacement.oldMaterialNames, replacement.newMaterialName);
@@ -871,7 +883,7 @@ export class AppearanceControlsComponent implements OnDestroy {
             const  attachData  =  file.weaponAttachData;
             const  designData  =  file.weaponDesignData;
             //await this.chooseWeapon(null, weapon);
-            
+
             localStorage.setItem('weapon', JSON.stringify(weapon));
             localStorage.setItem('DesignData', JSON.stringify(designData));
             localStorage.setItem('AttachData', JSON.stringify(attachData));
@@ -948,7 +960,7 @@ export class AppearanceControlsComponent implements OnDestroy {
             });
             await attachData.map(item => {
                 if (item.weaponName === weapon) {
-                   
+
                     if (item.isAdding) {
                         this.optionOn(item.option, item.section);
                        } else {
@@ -965,5 +977,23 @@ export class AppearanceControlsComponent implements OnDestroy {
         } catch {
 
         }
+    }
+
+    getCustomersList() {
+      this.customerService
+        .getCustomersList()
+        .snapshotChanges()
+        .pipe(
+          map(changes =>
+            changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+          )
+        )
+        .subscribe(customers => {
+          const uid = this.authService.userdata().uid;
+          const membership = customers.filter(customer => customer.key === uid);
+          this.membership = membership[0].planName.toLowerCase();
+          localStorage.setItem('membership', this.membership);
+          console.log(this.membership);
+        });
     }
 }

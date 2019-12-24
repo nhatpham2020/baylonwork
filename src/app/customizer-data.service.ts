@@ -194,12 +194,12 @@ export class CustomizerDataService {
     isAdmin = false;
     constructor(private auth: AuthService) {
         this.isAdmin = this.auth.isAdmin();
-        
+
     }
 
     generateTextureOptions(): AppearanceOption[] {
         const options: AppearanceOption[] = [];
-        
+
         if( this.isAdmin ) {
             const  patterns: any[]  =  JSON.parse(localStorage.getItem('patternsData'));
             patterns.map((pattern) => {
@@ -225,7 +225,7 @@ export class CustomizerDataService {
                         key: pattern.key
                     });
                 }
-                 
+
             })
         }
         return options;
@@ -233,7 +233,7 @@ export class CustomizerDataService {
 
     weaponsData(): Observable<WeaponCustomizationData> {
         let textureOptions = this.generateTextureOptions();
-       
+
         return of({
             //environment: 'assets/textures/environments/parking.hdr',
             environment: '/assets/textures/environments/parking/',
@@ -291,8 +291,8 @@ export class CustomizerDataService {
                     affectedParameter: 'texture',
                     optionGroups: [
                         {
-                            allowNone: true,
-                            options: textureOptions
+                          allowNone: true,
+                          options: textureOptions
                         }
                     ]
                 }
@@ -300,8 +300,8 @@ export class CustomizerDataService {
             weapons: weaponsConfig
         });
     }
-   
-   
-    
+
+
+
 }
 

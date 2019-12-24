@@ -89,6 +89,7 @@ export class CardpayComponent implements OnInit {
                 console.log(res.json());
                 const { planName } = res.json();
                 window.alert(`You subscribed successfully into ${planName}`);
+                localStorage.setItem('membership',planName.toLowerCase());
               },
               err => {
                 console.log("The error is ", err);
@@ -108,6 +109,8 @@ export class CardpayComponent implements OnInit {
                 console.log(res.json());
                 const { planName } = res.json();
                 window.alert(`You subscribed successfully into ${planName}`);
+                localStorage.setItem('membership',planName.toLowerCase());
+
               },
               err => {
                 console.log("The error is ", err);
@@ -156,6 +159,7 @@ export class CardpayComponent implements OnInit {
       .subscribe(customers => {
         const uid = this.authService.userdata().uid;
         const membership = customers.filter(customer => customer.key === uid);
+        console.log('membership');
         console.log(membership);
         if (!!membership[0]) {
           this.membership = membership[0];
@@ -184,6 +188,10 @@ export class CardpayComponent implements OnInit {
           this.membership = null;
         }
       });
+  }
+
+  close() {
+    this.modalRef.hide();
   }
 
   stopEvent(event: MouseEvent) {

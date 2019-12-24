@@ -413,3 +413,7 @@ form {
 #cardPay {
   text-align: center !important;
 }
+
+.submit{
+  margin: 10px 15px;
+}
