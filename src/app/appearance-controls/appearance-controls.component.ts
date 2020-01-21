@@ -763,6 +763,9 @@ export class AppearanceControlsComponent implements OnDestroy {
           default:
             textures = temp_textures.slice(-1);
         }
+        if(!!this.isAdmin) {
+          textures = temp_textures;
+        }
         this.customizationData.commonSections[1].optionGroups[0].options = textures;
         customizationData.weapons.forEach((weapon, wIdx) => {
             this.setupOptionTracking(this.customizationData.commonSections || [], weapon);

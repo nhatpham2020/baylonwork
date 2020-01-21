@@ -19,6 +19,7 @@ import { ProfileData } from 'src/model/profileData';
 })
 export class FavouriteComponent implements OnInit {
   public isPaid = false;
+  public empty = false;
   public uid = '';
   tempfile: any;
   message: string;
@@ -84,6 +85,9 @@ export class FavouriteComponent implements OnInit {
           }
         });
         this.fileUploads = MyFavourite;
+        if(this.fileUploads.length === 0) {
+          this.empty = true;
+        }
         const profileData = this.profile;
       profileData.myFavourite = this.fileUploads.length;
       this.profileService.updateProfile(this.profile.key, this.uid, profileData);

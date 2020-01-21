@@ -4,9 +4,8 @@
 	height: auto;
 	width: 100%;
 	position: absolute;
-	
-	top:60px;
-	left: 30px;
+	top:0px;
+	left:0px;
 }
 * {
 	box-sizing: border-box;
@@ -41,7 +40,7 @@
 
 	border: 4px solid black;
 	border-radius:8px;
-	
+
 }
 .tab img {
 	width: 30px;
@@ -58,8 +57,11 @@
 	min-height: 260px;
 }
 .profile-img img {
-	max-height: 85px;
+  max-height: 85px;
+  border-radius: 50%;
+  border:1px solid black;
 }
+
 .input-container {
 	display: -ms-flexbox;/* IE10 */
 	display: flex;
@@ -187,8 +189,8 @@ input[type=text], select, textarea {
 	float: left;
     z-index: 89;
     margin-right: -10px
-   
-	
+
+
 }
 .progress_bar_grey {
 	color: #000 !important;
@@ -223,7 +225,7 @@ input[type=text], select, textarea {
 }
 .tabcontent1 {
 	float: left;
-	width: 75%;
+	width: 25%;
 }
 
 .tablinks:hover {
@@ -231,7 +233,7 @@ input[type=text], select, textarea {
 	border-radius: 8px;
 }
 
- 
+
 .display_flex {
 	display: flex;
 }
@@ -280,18 +282,18 @@ a .fa.fa-times-circle-o {
 
 .nav-item img {
     height: 5%;
-    padding-top:0.2rem; 
+    padding-top:0.2rem;
     margin-right:0.1em;
 }
 
 
 .profile-end {
-    left: calc(100% - 80px);
-    height: auto;
+  left: 0px;
+  top: 120px;
+  height: auto;
 	float: left;
 	padding: 0 0;
 	margin-top:10px;
-	
 }
 .sidebar {
 	position: absolute;
@@ -333,7 +335,7 @@ i.fas.fa-piggy-bank {
 i.fa.fa-user-circle-o {
     font-size: 30px;
 	color: #fff;
-	
+
     width: 30px;
 	margin-bottom: 3px;
 }
@@ -359,7 +361,7 @@ li {
     list-style: none;
 }
 .profile-end img{
-    
+
 	width: 36px;
 	height: 36px;
 	margin-right: 1em;
@@ -380,13 +382,12 @@ li {
 	border-right: 20px solid #7c7c7c;
 	width: 0;
 }
-@media screen and (max-width: 420px) {
-      
-    .profile-end {
-		left: calc(100% - 70px);
-		
-	}
-    
-    
-    
+
+@media screen and (max-width: 932px) {
+  .main-box {
+    top:50px;
   }
+  .profile-end {
+    top: 100px;
+  }
+}

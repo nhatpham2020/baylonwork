@@ -31,7 +31,7 @@ export class TarExport {
             verbose: false,
             // timeLimit: 2
         });
-        
+
     }
 
     addFrame(canvasElement) {
@@ -120,8 +120,7 @@ export class TarExport {
             this.converter.on('progress', () => {
 
                 if (this.sigCancel) {
-
-                    reject(new Error('canceled manually'));
+                   reject(new Error('canceled manually'));
                 }
 
             });

@@ -20,7 +20,7 @@
             <!-- Logo
             ============================================= -->
             <div id="logo" class="nobottomborder text-center">
-                <a class="navbar-brand mr-auto" href="#"><img src="assets/img/logo-goat.png" id="log"></a>            
+                <a class="navbar-brand mr-auto" href="#"><img src="assets/img/logo-goat.png" id="log"></a>
             </div><!-- #logo end -->
             <!-- Primary Navigation
             ============================================= -->
@@ -53,22 +53,28 @@
                     </li>
                     <li class="nav-link" class="nav-item top-item">
                         <a href="#" (click) ="startSave($event)">
-                            <img  src="assets/img/nav-icons/Save-color.png"/>
+                            <img  src="assets/img/profile/Save.png"/>
                             <span  class="d-sm-inline">&nbsp;Save</span>
                         </a>
                     </li>
                     <li class="nav-link" class="nav-item top-item">
                         <a href="#" (click) ="startMarketing($event)">
-                            <img  src="assets/img/nav-icons/Market-color.png"/>
+                            <img  src="assets/img/nav-icons/Market.png"/>
                             <span  class="d-sm-inline">&nbsp;Marketing</span>
                         </a>
                     </li>
                     <li class="nav-link" class="nav-item top-item">
-                        <a href="#"(click) = "openlogin($event)">
-                            <img class="small" src="assets/img/nav-icons/login-v2.png"/>
-                            <span  class="d-sm-inline">Profile</span>
+                        <a href="#" (click)="openlogin($event)">
+                            <img src="../../assets/img/profile/Profile.png"/>
+                            <span  class="d-sm-inline">&nbsp;Profile</span>
                         </a>
                     </li>
+                    <li class="nav-link" class="nav-item top-item">
+                      <a href="#" (click)="openUpgrade($event)">
+                          <img src="../../assets/img/nav-icons/upgrade.png"/>
+                          <span  class="d-sm-inline">&nbsp;Upgrade</span>
+                      </a>
+                  </li>
                 </ul>
 
             </nav><!-- #primary-menu end -->

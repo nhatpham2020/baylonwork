@@ -24,7 +24,7 @@
                 <div class="p-2 weapon-name d-none d-lg-inline-block">{{chosenWeapon.name}}</div>
             </a>
         </div>
-        <div class="vertical-divider d-none d-md-block"></div>
+        <div class="vertical-divider"></div>
 
         <!-- section select for large device -->
       <!--   <div class="mt-2 mb-2 col-auto d-none d-lg-block" *ngFor="let section of allSections; let i = index">
@@ -41,59 +41,55 @@
 
         </div>
         <div class="mt-2 mb-2 col-auto d-none d-lg-block undo-container" *ngIf="activeSection().globalReset" style="padding-right:0px">
-            <a class="m-auto" href="#" title="undo"
-            (click)="resetPressed($event)"
-            [class.disabled]="undoManagerIndex() === 0">
-            <!--  <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
-            Undo
+          <a class="undo-option" href="#" title="undo"
+          (click)="resetPressed($event)"
+          [class.disabled]="undoManagerIndex() === 0">
+          <!--  <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
+          Undo
          </a>
-         <a class="m-auto" href="#" title="redo"
+         <a class= "undo-option" href="#" title="redo"
             (click)="redoPressed($event)"
             [class.disabled]="undoManagerIndex() == undoManagerLimit()">
              <!-- <i class="material-icons md-inherit custom-md-size">arrow_right</i> -->
              Redo
          </a>
-         <a class="nav-option undo-item" href="#" title="reset"
+         <a class=" undo-option" href="#" title="reset"
             (click)="viewerReset($event)">
-             <div class="display position-relative">
                Reset
                  <!-- <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
                       style="background-image: url('assets/img/nav-icons/spin.svg');">
                  </div>
                  <span class="undo-button">{{ undoManagerIndex() }}</span> -->
-             </div>
          </a>
 
     </div>
 
         <!-- section select for smaller device -->
-        <div class="mt-2 mb-2 col-1 d-lg-none" *ngFor="let section of allSections; ">
+        <div class="mt-2 mb-2 col-2 d-lg-none" *ngFor="let section of allSections; ">
             <a   [class.active]="section == activeSection()" href="#" (click)="changeSection($event, section)">
                 <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
             </a>
         </div>
         <div class="col-auto d-lg-none undo-container" *ngIf="activeSection().globalReset" id="smallundo">
-            <a class="m-auto" href="#" title="undo"
+            <a class="undo-mobile" href="#" title="undo"
             (click)="resetPressed($event)"
             [class.disabled]="undoManagerIndex() === 0">
              <!-- <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
              Undo
          </a>
-         <a class="m-auto" href="#" title="redo"
+         <a class="undo-mobile" href="#" title="redo"
             (click)="redoPressed($event)"
             [class.disabled]="undoManagerIndex() == undoManagerLimit()">
             <!--  <i class="material-icons md-inherit custom-md-size">arrow_right</i> -->
             Redo
          </a>
-         <a class="nav-option undo-item" href="#" title="reset"
+         <a class="undo-mobile" href="#" title="reset"
             (click)="viewerReset($event)">
-             <div class="display position-relative">
                 <!--  <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
                       style="background-image: url('assets/img/nav-icons/spin.svg');">
                  </div>
                  <span class="undo-button">{{ undoManagerIndex() }}</span> -->
                  Reset
-             </div>
          </a>
          </div>
 

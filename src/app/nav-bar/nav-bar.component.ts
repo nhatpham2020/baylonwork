@@ -18,6 +18,7 @@ import { MarketComponent } from '../market/market.component';
 import { GunwallComponent } from '../gunwall/gunwall.component';
 import { SavemodalComponent } from '../savemodal/savemodal.component';
 import { MarketmodalComponent } from '../marketmodal/marketmodal.component';
+import { CardpayComponent } from '../cardpay/cardpay.component';
 
 
 @Component({
@@ -54,10 +55,10 @@ export class NavBarComponent implements OnInit {
         } else {
             this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
-
+        this.controlNav(event);
         return this.stopEvent(event);
     }
-    
+
     openFavoriteModal(event: MouseEvent) {
         if (this.as.isLoggedIn) {
             this.openModal = this.modalService.show(FavouriteComponent, {class: 'modal-lg'});
@@ -65,7 +66,7 @@ export class NavBarComponent implements OnInit {
         } else {
             this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
-
+        this.controlNav(event);
         return this.stopEvent(event);
     }
     openMarketModal(event: MouseEvent) {
@@ -75,7 +76,7 @@ export class NavBarComponent implements OnInit {
         } else {
             this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
-
+        this.controlNav(event);
         return this.stopEvent(event);
     }
 
@@ -86,7 +87,7 @@ export class NavBarComponent implements OnInit {
         } else {
             this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
-
+        this.controlNav(event);
         return this.stopEvent(event);
     }
 
@@ -97,13 +98,20 @@ export class NavBarComponent implements OnInit {
         } else {
             this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
-
+        this.controlNav(event);
         return this.stopEvent(event);
     }
 
     openShareModal(event: MouseEvent) {
         this.openModal = this.modalService.show(ShareModalComponent);
+        this.controlNav(event);
         return this.stopEvent(event);
+    }
+
+    openUpgrade(event: MouseEvent) {
+      this.openModal = this.modalService.show(CardpayComponent,{class: 'modal-lg'});
+      this.controlNav(event);
+      return this.stopEvent(event);
     }
 
     openColorPickerModal(event: MouseEvent): ColorPickerModalComponent {
@@ -112,7 +120,6 @@ export class NavBarComponent implements OnInit {
         const instance = <ColorPickerModalComponent>this.openModal.content;
 
         this.stopEvent(event);
-
         return instance;
     }
 
@@ -123,6 +130,7 @@ export class NavBarComponent implements OnInit {
         } else {
             this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
         }
+        this.controlNav(event);
         return this.stopEvent(event);
     }
 
