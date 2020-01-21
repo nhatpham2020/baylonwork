@@ -13,8 +13,6 @@ import {socket, socketStartListening} from '../utils/Socket';
 // import {RawExportPreview} from '../utils/RawExportPreview';
 import {FileUploadProgressCallback, FileUploadResponse, IExportPreview, VideoConverterOptions} from '../utils/ExportCommon';
 import {BaseExportPreview} from '../utils/BaseExportPreview';
-import domtoimage from 'dom-to-image-more';
-
 
 socketStartListening();
 
@@ -160,9 +158,8 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     }
 
     close() {
-
-        this.undoPreviewMode();
-        this.modalRef.hide();
+      this.undoPreviewMode();
+      this.modalRef.hide();
 
     }
 
@@ -233,7 +230,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
             result = await this.createTarFromCanvas((val) => {
 
                 // FIXME progress is only triggered on convert not while capturing
-
+                console.log(val+ 'here');
                 this.setProgress(val, 1, 'Generating Tar');
             }, overrideConfig);
 
@@ -244,40 +241,42 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
             return;
         }
 
-
         if (!uploadImmediate) {
-            return;
+          return;
         }
 
         const uploadRoute = config.share.baseURL + config.share.fileUploadRoute;
+        
+        if(this.progressPercentage == 100) {
+          this.fileUpload.setRemote(uploadRoute);
 
-        this.fileUpload.setRemote(uploadRoute);
+          const gifPromise = this.fileUpload.uploadBlob(result.blob, undefined, (e) => {
 
-        const gifPromise = this.fileUpload.uploadBlob(result.blob, undefined, (e) => {
+              console.log(e.loaded, e.total);
 
-            console.log(e.loaded, e.total);
+              this.setProgress(e.loaded, e.total, 'Uploading ...');
 
-            this.setProgress(e.loaded, e.total, 'Uploading ...');
-
-        });
-
-
-        gifPromise.catch((e) => {
-            this.error = 'Failed to upload file. Server not responding.';
-        });
-        const response = await gifPromise;
+          });
 
 
-        if (!response.error) {
+          gifPromise.catch((e) => {
+              this.error = 'Failed to upload file. Server not responding.';
+          });
+          const response = await gifPromise;
 
-            this.setShareElements(response);
 
-            this.updateDebugResponse(response);
+          if (!response.error) {
 
-            this.uploaded = true;
-        } else {
-            this.error = response.error;
+              this.setShareElements(response);
+
+              this.updateDebugResponse(response);
+
+              this.uploaded = true;
+          } else {
+              this.error = response.error;
+          }
         }
+
 
     }
 
@@ -306,9 +305,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     // FIXME @7frank remove all previews from the global scene otherwise re-opening dialog
     // will create multiple instances of the individual objects
     ngOnDestroy(): void {
-        this.close();
-
-
+      this.close();
     }
 
     preparePreview(obj: { name: string, ctor: any }) {

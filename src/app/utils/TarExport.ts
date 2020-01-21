@@ -16,8 +16,6 @@ export class TarExport {
 
         const defaults: VideoConverterOptions = {quality: 8, framesPerSecond: 30, totalFrames: 60};
         this.options = Object.assign(defaults, options);
-
-
         this.createConverter();
 
     }
@@ -40,8 +38,8 @@ export class TarExport {
 
 
     cancel() {
-        this.sigCancel = true;
-
+      this.sigCancel = true;
+      this.converter.stop();
     }
 
 
@@ -120,7 +118,7 @@ export class TarExport {
             this.converter.on('progress', () => {
 
                 if (this.sigCancel) {
-                   reject(new Error('canceled manually'));
+                  reject(new Error('canceled manually'));
                 }
 
             });
