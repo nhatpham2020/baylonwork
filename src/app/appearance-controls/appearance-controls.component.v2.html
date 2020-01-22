@@ -152,7 +152,7 @@
     <div class="row option-browser" *ngIf="patterns">
         <div #optionsContainer class="mt-1 mb-1 col options-container tab-content" >
             <ng-container *ngFor="let optionGroup of activeSection().optionGroups; let isFirstGroup = first; ">
-                <ng-container *ngIf="!optionGroup.id||!optionGroup.name ">
+                <ng-container *ngIf="(!optionGroup.id||!optionGroup.name )&& activeSection().affectedParameter =='texture'">
                     <a  class="section-option" href="#"
                        *ngFor="let option of optionGroup.options; let isFirst = first"
                        [class.first-of-set]="isFirst"
@@ -165,9 +165,36 @@
                              [style.backgroundColor]="option.displayColor || ''" style="border-radius: 50%"
                              [style.backgroundImage]="option.displayImg ? ('url(\'' + option.displayImg + '\')') : ''"></div>
                     </a>
+                    <a class="section-option" href="javascript: void(0);"
+                           *ngFor="let plusbutton of plusbuttons;"
+                           (click)="fileToUpload2.click()"
+                    >
+                    <input #fileToUpload2 type="file"  accept="image/jpeg, .jpeg, image/png, .png, image/pjpeg, .jpg" name="fileToUpload2" (change)="uploadTexture($event)"style="display:none;">
+                            <div class="display undefined" style="border-radius: 50%; background-Image:url(assets/img//nav-icons/plusbutton.png)"
+                            ></div>
+                    </a>
+                    <a class="section-option" href="#"
+                      (click)="upgradeMembership($event)"
+                           *ngFor="let lockbutton of lockbuttons;"
+                           >
+                            <div class="display undefined" style="border-radius: 50%; background-Image:url(assets/img/nav-icons/lockbutton.jpg)"
+                            ></div>
+                    </a>
                 </ng-container>
-
-
+                <ng-container *ngIf="(!optionGroup.id||!optionGroup.name )&& activeSection().affectedParameter !=='texture'">
+                  <a  class="section-option" href="#"
+                     *ngFor="let option of optionGroup.options; let isFirst = first"
+                     [class.first-of-set]="isFirst"
+                     [class.active]=" (option === selectedOption(optionGroup))"
+                     (click)="optionClicked($event, optionGroup, option)"
+                     (dblclick)="onVeryLongPress($event, optionGroup, option)"
+                  >
+                      <!--   [longPress]="500" (onRelease)="onVeryLongPress($event)" -->
+                      <div  class="display" [className]="'display '+optionGroup.itemCustomClasses || 'display'"
+                           [style.backgroundColor]="option.displayColor || ''" style="border-radius: 50%"
+                           [style.backgroundImage]="option.displayImg ? ('url(\'' + option.displayImg + '\')') : ''"></div>
+                  </a>
+                </ng-container>
                 <ng-container *ngIf="!!optionGroup.id&&!!optionGroup.name">
                     <div id="{{optionGroup.id}}" [className]="isFirstGroup?'tab-pane fade show active':'tab-pane fade'">
                         <a class="section-option" href="#"
@@ -181,6 +208,7 @@
                                  [style.backgroundColor]="option.displayColor || ''" style="border-radius: 50%"
                                  [style.backgroundImage]="option.displayImg ? ('url(\'' + option.displayImg + '\')') : ''"></div>
                         </a>
+
                     </div>
                 </ng-container>
 

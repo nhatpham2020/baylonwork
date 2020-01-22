@@ -34,6 +34,7 @@ import { MarketmodalComponent } from '../marketmodal/marketmodal.component';
 import { DeployService } from '../services/deploy.service';
 import { DeployVar } from 'src/model/deployVar';
 import { CustomerService } from '../services/customer.service';
+import { CardpayComponent } from '../cardpay/cardpay.component';
 export interface DeepActiveAppearanceTracking {
     activeSection: AppearanceSection;
     resetActive: boolean;
@@ -75,6 +76,8 @@ export class AppearanceControlsComponent implements OnDestroy {
     public weaponvisible: any[];
     public patterns: Pattern[];
     public currentPatternVisible = false;
+    plusbuttons;
+    lockbuttons;
     isAdmin = false;
     isFirst = true;
     membership: string;
@@ -756,16 +759,23 @@ export class AppearanceControlsComponent implements OnDestroy {
         switch (membership) {
           case 'goatgunbasic':
             textures = temp_textures.slice(-5);
+            this.plusbuttons = new Array( 5 -textures.length);
+            this.lockbuttons = new Array(25 - 5);
             break;
           case 'goatgunpro':
             textures = temp_textures.slice(-25);
+            this.plusbuttons = new Array( 25 - textures.length);
+            this.lockbuttons = new Array(0);
             break;
           default:
             textures = temp_textures.slice(-1);
+            this.plusbuttons = new Array( 1 - textures.length);
+            this.lockbuttons = new Array(24);
         }
-        if(!!this.isAdmin) {
+        if(this.isAdmin === true) {
           textures = temp_textures;
         }
+        console.log(textures.length)
         this.customizationData.commonSections[1].optionGroups[0].options = textures;
         customizationData.weapons.forEach((weapon, wIdx) => {
             this.setupOptionTracking(this.customizationData.commonSections || [], weapon);
@@ -998,5 +1008,15 @@ export class AppearanceControlsComponent implements OnDestroy {
           localStorage.setItem('membership', this.membership);
           console.log(this.membership);
         });
+    }
+
+    upgradeMembership(event: MouseEvent) {
+      if (this.authService.isLoggedIn) {
+        // TODO
+        this.openModal = this.modalService.show(CardpayComponent,{class: 'modal-lg'});
+    } else {
+        this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+    }
+      return this.stopEvent(event);
     }
 }

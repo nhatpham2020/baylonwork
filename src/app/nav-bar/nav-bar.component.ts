@@ -109,7 +109,12 @@ export class NavBarComponent implements OnInit {
     }
 
     openUpgrade(event: MouseEvent) {
-      this.openModal = this.modalService.show(CardpayComponent,{class: 'modal-lg'});
+      if (this.as.isLoggedIn) {
+        // TODO
+        this.openModal = this.modalService.show(CardpayComponent,{class: 'modal-lg'});
+    } else {
+        this.openModal = this.modalService.show(LoginComponent, {class: 'modal-lg'});
+    }
       this.controlNav(event);
       return this.stopEvent(event);
     }

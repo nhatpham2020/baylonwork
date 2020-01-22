@@ -2,7 +2,9 @@
 import config from "../share-modal/config"
 
 export let socket = null;
-
+export function close() {
+  socket.close();
+}
 export function socketStartListening() {
 
     const io = window['io']
@@ -33,12 +35,10 @@ export function socketStartListening() {
 
     });
 
-
     socket.on('connect', function (data) {
         console.log("connect", data);
 
     });
-
 
 }
 

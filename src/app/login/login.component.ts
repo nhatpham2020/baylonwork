@@ -6,6 +6,8 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import { ProfileComponent } from '../profile/profile.component';
 import { ProfileService } from '../services/profile.service';
 import { ProfileData } from 'src/model/profileData';
+import { CustomerService } from '../services/customer.service';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -17,7 +19,9 @@ export class LoginComponent implements OnInit {
   isLogin = true;
   values = '';
   warn ='';
+  membership: string;
   constructor(
+    private customerService: CustomerService,
     private profileService: ProfileService,
     private  authService:  AuthService,
     private modalRef: BsModalRef,
@@ -33,8 +37,10 @@ export class LoginComponent implements OnInit {
     console.log(password);
     //
    this.authService.login(email, password ).then((userData) => {
-    window.alert('Login suceess!');
     this.modalRef.hide();
+    this.getCustomersList();
+
+
    },  (err) => {console.log(err);
    this.warn = err; }
    );
@@ -61,7 +67,7 @@ export class LoginComponent implements OnInit {
     } else {
       this.values = 'Password is not matching.';
     }
-    
+
   }
   register(id: string, email: string, pwd: string, pwd2: string ) {
     console.log(id);
@@ -111,7 +117,6 @@ export class LoginComponent implements OnInit {
   public googleLogin(event: MouseEvent) {
     this.authService.loginWithGoogle().then((userData) => {
       console.log(userData);
-      window.alert('Google Login suceess!');
       const profileData = new ProfileData;
         profileData.uid = userData.user.uid;
         profileData.email = userData.user.email;
@@ -122,6 +127,7 @@ export class LoginComponent implements OnInit {
         profileData.avatarURL = userData.user.photoURL || '../../assets/img/profile/Profile-ICon.png';
         profileData.BIO = 'I like goatguns so much.';
       this.profileService.saveFileData(profileData);
+      this.getCustomersList();
       this.modalRef.hide();
      },  (err) => {console.log(err);
      this.warn = err; }
@@ -132,7 +138,6 @@ export class LoginComponent implements OnInit {
   public facebookLogin(event: MouseEvent) {
     this.authService.loginWtihFacebook().then((userData) => {
       console.log(userData);
-      window.alert('Facebook Login suceess!');
       const profileData = new ProfileData;
         profileData.uid = userData.user.uid;
         profileData.email = userData.user.email;
@@ -143,11 +148,32 @@ export class LoginComponent implements OnInit {
         profileData.avatarURL = userData.user.photoURL || '../../assets/img/profile/Profile-ICon.png';
         profileData.BIO = 'I like goatguns so much.';
       this.profileService.saveFileData(profileData);
+      this.getCustomersList();
       this.modalRef.hide();
      },  (err) => {console.log(err);
      this.warn = err; }
      );
      return this.stopEvent(event);
+  }
+
+  getCustomersList() {
+    this.customerService
+      .getCustomersList()
+      .snapshotChanges()
+      .pipe(
+        map(changes =>
+          changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+        )
+      )
+      .subscribe(customers => {
+        const uid = this.authService.userdata().uid;
+        const membership = customers.filter(customer => customer.key === uid);
+        this.membership = membership[0].planName.toLowerCase() || 'goatgunfree';
+        localStorage.setItem('membership', this.membership);
+        console.log(this.membership);
+        window.alert('Login suceess!');
+        location.reload(false);
+      });
   }
   stopEvent(event: MouseEvent) {
     event.preventDefault();

@@ -3,7 +3,7 @@ import {AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild} from
 import {BsModalRef} from 'ngx-bootstrap';
 import {facebookShare} from '../utils/Facebook';
 import {ViewerService} from '../viewer.service';
-import {ExportPreviewFullFeatured} from '../utils/ExportPreviewFullFeatured';
+import {ExportPreviewFullFeatured } from '../utils/ExportPreviewFullFeatured';
 import {FileUpload, UploadResponseObject} from '../utils/FileUpload';
 import config from './config';
 
@@ -165,17 +165,12 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     undoPreviewMode() {
         if (this.exporter) {
-
-            this.exporter.cancel();
+           this.exporter.cancel();
         }
         this.viewerService.viewer.resizeOnRender = true;
         this.viewerService.viewer.resizeAsNeeded(true);
         this.preview.disablePreview();
-
-
         this.previousCanvasContainer.appendChild(this.displayCanvas);
-
-
     }
 
 
@@ -199,7 +194,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
             link.click();
         }); */
         const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.preview, progressCallback);
-
+        console.log(result);
 
         const stop = window.performance.now();
 
@@ -246,7 +241,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         }
 
         const uploadRoute = config.share.baseURL + config.share.fileUploadRoute;
-        
+
         if(this.progressPercentage == 100) {
           this.fileUpload.setRemote(uploadRoute);
 
@@ -263,14 +258,9 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
               this.error = 'Failed to upload file. Server not responding.';
           });
           const response = await gifPromise;
-
-
           if (!response.error) {
-
               this.setShareElements(response);
-
               this.updateDebugResponse(response);
-
               this.uploaded = true;
           } else {
               this.error = response.error;

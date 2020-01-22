@@ -54,6 +54,8 @@ export class AuthService {
   async logout() {
     await this.afAuth.auth.signOut();
      localStorage.removeItem('user');
+     localStorage.removeItem('membership');
+     location.reload(false);
   }
 
   get isLoggedIn(): boolean {
@@ -83,8 +85,10 @@ export class AuthService {
       const verified = this.userdata().emailVerified;
       try {
         if (  email == "bo.cai@symbo.org" || email == "flowerbed2020@outlook.com" &&  verified ) {
-         console.log(email); 
+         console.log(email);
          isAdmin = true;
+        } else {
+          isAdmin = false;
         }
       }
       catch (err) {

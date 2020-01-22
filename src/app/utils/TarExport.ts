@@ -1,6 +1,7 @@
 import 'ccapture.js/src/tar';
 import * as CCapture from 'ccapture.js/src/CCapture.js';
 import {FileUploadProgressCallback, FileUploadResponse, IExportPreview, VideoConverterOptions} from './ExportCommon';
+import { resolveComponentResources } from '@angular/core/src/metadata/resource_loading';
 
 
 export class TarExport {
@@ -39,7 +40,6 @@ export class TarExport {
 
     cancel() {
       this.sigCancel = true;
-      this.converter.stop();
     }
 
 
@@ -74,19 +74,14 @@ export class TarExport {
                 if (this.sigCancel) {
                     stopCapture();
                     reject(new Error('canceled manually'));
+
                 }
 
                 if (imgNm <= amount) {
-
-
                     progessCB(imgNm / amount, 'capturing');
-
                     this.addFrame(canvasElement);
-
                     // Add a constant rotation per frame.
-
                     preview.setPreviewTargetRotation(imgNm * 2 * Math.PI / amount);
-
                     imgNm++;
                 } else {
                     stopCapture();

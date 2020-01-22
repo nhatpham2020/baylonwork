@@ -88,8 +88,10 @@ export class CardpayComponent implements OnInit {
               res => {
                 console.log(res.json());
                 const { planName } = res.json();
-                window.alert(`You subscribed successfully into ${planName}`);
                 localStorage.setItem('membership',planName.toLowerCase());
+                window.alert(`You subscribed successfully into ${planName}`);
+                location.reload(false);
+
               },
               err => {
                 console.log("The error is ", err);
@@ -108,8 +110,9 @@ export class CardpayComponent implements OnInit {
               res => {
                 console.log(res.json());
                 const { planName } = res.json();
-                window.alert(`You subscribed successfully into ${planName}`);
                 localStorage.setItem('membership',planName.toLowerCase());
+                window.alert(`You subscribed successfully into ${planName}`);
+                location.reload(false);
 
               },
               err => {

@@ -434,19 +434,17 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
     resizeAsNeeded(force?: boolean) {
         const measuredWidth = this.displayCanvas.parentElement.clientWidth;
         const measuredHeight = this.displayCanvas.parentElement.clientHeight;
-
-        if (!force)
+        if (!!force)
             if ((measuredWidth === this.knownWidth) && (measuredHeight === this.knownHeight)) {
                 return;
-            }
-
+        }
 
         this.knownWidth = measuredWidth;
         this.knownHeight = measuredHeight;
         this.aspectRatio = measuredWidth / measuredHeight;
 
 
-        // this.engine.resize();
+        //this.engine.resize();
 
         this.engine.setSize(measuredWidth, measuredHeight);
 

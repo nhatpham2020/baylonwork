@@ -123,7 +123,7 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
       return config.share.baseURL + '/twitter/video/' + data.id + '.' + data.format;
 
   }
-  
+
 
   shareWithFacebook() {
       if (!this.uploadResponse) {
@@ -158,6 +158,7 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
   close() {
 
       this.undoPreviewMode();
+      this.getVideoURL(null);
       this.modalRef.hide();
 
   }
@@ -209,9 +210,9 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
           console.log(error);
         }
       );
-      
+
      // const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.preview, progressCallback);
-      
+
 
       const stop = window.performance.now();
 
@@ -220,7 +221,7 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
   }
   // `location` is the Firebase Storage reference;
 // `type` is the image type (in your case 'image/png')
-   
+
 
   async initVideoExport(overrideConfig?: VideoConverterOptions, uploadImmediate: boolean = true) {
 
@@ -305,10 +306,10 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
       this.previousCanvasContainer = this.displayCanvas.parentElement;
       this.canvasContainer.nativeElement.appendChild(this.displayCanvas);
       console.log(  this.displayCanvas);
-      
+
       this.viewerService.viewer.resizeOnRender = false;
       this.scene.getEngine().setSize(512, 512);
-     
+
       this.preparePreview(this.availablePreviews.special);
      /*  domtoimage.toPng(this.displayCanvas)
           .then(function (dataUrl) {
