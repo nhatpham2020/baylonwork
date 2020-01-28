@@ -47,6 +47,9 @@
 	width: 30px;
 }
 
+.icon-image {
+  max-height: 36px;
+}
 
 .tab {
 	float: left;

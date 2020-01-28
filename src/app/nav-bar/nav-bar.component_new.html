@@ -27,53 +27,65 @@
             <nav id="primary-menu">
 
                 <ul>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click) ="openMarketModal($event)">
-                            <img  src="assets/img/nav-icons/Market.png"/>
-                            <span class="d-md-inline">&nbsp;MARKET</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click) ="openGunwallModal($event)">
-                            <img  src="assets/img/nav-icons/Gunwall.png"/>
-                            <span  class="d-sm-inline">&nbsp;GUNWALL</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click) ="openFavoriteModal($event)">
-                            <img  src="assets/img/nav-icons/Favorite.png"/>
-                            <span  class="d-sm-inline">&nbsp;FAVORITE</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click) ="openShareModal($event)">
-                            <img  src="assets/img/nav-icons/share-v2.svg"/>
-                            <span  class="d-sm-inline">&nbsp;Share</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click) ="startSave($event)">
-                            <img  src="assets/img/profile/Save.png"/>
-                            <span  class="d-sm-inline">&nbsp;Save</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click) ="startMarketing($event)">
-                            <img  src="assets/img/nav-icons/Market.png"/>
-                            <span  class="d-sm-inline">&nbsp;Marketing</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                        <a href="#" (click)="openlogin($event)">
-                            <img src="../../assets/img/profile/Profile.png"/>
-                            <span  class="d-sm-inline">&nbsp;Profile</span>
-                        </a>
-                    </li>
-                    <li class="nav-link" class="nav-item top-item">
-                      <a href="#" (click)="openUpgrade($event)">
-                          <img src="../../assets/img/nav-icons/upgrade.png"/>
-                          <span  class="d-sm-inline">&nbsp;Upgrade</span>
-                      </a>
+                  <li class="nav-link" class="nav-item top-item">
+                    <strong>THIS WEAPON</strong>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="startSave($event)">
+                      <img src="assets/img/profile/Save.png" />
+                      <span class="d-sm-inline">&nbsp;Save TO MY WALL</span>
+                    </a>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="startMarketing($event)">
+                      <img src="assets/img/nav-icons/postmarket.png" />
+                      <span class="d-sm-inline">POST TO MARKET</span>
+                    </a>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="openShareModal($event)">
+                      <img src="assets/img/nav-icons/share-v2.svg" />
+                      <span class="d-sm-inline">&nbsp;Share</span>
+                    </a>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <strong>GO VISIT</strong>
+                  </li>
+
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="openMarketModal($event)">
+                      <img src="assets/img/nav-icons/Market.png" />
+                      <span class="d-md-inline">&nbsp;MARKETPLACE</span>
+                    </a>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="openGunwallModal($event)">
+                      <img src="assets/img/nav-icons/Gunwall.png" />
+                      <span class="d-sm-inline">&nbsp;GUNWALL</span>
+                    </a>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="openFavoriteModal($event)">
+                      <img src="assets/img/nav-icons/Favorite.png" />
+                      <span class="d-sm-inline">&nbsp;FAVORITEWALL</span>
+                    </a>
+                  </li>
+
+
+                  <li class="nav-link" class="nav-item top-item">
+                    <strong>MY ACCOUNT</strong>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="openlogin($event)">
+                      <img src="../../assets/img/profile/Profile.png" />
+                      <span class="d-sm-inline">&nbsp;Profile</span>
+                    </a>
+                  </li>
+                  <li class="nav-link" class="nav-item top-item">
+                    <a href="#" (click)="openUpgrade($event)">
+                      <img src="../../assets/img/nav-icons/upgrade.png" />
+                      <span class="d-sm-inline">&nbsp;Upgrade</span>
+                    </a>
                   </li>
                 </ul>
 

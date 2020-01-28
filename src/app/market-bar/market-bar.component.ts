@@ -27,10 +27,30 @@ export class MarketBarComponent implements OnInit {
     this.messageEvent.emit(this.message);
     return this.stopEvent(event);
   }
+
   stopEvent(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     return false;
+  }
+  deleteFavourite(event: MouseEvent, file: MarketwallData) {
+
+    const updateFile: MarketwallData = file;
+    if( file.favouriteMembers.includes(this.uid) && file.uid !== this.uid ) {
+      const index = file.favouriteMembers.indexOf(this.uid);
+      if ( file.favouriteMembers.length > 1) {
+        updateFile.favouriteMembers.splice(index, 1);
+        updateFile.favouritecount--;
+      }
+    }
+    this.uploadService.updateMarket(file.key, updateFile);
+    return this.stopEvent(event);
+  }
+
+  deleteMarket(event: MouseEvent, file: MarketwallData) {
+    this.uploadService.deleteFileDatabase(file.key);
+    window.alert('This gun was successfully removed from MarketPlace.')
+    return this.stopEvent(event);
   }
   increase(event: MouseEvent, file: MarketwallData, factor: number) {
     const updateFile: MarketwallData = file;
@@ -43,12 +63,6 @@ export class MarketBarComponent implements OnInit {
         if (!file.favouriteMembers.includes(this.uid) && file.uid !== this.uid) {
           updateFile.favouriteMembers.push(this.uid);
           updateFile.favouritecount++;
-        } else if( file.uid !== this.uid ) {
-          const index = file.favouriteMembers.indexOf(this.uid);
-          if ( file.favouriteMembers.length > 1) {
-            updateFile.favouriteMembers.splice(index, 1);
-            updateFile.favouritecount--;
-          }
         }
         break;
       case 2 :

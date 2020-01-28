@@ -23,7 +23,7 @@ export class UploadMarketService {
       this.uid = this.authService.userdata().uid;
 
      }
-   
+
   pushFileToStorage(fileUpload: UploadFile, uid: string): Observable<number> {
     const fileid = Math.random().toString(20).substring(2);
     const filePath = `${this.basePath}/` + uid + '/' + fileid;
@@ -42,7 +42,7 @@ export class UploadMarketService {
           marketwall.weaponName = JSON.parse(localStorage.getItem('weapon'));
           const AttachData = localStorage.getItem('AttachData');
           const DesingData = localStorage.getItem('DesignData');
-          
+
           if (DesingData && DesingData !== 'undefined' ) {
             marketwall.weaponDesignData = JSON.parse(DesingData);
           }
@@ -82,15 +82,15 @@ export class UploadMarketService {
     return this.db.list(this.basePath).update(key, value);
   }
 
-  deleteFileUpload(fileUpload: UploadFile, uid) {
-    this.deleteFileDatabase(fileUpload.key, uid)
+  deleteFileUpload(fileUpload: UploadFile) {
+    this.deleteFileDatabase(fileUpload.key)
       .then(() => {
         this.deleteFileStorage(fileUpload.name);
       })
       .catch(error => console.log(error));
   }
 
-  public deleteFileDatabase(key: string, uid: string) {
+  public deleteFileDatabase(key: string) {
     return this.db.list(this.basePath ).remove(key);
   }
 

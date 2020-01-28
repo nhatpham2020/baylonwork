@@ -81,6 +81,12 @@ export class AppearanceControlsComponent implements OnDestroy {
     isAdmin = false;
     isFirst = true;
     membership: string;
+    scrollTexture: number = 0;
+    scrollColor: number = 0;
+    scrollAttach: number = 0;
+    disalbeLeftScroll: boolean = true;
+    disalbeRightScroll: boolean = false;
+    bufferParam: string = 'texture';
     public openModal: BsModalRef = null;
     constructor(private customizerDataService: CustomizerDataService, private viewerService: ViewerService,
         private gundata: GuneditService, private gunVisibleService: GunvisibleService,
@@ -324,6 +330,24 @@ export class AppearanceControlsComponent implements OnDestroy {
     // Parent Option
     public changeSection(event: MouseEvent, section: AppearanceSection) {
         this.activeTracking().activeSection = section;
+        if (this.bufferParam != this.activeSection().affectedParameter) {
+          const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+          switch (this.activeSection().affectedParameter)
+          {
+             case 'texture':
+               console.log(this.scrollTexture);
+              ne.scrollLeft = this.clampScrollValue(this.scrollTexture);
+                 break;
+             case 'color':
+              ne.scrollLeft = this.clampScrollValue(this.scrollColor);
+              console.log(this.scrollColor);
+                 break;
+             default:
+              console.log(this.scrollAttach);
+              ne.scrollLeft = this.clampScrollValue(this.scrollAttach);
+          }
+        }
+        this.bufferParam = this.activeSection().affectedParameter;
         return this.stopEvent(event);
     }
 
@@ -643,21 +667,51 @@ export class AppearanceControlsComponent implements OnDestroy {
         return this.stopEvent(event);
     }
 
-    scrollOptionsLeft(event) {
-        const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+    scrollOptionsLeft(event, parameter) {
 
-        ne.scrollLeft = this.clampScrollValue(ne.scrollLeft - (ne.clientWidth - 64));
+      const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+      switch (parameter)
+      {
+         case 'texture':
+          ne.scrollLeft = this.clampScrollValue(this.scrollTexture - (ne.clientWidth - 64));
+          this.scrollTexture = this.clampScrollValue(this.scrollTexture - (ne.clientWidth - 64));
+          console.log(this.scrollTexture)
+             break;
+         case 'color':
+          ne.scrollLeft = this.clampScrollValue(this.scrollColor - (ne.clientWidth - 64));
+          this.scrollColor = this.clampScrollValue(this.scrollColor - (ne.clientWidth - 64));
+          console.log(this.scrollColor)
+             break;
+         default:
+          ne.scrollLeft = this.clampScrollValue(this.scrollAttach - (ne.clientWidth - 64));
+          this.scrollAttach = this.clampScrollValue(this.scrollAttach - (ne.clientWidth - 64));
+          console.log(this.scrollAttach);
+      }
 
-
-        return this.stopEvent(event);
+      return this.stopEvent(event);
     }
 
-    scrollOptionsRight(event) {
-        const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+    scrollOptionsRight(event, parameter) {
+         const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+      switch (parameter)
+      {
+         case 'texture':
+          ne.scrollLeft = this.clampScrollValue(this.scrollTexture + (ne.clientWidth - 64));
+          this.scrollTexture = this.clampScrollValue(this.scrollTexture + (ne.clientWidth - 64));
+          console.log(this.scrollTexture)
+             break;
+         case 'color':
+          ne.scrollLeft = this.clampScrollValue(this.scrollColor + (ne.clientWidth - 64));
+          this.scrollColor = this.clampScrollValue(this.scrollColor + (ne.clientWidth - 64));
+          console.log(this.scrollColor)
+             break;
+         default:
+          ne.scrollLeft = this.clampScrollValue(this.scrollAttach + (ne.clientWidth - 64));
+          this.scrollAttach = this.clampScrollValue(this.scrollAttach + (ne.clientWidth - 64));
+          console.log(this.scrollAttach)
+      }
 
-        ne.scrollLeft = this.clampScrollValue(ne.scrollLeft + (ne.clientWidth - 64));
-
-        return this.stopEvent(event);
+      return this.stopEvent(event);
     }
 
     selectedOption(optionGroup: AppearanceOptionGroup): AppearanceOption {

@@ -13,5 +13,4 @@ export class MarketwallData {
     likeMembers: string[];
     favouritecount: number;
     favouriteMembers: string[];
-
 }

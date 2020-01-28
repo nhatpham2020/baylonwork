@@ -181,6 +181,7 @@ input[type=text], select, textarea {
 	float: left;
 	margin-right: 10%;
 }
+
 .progrss_img {
 	position:  relative !important ;
 	max-width: 20%;

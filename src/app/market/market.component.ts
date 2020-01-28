@@ -85,7 +85,7 @@ export class MarketComponent implements OnInit {
       this.profileService.updateProfile(this.profile.key, this.uid, profileData);
     });
 
-   
+
   }
   getCustomersList() {
     this.customerService.getCustomersList().snapshotChanges().pipe(
@@ -130,13 +130,15 @@ export class MarketComponent implements OnInit {
   }
 
   Delete(key: string) {
-    this.uploadService.deleteFileDatabase(key, this.uid);
+    this.uploadService.deleteFileDatabase(key);
   }
 
   Edit(event: MouseEvent, file: any) {
     this.tempfile = file;
-    console.log(file);
-    this.gundataService.changeMessage(file);
+    var tempFile = file;
+    tempFile.wall = 'marketwall';
+    console.log(tempFile);
+    this.gundataService.changeMessage(tempFile);
     this.modalRef.hide();
     return this.stopEvent(event);
   }

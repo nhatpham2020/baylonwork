@@ -140,7 +140,20 @@
 	margin-bottom: 0;
 	font-weight: 400;
 }
+.card img,
+.rotating {
+	transform: rotate(0deg);
+	transition: transform 1.5s linear;
+}
 
+.card:hover img,
+.rotating:hover {
+	transform: rotate(360deg);
+	transition: transform 20s linear;
+}
+.card-body img {
+ border-radius: 50% !important;
+}
 .recipe-itmes .card-date i { margin-right: 6px; }
 
 .play-video i {

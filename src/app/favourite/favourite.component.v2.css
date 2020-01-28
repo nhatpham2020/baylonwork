@@ -402,3 +402,17 @@ ol.list-preparation li:not(:first-child) { padding-top: 18px; }
     height: 250px;
   }
 }
+.card img,
+.rotating {
+	transform: rotate(0deg);
+	transition: transform 1.5s linear;
+}
+
+.card:hover img,
+.rotating:hover {
+	transform: rotate(360deg);
+	transition: transform 20s linear;
+}
+.card-body img {
+ border-radius: 50% !important;
+}

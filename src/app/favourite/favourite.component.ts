@@ -95,13 +95,15 @@ export class FavouriteComponent implements OnInit {
   }
 
   Delete(key: string) {
-    this.uploadService.deleteFileDatabase(key, this.uid);
+    this.uploadService.deleteFileDatabase(key);
   }
 
   Edit(event: MouseEvent, file: any) {
     this.tempfile = file;
-    console.log(file);
-    this.gundataService.changeMessage(file);
+    var tempFile = file;
+    tempFile.wall = 'favouritewall'
+    console.log(tempFile);
+    this.gundataService.changeMessage(tempFile);
     this.modalRef.hide();
     return this.stopEvent(event);
   }

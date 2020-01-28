@@ -40,7 +40,7 @@
                 </a>
 
         </div>
-        <div class="mt-2 mb-2 col-auto d-none d-lg-block undo-container" *ngIf="activeSection().globalReset" style="padding-right:0px">
+        <div class="mt-2 mb-2 col-auto d-none d-lg-block undo-container" *ngIf="activeSection().globalReset && hideWeaponChoices" style="padding-right:0px">
           <a class="undo-option" href="#" title="undo"
           (click)="resetPressed($event)"
           [class.disabled]="undoManagerIndex() === 0">
@@ -70,7 +70,7 @@
                 <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
             </a>
         </div>
-        <div class="col-auto d-lg-none undo-container" *ngIf="activeSection().globalReset" id="smallundo">
+        <div class="col-auto d-lg-none undo-container" *ngIf="activeSection().globalReset && hideWeaponChoices" id="smallundo">
             <a class="undo-mobile" href="#" title="undo"
             (click)="resetPressed($event)"
             [class.disabled]="undoManagerIndex() === 0">
@@ -228,12 +228,12 @@
             </a>
 
             <a class="m-auto" href="#"
-               (click)="scrollOptionsLeft($event)"
+               (click)="scrollOptionsLeft($event, activeSection().affectedParameter)"
                [class.disabled]="optionsContainer.scrollLeft === 0">
                 <i class="material-icons md-inherit">arrow_left</i>
             </a>
             <a class="m-auto" href="#"
-               (click)="scrollOptionsRight($event)"
+               (click)="scrollOptionsRight($event, activeSection().affectedParameter)"
                [class.disabled]="(optionsContainer.scrollLeft + optionsContainer.clientWidth) >= optionsContainer.scrollWidth">
                 <i class="material-icons md-inherit">arrow_right</i>
             </a>
