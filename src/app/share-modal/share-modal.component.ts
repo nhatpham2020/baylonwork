@@ -9,7 +9,7 @@ import config from './config';
 
 import {TarExport} from '../utils/TarExport';
 
-import {socket, socketStartListening} from '../utils/Socket';
+import { socket, socketStartListening } from '../utils/Socket';
 // import {RawExportPreview} from '../utils/RawExportPreview';
 import {FileUploadProgressCallback, FileUploadResponse, IExportPreview, VideoConverterOptions} from '../utils/ExportCommon';
 import {BaseExportPreview} from '../utils/BaseExportPreview';
@@ -159,6 +159,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     close() {
       this.undoPreviewMode();
+      socket.close();
       this.modalRef.hide();
 
     }
