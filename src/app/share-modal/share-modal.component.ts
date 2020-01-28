@@ -257,6 +257,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
           gifPromise.catch((e) => {
               this.error = 'Failed to upload file. Server not responding.';
           });
+
           const response = await gifPromise;
           if (!response.error) {
               this.setShareElements(response);
