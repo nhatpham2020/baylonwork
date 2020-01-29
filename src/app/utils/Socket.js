@@ -22,8 +22,8 @@ export function socketStartListening() {
         console.warn("socket.io server not responding")
         return;
     }
-
     //  const socket = io(config.baseURL);
+
     socket = io.connect(config.baseURL);
     socket.on('this', function (data) {
         console.log("this", data);
@@ -34,11 +34,5 @@ export function socketStartListening() {
         console.log("connect", data);
 
     });
-
-    socket.on('connect', function (data) {
-        console.log("connect", data);
-
-    });
-
 }
 

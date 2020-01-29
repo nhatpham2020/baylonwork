@@ -61,7 +61,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     private interval1;
 
     constructor(private modalRef: BsModalRef, private viewerService: ViewerService, private zone: NgZone) {
-
+      socketStartListening();
         window['that'] = this;
 
         socket.on('convert-progress', (data) => {
