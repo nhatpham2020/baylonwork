@@ -14,9 +14,6 @@ import { socket, socketStartListening } from '../utils/Socket';
 import {FileUploadProgressCallback, FileUploadResponse, IExportPreview, VideoConverterOptions} from '../utils/ExportCommon';
 import {BaseExportPreview} from '../utils/BaseExportPreview';
 
-socketStartListening();
-
-
 @Component({
     selector: 'app-share-modal',
     templateUrl: './share-modal.component.html',
