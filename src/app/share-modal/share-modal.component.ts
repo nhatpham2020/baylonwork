@@ -64,11 +64,8 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
         window['that'] = this;
 
-
         socket.on('convert-progress', (data) => {
             this.zone.run(() => {
-
-
                 this.setProgress(data.percentage, 100, 'Converting ' + data.format);
 
                 if (data.percentage >= 99) {
@@ -159,9 +156,9 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     close() {
       this.undoPreviewMode();
-      socket.close();
       this.modalRef.hide();
-
+      socket.io.close();
+      console.log(socket);
     }
 
     undoPreviewMode() {
