@@ -158,7 +158,6 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
   close() {
 
       this.undoPreviewMode();
-      this.getVideoURL(null);
       this.modalRef.hide();
 
   }

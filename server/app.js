@@ -1,5 +1,4 @@
 const express = require("express");
-const fs = require("fs");
 const stripe = require("stripe")("sk_test_GLcz4Yc3FRghFx6M9GnmpU0k00ne6LUnGh");
 const app = express();
 const bodyParser = require("body-parser");
@@ -14,6 +13,8 @@ const firebase = require("firebase-admin");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 const serviceAccount = require("./serviceAccountKey.json");
+let fs = require('fs-extra');
+
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -22,7 +23,7 @@ firebase.initializeApp({
 
 const db = firebase.database();
 const ref = db.ref("membership");
-ref.once("value", function(snapshot) {
+ref.once("value", function (snapshot) {
   console.log(snapshot.val());
 });
 
@@ -42,14 +43,14 @@ app.io = io;
 /**
  * Some basic io feedback.
  */
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   io.emit("this", { will: "be received by everyone" });
 
   /*  socket.on('private message', function (from, msg) {
           console.log('I received a private message by ', from, ' saying ', msg);
       });*/
 
-  socket.on("disconnect", function() {
+  socket.on("disconnect", function () {
     io.emit("user disconnected");
   });
 });
@@ -83,10 +84,10 @@ app.enable("trust proxy"); // only if you're behind a reverse proxy (Heroku, Blu
 app.use(basicCORSHeaders);
 var storage = multer.diskStorage({
   //multers disk storage settings
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, "../dist/gun-customizer/assets/img/patterns/pattern");
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     var datetimestamp = Date.now();
     // cb(null, datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
     cb(null, file.originalname);
@@ -94,10 +95,40 @@ var storage = multer.diskStorage({
 });
 var storage2 = multer.diskStorage({
   //multers disk storage settings
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, "../src/assets/img/patterns/pattern");
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
+    var datetimestamp = Date.now();
+    // cb(null, datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
+    cb(null, file.originalname);
+  }
+});
+
+var storage3 = multer.diskStorage({
+  //multers disk storage settings
+  destination: function (req, file, cb) {
+      let uid = req.params.uid;
+      let path = `../dist/gun-customizer/assets/img/patterns/pattern/${uid}`;
+      fs.mkdirsSync(path);
+    cb(null, path);
+  },
+  filename: function (req, file, cb) {
+    var datetimestamp = Date.now();
+    // cb(null, datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
+    cb(null, file.originalname);
+  }
+});
+
+var storage4 = multer.diskStorage({
+  //multers disk storage settings
+  destination: function (req, file, cb) {
+      let uid = req.params.uid;
+      let path = `../src/assets/img/patterns/pattern/${uid}`;
+      fs.mkdirsSync(path);
+    cb(null, path);
+  },
+  filename: function (req, file, cb) {
     var datetimestamp = Date.now();
     // cb(null, datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
     cb(null, file.originalname);
@@ -112,17 +143,45 @@ var upload2 = multer({
   //multer settings
   storage: storage2
 }).single("uploads");
+var upload3 = multer({
+  //multer settings
+  storage: storage3
+}).single("uploads");
+var upload4 = multer({
+  //multer settings
+  storage: storage4
+}).single("uploads");
 /** API path that will upload the files */
-app.post("/upload", function(req, res) {
+app.post("/upload", function (req, res) {
   console.log(req);
-  upload(req, res, function(err) {
+  upload(req, res, function (err) {
     if (err) {
       res.json({ error_code: 1, err_desc: err });
       return;
     }
     res.json({ error_code: 0, err_desc: null });
   });
-  upload2(req, res, function(err) {
+  upload2(req, res, function (err) {
+    if (err) {
+      //res.json({error_code:1,err_desc:err});
+      return;
+    }
+    //res.json({error_code:0,err_desc:null});
+  });
+});
+
+app.post("/uploadMine/:uid", function (req, res) {
+  const uid = req.params.uid;
+  upload3(req, res, function (err) {
+    if (err) {
+      console.log('errror');
+      res.json({ error_code: 1, err_desc: err });
+      return;
+    }
+    console.log('success');
+    res.json({ error_code: 0, err_desc: null });
+  });
+  upload4(req, res, function (err) {
     if (err) {
       //res.json({error_code:1,err_desc:err});
       return;
@@ -150,7 +209,7 @@ app.post("/payme", (req, res) => {
             }
           ]
         },
-        function(err, subscription) {
+        function (err, subscription) {
           const { id, plan } = subscription;
           if (err) {
             throw err;
@@ -187,7 +246,7 @@ app.post("/changeplan", async (req, res) => {
         }
       ]
     },
-    function(err, subscription) {
+    function (err, subscription) {
       const { id, plan } = subscription;
       console.log(id + plan);
       if (err) {
@@ -231,7 +290,7 @@ app.post("/sendMail", (req, res) => {
             </style>
             <head>
             <body>
-            <p>Hi, Bo .</p> 
+            <p>Hi, Bo .</p>
             <p>User ${username}(${useremail}) wrote a message to you.</p>
             <table>
             <tr>
@@ -251,7 +310,7 @@ app.post("/sendMail", (req, res) => {
             </body>
             </html>` // plain text body
   };
-  transporter.sendMail(mailOptions, function(err, info) {
+  transporter.sendMail(mailOptions, function (err, info) {
     if (err) res.send(err.toString());
     else res.send("Sended");
   });

@@ -45,17 +45,17 @@
           (click)="resetPressed($event)"
           [class.disabled]="undoManagerIndex() === 0">
           <!--  <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
-          Undo
+          UNDO
          </a>
          <a class= "undo-option" href="#" title="redo"
             (click)="redoPressed($event)"
             [class.disabled]="undoManagerIndex() == undoManagerLimit()">
              <!-- <i class="material-icons md-inherit custom-md-size">arrow_right</i> -->
-             Redo
+             REDO
          </a>
          <a class=" undo-option" href="#" title="reset"
             (click)="viewerReset($event)">
-               Reset
+               RESET
                  <!-- <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
                       style="background-image: url('assets/img/nav-icons/spin.svg');">
                  </div>
@@ -91,13 +91,13 @@
       (click)="resetPressed($event)"
       [class.disabled]="undoManagerIndex() === 0">
        <!-- <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
-       Undo
+       UNDO
    </a>
    <a class="undo-mobile" href="#" title="redo"
       (click)="redoPressed($event)"
       [class.disabled]="undoManagerIndex() == undoManagerLimit()">
       <!--  <i class="material-icons md-inherit custom-md-size">arrow_right</i> -->
-      Redo
+      REDO
    </a>
    <a class="undo-mobile" href="#" title="reset"
       (click)="viewerReset($event)">
@@ -105,7 +105,7 @@
                 style="background-image: url('assets/img/nav-icons/spin.svg');">
            </div>
            <span class="undo-button">{{ undoManagerIndex() }}</span> -->
-           Reset
+           RESET
    </a>
   </div>
 <!-- if color select then have tabs -->
@@ -169,7 +169,7 @@
                            *ngFor="let plusbutton of plusbuttons;"
                            (click)="fileToUpload2.click()"
                     >
-                    <input #fileToUpload2 type="file"  accept="image/jpeg, .jpeg, image/png, .png, image/pjpeg, .jpg" name="fileToUpload2" (change)="uploadTexture($event)"style="display:none;">
+                    <input #fileToUpload2 type="file"  accept="image/jpeg, .jpeg, image/png, .png, image/pjpeg, .jpg" name="fileToUpload2" (change)="uploadMyTexture($event)"style="display:none;">
                             <div class="display undefined" style="border-radius: 50%; background-Image:url(assets/img//nav-icons/plusbutton.png)"
                             ></div>
                     </a>

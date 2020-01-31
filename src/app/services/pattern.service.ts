@@ -19,7 +19,7 @@ import { AppearanceOption } from '../customizer-data-types';
 export class PatternService {
 
   private basePath = '/pattern';
-  
+
   public pattern = new Pattern;
   url = 'http://localhost:4000/upload';
   constructor(private db: AngularFireDatabase, private storage: AngularFireStorage,
@@ -27,8 +27,8 @@ export class PatternService {
     private http: HttpClient ) {
 
      }
- 
-  
+
+
   updateFileToStorage(fileUpload: UploadFile, pattern: Pattern): Observable<number> {
     const fileid = Math.random().toString(20).substring(2);
     const filePath = `${this.basePath}/` + fileid;
@@ -47,14 +47,12 @@ export class PatternService {
     return uploadTask.percentageChanges();
   }
 
-  pushFileToStorage(fileUpload: UploadFile, isEdit?:AppearanceOption): Observable<number> {
+  pushFileToStorage(fileUpload: UploadFile,index: number, isEdit?:AppearanceOption): Observable<number> {
     const fileid = Math.random().toString(20).substring(2);
     const filePath = `${this.basePath}/` + fileid;
     const storageRef = this.storage.ref(filePath);
     const uploadTask = this.storage.upload(filePath, fileUpload.file);
     const pattern = new Pattern;
-    const  patterns: AppearanceOption[]  =  JSON.parse(localStorage.getItem('patternsData'));
-    const { index } = patterns.pop();
     uploadTask.snapshotChanges().pipe(
       finalize(() => {
         storageRef.getDownloadURL().subscribe(downloadURL => {
@@ -63,7 +61,7 @@ export class PatternService {
         pattern.index = index + 1 ;
         pattern.visibility = true;
         pattern.url = downloadURL;
-        
+
         if(!isEdit) {
           this.savePatternData(pattern);
         } else {
@@ -71,7 +69,42 @@ export class PatternService {
           pattern.index = isEdit.index;
           pattern.url = downloadURL;
           this.updatePattern(isEdit.key, pattern);
-          
+
+        }
+        window.location.reload();
+        });
+      })
+    ).subscribe();
+
+    return uploadTask.percentageChanges();
+  }
+
+  pushMyFileToStorage(fileUpload: UploadFile, index:number, uid: string, isEdit?:AppearanceOption): Observable<number> {
+    const fileid = Math.random().toString(20).substring(2);
+    console.log('Updating my texture');
+    this.basePath = '/userpatterns';
+    const filePath = `${this.basePath}/${uid}/` + fileid;
+    const storageRef = this.storage.ref(filePath);
+    const uploadTask = this.storage.upload(filePath, fileUpload.file);
+    const pattern = new Pattern;
+    uploadTask.snapshotChanges().pipe(
+      finalize(() => {
+        storageRef.getDownloadURL().subscribe(downloadURL => {
+          console.log('File available at', downloadURL);
+        pattern.name = fileid;
+        pattern.index = index + 1;
+        pattern.visibility = true;
+        pattern.url = downloadURL;
+        console.log(pattern);
+
+        if(!isEdit) {
+          this.saveMyPatternData(pattern, uid);
+        } else {
+          pattern.name = fileid;
+          pattern.index = isEdit.index;
+          pattern.url = downloadURL;
+          this.updateMyPattern(isEdit.key, pattern, uid);
+
         }
         window.location.reload();
         });
@@ -87,7 +120,7 @@ export class PatternService {
   }, (error) => {
       console.error(error);
   });
-    
+
   }
   public makeFileRequest(url: string, params: Array<string>, file: File) {
     return new Promise((resolve, reject) => {
@@ -111,7 +144,14 @@ export class PatternService {
   savePatternData(profile: Pattern) {
     this.db.list(this.basePath).push(profile);
   }
-
+  saveMyPatternData(profile: Pattern, uid: string) {
+    this.basePath = '/userpatterns';
+    this.db.list(`${this.basePath}/${uid}`).push(profile);
+  }
+  updateMyPattern(key: string,  value: any, uid: string): Promise<void> {
+    this.basePath = '/userpatterns';
+    return this.db.list(`${this.basePath}/${uid}`).update(key, value);
+  }
   getFileUploads(numberItems, uid): AngularFireList<Pattern> {
     return this.db.list(this.basePath , ref =>
       ref.limitToLast(numberItems));
@@ -119,10 +159,14 @@ export class PatternService {
   public getPatternList(): AngularFireList<Pattern> {
     return this.db.list(this.basePath);
   }
+  public getMyPatternList(uid): AngularFireList<Pattern> {
+    this.basePath = '/userpatterns';
+    return this.db.list(`${this.basePath}/${uid}`);
+  }
   public getProfile(uid): AngularFireList<Pattern> {
     return this.db.list(this.basePath);
   }
-  
+
   updatePattern(key: string,  value: any): Promise<void> {
     return this.db.list(this.basePath).update(key, value);
   }

@@ -55,6 +55,7 @@ export class AuthService {
     await this.afAuth.auth.signOut();
      localStorage.removeItem('user');
      localStorage.removeItem('membership');
+     localStorage.removeItem('mypatterns');
      location.reload(false);
   }
 
