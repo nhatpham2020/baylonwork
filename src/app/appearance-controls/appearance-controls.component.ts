@@ -833,7 +833,7 @@ export class AppearanceControlsComponent implements OnDestroy {
   viewerInitialized() {
     this.customizerDataService.weaponsData().subscribe((customizationData) => {
       this.getCustomersList();
-      const membership = localStorage.getItem('membership') || null;
+      const membership = localStorage.getItem('membership') || this.membership;
       this.customizationData = customizationData;
       const temp_textures = this.customizationData.commonSections[1].optionGroups[0].options;
       let textures;
@@ -1112,9 +1112,9 @@ export class AppearanceControlsComponent implements OnDestroy {
         )
       )
       .subscribe(customers => {
-        const uid = this.authService.userdata().uid;
+        const uid = this.authService.userdata().uid || null;
         const membership = customers.filter(customer => customer.key === uid);
-        this.membership = membership[0].planName.toLowerCase();
+        this.membership = membership[0].planName.toLowerCase() || 'goatgunfree';
         localStorage.setItem('membership', this.membership);
         console.log(this.membership);
       });
