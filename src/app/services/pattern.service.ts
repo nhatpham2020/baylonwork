@@ -142,6 +142,7 @@ export class PatternService {
 }
 
   savePatternData(profile: Pattern) {
+    this.basePath = '/pattern';
     this.db.list(this.basePath).push(profile);
   }
   saveMyPatternData(profile: Pattern, uid: string) {
@@ -153,21 +154,26 @@ export class PatternService {
     return this.db.list(`${this.basePath}/${uid}`).update(key, value);
   }
   getFileUploads(numberItems, uid): AngularFireList<Pattern> {
+    this.basePath = '/pattern';
     return this.db.list(this.basePath , ref =>
       ref.limitToLast(numberItems));
   }
   public getPatternList(): AngularFireList<Pattern> {
+    this.basePath = '/pattern';
     return this.db.list(this.basePath);
   }
   public getMyPatternList(uid): AngularFireList<Pattern> {
+
     this.basePath = '/userpatterns';
     return this.db.list(`${this.basePath}/${uid}`);
   }
   public getProfile(uid): AngularFireList<Pattern> {
+    this.basePath = '/pattern';
     return this.db.list(this.basePath);
   }
 
   updatePattern(key: string,  value: any): Promise<void> {
+    this.basePath = '/pattern';
     return this.db.list(this.basePath).update(key, value);
   }
 
@@ -180,6 +186,7 @@ export class PatternService {
   }
 
   public deleteFileDatabase(key: string) {
+    this.basePath = 'pattern';
     return this.db.list(this.basePath ).remove(key).then(() => {
       window.alert('Image Removed.\n Will be automatically reloaded to apply changes.');
       window.location.reload();

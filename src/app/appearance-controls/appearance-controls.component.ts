@@ -212,6 +212,7 @@ export class AppearanceControlsComponent implements OnDestroy {
     const currentPattern = this.patterns.filter(pattern => pattern.index === lastClickedOption.index).pop();
     currentPattern.visibility = visible;
     this.currentPatternVisible = currentPattern.visibility;
+    console.log(currentPattern.visibility);
     this.patternService.updatePattern(currentPattern.key, currentPattern);
 
   }
@@ -856,26 +857,30 @@ export class AppearanceControlsComponent implements OnDestroy {
         commontextures = JSON.parse(localStorage.getItem('deployedPatternData')).length;
         console.log(commontextures);console.log('number of commontexture');
       }
-
-      switch (membership) {
-        case 'goatgunbasic':
-          textures = temp_textures.slice(- 5- commontextures);
-          this.plusbuttons = new Array(5 + commontextures - textures.length);
-          this.lockbuttons = new Array(25 - 5);
-          break;
-        case 'goatgunpro':
-          textures = temp_textures.slice(- 25 -commontextures);
-          this.plusbuttons = new Array(25 + commontextures - textures.length);
-          this.lockbuttons = new Array(0);
-          break;
-        default:
-          textures = temp_textures.slice(-1 - commontextures);
-          this.plusbuttons = new Array(1 + commontextures - textures.length);
-          this.lockbuttons = new Array(24);
-      }
       if (this.isAdmin === true) {
         textures = temp_textures;
+        this.plusbuttons = 0;
+        this.lockbuttons = 0;
+      } else {
+        switch (membership) {
+          case 'goatgunbasic':
+            textures = temp_textures.slice(- 5- commontextures);
+            this.plusbuttons = new Array(5 + commontextures - textures.length);
+            this.lockbuttons = new Array(25 - 5);
+            break;
+          case 'goatgunpro':
+            textures = temp_textures.slice(- 25 -commontextures);
+            this.plusbuttons = new Array(25 + commontextures - textures.length);
+            this.lockbuttons = new Array(0);
+            break;
+          default:
+            textures = temp_textures.slice(-1 - commontextures);
+            this.plusbuttons = new Array(1 + commontextures - textures.length);
+            this.lockbuttons = new Array(24);
+        }
       }
+
+
       console.log(textures.length)
       this.customizationData.commonSections[1].optionGroups[0].options = textures;
       customizationData.weapons.forEach((weapon, wIdx) => {
