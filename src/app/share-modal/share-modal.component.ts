@@ -77,7 +77,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
                     this.enableSharingButtons = true;
                     this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
                     this.shareLink.nativeElement.disabled = false;
-                    this.closebutton.nativeElement.disabled = false;
+                    this.closebutton.nativeElement.hidden = false;
                 }
 
 
@@ -224,7 +224,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         } catch (e) {
             console.warn(e);
             this.error = e.message;
-            this.closebutton.nativeElement.disabled = false;
+            this.closebutton.nativeElement.hidden = false;
             return;
         }
 
@@ -248,7 +248,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
           gifPromise.catch((e) => {
               this.error = 'Failed to upload file. Server not responding.';
-              this.closebutton.nativeElement.disabled = false;
+              this.closebutton.nativeElement.hidden = false;
           });
 
           const response = await gifPromise;
@@ -258,7 +258,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
               this.uploaded = true;
           } else {
               this.error = response.error;
-              this.closebutton.nativeElement.disabled = false;
+              this.closebutton.nativeElement.hidden = false;
           }
         }
 
