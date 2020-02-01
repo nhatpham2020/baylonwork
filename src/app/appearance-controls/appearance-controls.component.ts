@@ -88,6 +88,10 @@ export class AppearanceControlsComponent implements OnDestroy {
   disalbeRightScroll: boolean = false;
   bufferParam: string = 'texture';
   public openModal: BsModalRef = null;
+  config = {
+    backdrop: false,
+    ignoreBackdropClick: true
+  };
   constructor(private customizerDataService: CustomizerDataService, private viewerService: ViewerService,
     private gundata: GuneditService, private gunVisibleService: GunvisibleService,
     private patternService: PatternService, private http: HttpClient, private modalService: BsModalService,
@@ -126,7 +130,7 @@ export class AppearanceControlsComponent implements OnDestroy {
     return UndoMgr.getInstance().getIndex() + 1;
   }
   openShareModal(event: MouseEvent) {
-    this.openModal = this.modalService.show(ShareModalComponent);
+    this.openModal = this.modalService.show(ShareModalComponent, this.config);
     return this.stopEvent(event);
   }
   startSharing(event?: MouseEvent) {
@@ -853,9 +857,9 @@ export class AppearanceControlsComponent implements OnDestroy {
       // this.loadWeapon(customizationData.weapons[0], true);
       this.chooseWeapon(null, customizationData.weapons[0]);
       let commontextures = 0;
-      if(!!localStorage.getItem('deployedPatternData')) {
+      if (!!localStorage.getItem('deployedPatternData')) {
         commontextures = JSON.parse(localStorage.getItem('deployedPatternData')).length;
-        console.log(commontextures);console.log('number of commontexture');
+        console.log(commontextures); console.log('number of commontexture');
       }
       if (this.isAdmin === true) {
         textures = temp_textures;
@@ -864,12 +868,12 @@ export class AppearanceControlsComponent implements OnDestroy {
       } else {
         switch (membership) {
           case 'goatgunbasic':
-            textures = temp_textures.slice(- 5- commontextures);
+            textures = temp_textures.slice(- 5 - commontextures);
             this.plusbuttons = new Array(5 + commontextures - textures.length);
             this.lockbuttons = new Array(25 - 5);
             break;
           case 'goatgunpro':
-            textures = temp_textures.slice(- 25 -commontextures);
+            textures = temp_textures.slice(- 25 - commontextures);
             this.plusbuttons = new Array(25 + commontextures - textures.length);
             this.lockbuttons = new Array(0);
             break;

@@ -23,6 +23,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild('canvasContainer') canvasContainer: ElementRef<HTMLDivElement>;
     @ViewChild('shareLink') shareLink: ElementRef<HTMLInputElement>;
+    @ViewChild('closebutton') closebutton: ElementRef<HTMLInputElement>;
     public scene: BABYLON.Scene;
     debug = config.debug;
     progress = false;
@@ -56,7 +57,6 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     private exporter: any;
     private previousCanvasContainer: HTMLElement | null;
     private interval1;
-
     constructor(private modalRef: BsModalRef, private viewerService: ViewerService, private zone: NgZone) {
       socketStartListening();
         window['that'] = this;
@@ -77,7 +77,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
                     this.enableSharingButtons = true;
                     this.shareLink.nativeElement.value = this.getVideoURL(this.uploadResponse);
                     this.shareLink.nativeElement.disabled = false;
-
+                    this.closebutton.nativeElement.disabled = false;
                 }
 
 
@@ -89,8 +89,6 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-
-
         this.displayCanvas = this.viewerService.viewer.renderCanvas.nativeElement;
 
         this.scene = this.viewerService.viewer.scene;
@@ -154,8 +152,6 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
     close() {
       this.undoPreviewMode();
       this.modalRef.hide();
-      socket.io.close();
-      console.log(socket);
     }
 
     undoPreviewMode() {
@@ -228,6 +224,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
         } catch (e) {
             console.warn(e);
             this.error = e.message;
+            this.closebutton.nativeElement.disabled = false;
             return;
         }
 
@@ -251,6 +248,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
 
           gifPromise.catch((e) => {
               this.error = 'Failed to upload file. Server not responding.';
+              this.closebutton.nativeElement.disabled = false;
           });
 
           const response = await gifPromise;
@@ -260,6 +258,7 @@ export class ShareModalComponent implements AfterViewInit, OnDestroy {
               this.uploaded = true;
           } else {
               this.error = response.error;
+              this.closebutton.nativeElement.disabled = false;
           }
         }
 

@@ -2,11 +2,12 @@
   <h4 class="modal-title ng-binding text-center">
     SHARE YOUR BUILD
     <button
-      (click)="close()"
+      (click)="close($event)"
       type="button"
       class="close pull-right"
       style="font-weight: 900;font-size: 1.5em;"
-      aria-label="Close"
+      #closebutton
+      aria-label="Close" disabled
     >
       <span aria-hidden="true">&times;</span>
     </button>
