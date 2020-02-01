@@ -856,10 +856,16 @@ export class AppearanceControlsComponent implements OnDestroy {
 
       // this.loadWeapon(customizationData.weapons[0], true);
       this.chooseWeapon(null, customizationData.weapons[0]);
-      let commontextures = 0;
+      let commontextures: any;
+      let commontexturelength = 0
       if (!!localStorage.getItem('deployedPatternData')) {
-        commontextures = JSON.parse(localStorage.getItem('deployedPatternData')).length;
-        console.log(commontextures); console.log('number of commontexture');
+        commontextures = JSON.parse(localStorage.getItem('deployedPatternData'));
+        commontextures.map((pattern) => {
+          if (pattern.visibility == true) {
+            commontexturelength++;
+          }
+
+        });
       }
       if (this.isAdmin === true) {
         textures = temp_textures;
@@ -868,18 +874,18 @@ export class AppearanceControlsComponent implements OnDestroy {
       } else {
         switch (membership) {
           case 'goatgunbasic':
-            textures = temp_textures.slice(- 5 - commontextures);
-            this.plusbuttons = new Array(5 + commontextures - textures.length);
+            textures = temp_textures.slice(- 5 - commontexturelength);
+            this.plusbuttons = new Array(5 + commontexturelength - textures.length);
             this.lockbuttons = new Array(25 - 5);
             break;
           case 'goatgunpro':
-            textures = temp_textures.slice(- 25 - commontextures);
-            this.plusbuttons = new Array(25 + commontextures - textures.length);
+            textures = temp_textures.slice(- 25 - commontexturelength);
+            this.plusbuttons = new Array(25 + commontexturelength - textures.length);
             this.lockbuttons = new Array(0);
             break;
           default:
-            textures = temp_textures.slice(-1 - commontextures);
-            this.plusbuttons = new Array(1 + commontextures - textures.length);
+            textures = temp_textures.slice(-1 - commontexturelength);
+            this.plusbuttons = new Array(1 + commontexturelength - textures.length);
             this.lockbuttons = new Array(24);
         }
       }
