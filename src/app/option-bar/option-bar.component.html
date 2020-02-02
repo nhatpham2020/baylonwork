@@ -1,7 +1,6 @@
 <!-- For large device  -->
 <div class="main-box d-none d-lg-block">
 
-  <div class="row display_flex">
 
     <div id="Profile" class="tabcontent1">
       <div class="profile-section">
@@ -19,18 +18,14 @@
           <li><a href="#" (click) = "Deletegun($event, hero.key, hero.uid)"style="padding-top:0.3rem;"><img  src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
         </div>
       </div>
-    </div>
-
   </div>
-
 </div>
 
 <!-- For small device -->
 <div class="main-box d-lg-none">
 
-  <div class="row display_flex">
 
-    <div id="Profile" class="tabcontent1">
+    <div id="Profile" id="tabcontent1">
       <div class="profile-section">
         <div class="profile-left-small" style="margin-top: 10px;">
           <div class="profile-img"> <img src={{hero.avatarURL}} style="border-radius: 50%">
@@ -49,6 +44,5 @@
       </div>
     </div>
 
-  </div>
 
 </div>

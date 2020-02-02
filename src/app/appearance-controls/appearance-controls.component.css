@@ -176,7 +176,9 @@
 }
 
 .undo-option {
-  margin: 0 3em;
+  position: absolute;
+  top: -2em;
+  left: 2.8em
 }
 .undo-item-lg {
   height: 4em;
@@ -365,11 +367,10 @@ nav {
   }
 }
 
-@media screen and (max-width: 1200px) {
-  .undo-container {
+@media screen and (max-width: 720px) {
+  .undo-option {
     position: absolute;
-    top: -1.5em;
-    right: 5.5em;
+    left: 0.6em;
   }
 }
 

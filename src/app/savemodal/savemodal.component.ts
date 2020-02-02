@@ -81,29 +81,6 @@ export class SavemodalComponent implements AfterViewInit, OnDestroy {
       this.uid = this.authService.userdata().uid;
       window['that'] = this;
 
-
-      socket.on('convert-progress', (data) => {
-          this.zone.run(() => {
-
-
-              this.setProgress(data.percentage, 100, 'Converting ' + data.format);
-
-              if (data.percentage >= 99) {
-              this.created = true;
-              }
-              console.log(this.progress, this.progressType, this.progressPercentage);
-
-              // TODO @7frank work flow...
-              if (!this.progress && this.progressType === 'Converting jpg') {
-
-                  // disable the overlay as soon as sockerio returns that the jpg was converted
-                  this.enableSharingButtons = true;
-              }
-          });
-
-      });
-
-
   }
 
   // TODO @7frank add "format" parameter

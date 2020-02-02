@@ -155,10 +155,17 @@ export class NavBarComponent implements OnInit {
       console.log('isClosed')
       document.getElementById('sideNav').classList.add('side-header-open');
       document.getElementById('primary-menu').style.display = 'block';
+      if(document.getElementById('tabcontent1')) {
+        document.getElementById('tabcontent1').style.zIndex = '-5';
+      }
     } else {
       console.log('isopened')
       document.getElementById('sideNav').classList.remove('side-header-open');
       document.getElementById('primary-menu').style.display = 'none';
+      if(document.getElementById('tabcontent1')) {
+        document.getElementById('tabcontent1').style.zIndex = '0';
+      }
+
     }
     this.isNavOpen = !this.isNavOpen;
     return this.stopEvent(event);

@@ -12,11 +12,11 @@
       <div class="profile-right">
       </div>
       <div class="profile-end sidebar ml-auto flex-row">
-        <li>{{hero.sharecount}}&nbsp;<a href="#" (click)="increase($event,hero, 0)"><i class="fa fa-share-alt" aria-hidden="true"></i></a></li>
-        <li>{{hero.favouritecount}}&nbsp;<a href="#" (click)="increase($event,hero, 1)"><i class="fa fa-star-o" aria-hidden="true"></i></a></li>
-        <li>{{hero.likecount}}&nbsp;<a href="#" (click)="increase($event,hero, 2)"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
-        <li *ngIf="hero.wall=='favouritewall'"><a href="#" (click) = "deleteFavourite($event, hero)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
-        <li *ngIf="(hero.wall=='marketwall') && (hero.uid == uid)"><a href="#" (click) = "deleteMarket($event, hero)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
+        <li>&nbsp;<a href="#" (click)="increase($event,hero, 0)"><i class="fa fa-share-alt" aria-hidden="true"></i></a>&nbsp;{{hero.sharecount}}</li>
+        <li>&nbsp;<a href="#" (click)="increase($event,hero, 1)"><i class="fa fa-star-o" aria-hidden="true"></i></a>&nbsp;{{hero.favouritecount}}</li>
+        <li>&nbsp;<a href="#" (click)="increase($event,hero, 2)"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a>&nbsp;{{hero.likecount}}</li>
+        <li *ngIf="hero.wall=='favouritewall'">&nbsp;<a href="#" (click) = "deleteFavourite($event, hero)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
+        <li *ngIf="(hero.wall=='marketwall') && (hero.uid == uid)">&nbsp;<a href="#" (click) = "deleteMarket($event, hero)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
       </div>
     </div>
 
@@ -28,7 +28,7 @@
 
 <div class="row display_flex">
 
-  <div id="Profile" class="tabcontent1">
+  <div id="Profile" id="tabcontent1">
     <div class="profile-section">
       <div class="profile-left-small" >
         <div class="profile-img"> <img src={{hero.avatarURL}} style="border-radius: 50%"> </div>
@@ -37,14 +37,14 @@
       <div class="profile-right-small">
       </div>
       <div class="profile-end sidebar ml-auto flex-row" style="margin-top:1em;">
-        <li>{{hero.sharecount}}&nbsp;<a href="#" (click)="increase($event,hero, 0)"><i class="fa fa-share-alt" aria-hidden="true"></i></a></li>
-        <li>{{hero.favouritecount}}&nbsp;<a href="#" (click)="increase($event,hero, 1)"><i class="fa fa-star-o" aria-hidden="true"></i></a></li>
-        <li>{{hero.likecount}}&nbsp;<a href="#" (click)="increase($event,hero, 2)"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a></li>
-        <li><a href="#" (click) = "Deletegun($event, hero.key, hero.uid)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
+        <li>&nbsp;<a href="#" (click)="increase($event,hero, 0)"><i class="fa fa-share-alt" aria-hidden="true"></i></a>&nbsp;{{hero.sharecount}}</li>
+        <li>&nbsp;<a href="#" (click)="increase($event,hero, 1)"><i class="fa fa-star-o" aria-hidden="true"></i></a>&nbsp;{{hero.favouritecount}}</li>
+        <li>&nbsp;<a href="#" (click)="increase($event,hero, 2)"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a>&nbsp;{{hero.likecount}}</li>
+        <li *ngIf="hero.wall=='favouritewall'">&nbsp;<a href="#" (click) = "deleteFavourite($event, hero)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
+        <li *ngIf="(hero.wall=='marketwall') && (hero.uid == uid)">&nbsp;<a href="#" (click) = "deleteMarket($event, hero)"style="padding-top:0.3rem"><img class="icon-image" src="assets/img/nav-icons/DeleteIcon.png"/></a></li>
       </div>
     </div>
   </div>
-
 </div>
 
 </div>

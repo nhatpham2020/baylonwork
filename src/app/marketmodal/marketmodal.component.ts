@@ -81,28 +81,6 @@ export class MarketmodalComponent implements AfterViewInit, OnDestroy {
       window['that'] = this;
 
 
-      socket.on('convert-progress', (data) => {
-          this.zone.run(() => {
-
-
-              this.setProgress(data.percentage, 100, 'Converting ' + data.format);
-
-              if (data.percentage >= 99) {
-              this.created = true;
-              }
-              console.log(this.progress, this.progressType, this.progressPercentage);
-
-              // TODO @7frank work flow...
-              if (!this.progress && this.progressType === 'Converting jpg') {
-
-                  // disable the overlay as soon as sockerio returns that the jpg was converted
-                  this.enableSharingButtons = true;
-              }
-          });
-
-      });
-
-
   }
 
   // TODO @7frank add "format" parameter
@@ -122,7 +100,7 @@ export class MarketmodalComponent implements AfterViewInit, OnDestroy {
       return config.share.baseURL + '/twitter/video/' + data.id + '.' + data.format;
 
   }
-  
+
 
   shareWithFacebook() {
       if (!this.uploadResponse) {
@@ -208,9 +186,9 @@ export class MarketmodalComponent implements AfterViewInit, OnDestroy {
           console.log(error);
         }
       );
-      
+
      // const result = await this.exporter.startRecording(this.displayCanvas, this.scene, this.preview, progressCallback);
-      
+
 
       const stop = window.performance.now();
 
@@ -219,7 +197,7 @@ export class MarketmodalComponent implements AfterViewInit, OnDestroy {
   }
   // `location` is the Firebase Storage reference;
 // `type` is the image type (in your case 'image/png')
-   
+
 
   async initVideoExport(overrideConfig?: VideoConverterOptions, uploadImmediate: boolean = true) {
 
@@ -304,10 +282,10 @@ export class MarketmodalComponent implements AfterViewInit, OnDestroy {
       this.previousCanvasContainer = this.displayCanvas.parentElement;
       this.canvasContainer.nativeElement.appendChild(this.displayCanvas);
       console.log(  this.displayCanvas);
-      
+
       this.viewerService.viewer.resizeOnRender = false;
       this.scene.getEngine().setSize(512, 512);
-     
+
       this.preparePreview(this.availablePreviews.special);
      /*  domtoimage.toPng(this.displayCanvas)
           .then(function (dataUrl) {

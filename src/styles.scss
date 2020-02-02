@@ -8,7 +8,6 @@ html, body {
   background-color: #ffffff;
   color: #222222;
   overflow: hidden;
-  
 }
 
 app-root {
@@ -17,9 +16,9 @@ app-root {
 @media screen and (max-width: 420px) {
   app-root {
     height: 87vh;
-  }  
+  }
 
-    
+
   }
 app-babylon-viewer {
   line-height: 0;

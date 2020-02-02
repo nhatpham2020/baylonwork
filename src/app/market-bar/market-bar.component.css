@@ -1,8 +1,8 @@
 
 .main-box {
-    border-radius: 5px;
+  border-radius: 5px;
 	height: auto;
-	width: 100%;
+	width: 10%;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -230,10 +230,10 @@ input[type=text], select, textarea {
 	right: 0;
 	bottom: 2px;
 }
-.tabcontent1 {
+#tabcontent1 {
 	position: relative;
 	float: left;
-	width: 25%;
+  width: 25%;
 }
 
 .tablinks:hover {
@@ -304,7 +304,7 @@ a .fa.fa-times-circle-o {
 
 .profile-end li{
   width: 65px;
-  text-align: right;
+  text-align: left;
 }
 
 .profile-edit {
@@ -402,6 +402,7 @@ li {
     top:50px;
   }
   .profile-end {
+    left:14px;
     top: 100px;
   }
 }

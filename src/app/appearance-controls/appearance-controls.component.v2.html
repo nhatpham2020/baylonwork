@@ -33,41 +33,67 @@
                 <div class="text-center">{{section.name}}</div>
             </a>
         </div> -->
-        <div class="mt-2 mb-2 col-auto d-none d-lg-block" *ngFor="let section of allSections;"  >
+        <div class="mt-2 mb-2 col-auto d-none d-lg-block" *ngFor="let section of allSections;let index = index"  >
                 <a  [class.active]="section == activeSection()" href="#" (click)="changeSection($event, section)">
                     <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
                     <div class="text-center">{{section.name}}</div>
+                    <a class="undo-option" href="#" title="undo" *ngIf="activeSection().globalReset && hideWeaponChoices && index==0"
+                    (click)="resetPressed($event)"
+                    [class.disabled]="undoManagerIndex() === 0">
+                    <!--  <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
+                    UNDO
+                  </a>
+                  <a class= "undo-option" href="#" title="redo" *ngIf="activeSection().globalReset && hideWeaponChoices && index==1"
+                    (click)="redoPressed($event)"
+                    [class.disabled]="undoManagerIndex() == undoManagerLimit()">
+                    REDO
+                  </a>
+                  <a class=" undo-option" href="#" title="reset" *ngIf="activeSection().globalReset && hideWeaponChoices && index==2"
+                    (click)="viewerReset($event)">
+                    RESET
+                  </a>
+
                 </a>
 
+
         </div>
-        <div class="mt-2 mb-2 col-auto d-none d-lg-block undo-container" *ngIf="activeSection().globalReset && hideWeaponChoices" style="padding-right:0px">
+       <!--  <div class="mt-2 mb-2 col-auto d-none d-lg-block undo-container" *ngIf="activeSection().globalReset && hideWeaponChoices" style="padding-right:0px">
           <a class="undo-option" href="#" title="undo"
           (click)="resetPressed($event)"
           [class.disabled]="undoManagerIndex() === 0">
-          <!--  <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
           UNDO
          </a>
          <a class= "undo-option" href="#" title="redo"
             (click)="redoPressed($event)"
             [class.disabled]="undoManagerIndex() == undoManagerLimit()">
-             <!-- <i class="material-icons md-inherit custom-md-size">arrow_right</i> -->
              REDO
          </a>
          <a class=" undo-option" href="#" title="reset"
             (click)="viewerReset($event)">
                RESET
-                 <!-- <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
-                      style="background-image: url('assets/img/nav-icons/spin.svg');">
-                 </div>
-                 <span class="undo-button">{{ undoManagerIndex() }}</span> -->
          </a>
 
         </div>
-
+ -->
         <!-- section select for smaller device -->
-        <div class="mt-2 mb-2 col-2 d-lg-none" *ngFor="let section of allSections; ">
+        <div class="mt-2 mb-2 col-2 d-lg-none" *ngFor="let section of allSections; let index = index">
             <a   [class.active]="section == activeSection()" href="#" (click)="changeSection($event, section)">
                 <div class="section-icon contain-svg" [inlineSVG]="section.svgPath"></div>
+                <a class="undo-option" href="#" title="undo" *ngIf="activeSection().globalReset && hideWeaponChoices && index==0"
+                    (click)="resetPressed($event)"
+                    [class.disabled]="undoManagerIndex() === 0">
+                    <!--  <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
+                    UNDO
+                  </a>
+                  <a class= "undo-option" href="#" title="redo" *ngIf="activeSection().globalReset && hideWeaponChoices && index==1"
+                    (click)="redoPressed($event)"
+                    [class.disabled]="undoManagerIndex() == undoManagerLimit()">
+                    REDO
+                  </a>
+                  <a class=" undo-option" href="#" title="reset" *ngIf="activeSection().globalReset && hideWeaponChoices && index==2"
+                    (click)="viewerReset($event)">
+                    RESET
+                  </a>
             </a>
         </div>
 
@@ -86,28 +112,7 @@
 
 
     </div>
-    <div class="d-lg-none undo-container" *ngIf="activeSection().globalReset && hideWeaponChoices" id="smallundo">
-      <a class="undo-mobile" href="#" title="undo"
-      (click)="resetPressed($event)"
-      [class.disabled]="undoManagerIndex() === 0">
-       <!-- <i class="material-icons md-inherit custom-md-size">arrow_left</i> -->
-       UNDO
-   </a>
-   <a class="undo-mobile" href="#" title="redo"
-      (click)="redoPressed($event)"
-      [class.disabled]="undoManagerIndex() == undoManagerLimit()">
-      <!--  <i class="material-icons md-inherit custom-md-size">arrow_right</i> -->
-      REDO
-   </a>
-   <a class="undo-mobile" href="#" title="reset"
-      (click)="viewerReset($event)">
-          <!--  <div class="display fa-spin-hover" [style.opacity]="undoButtonVisiblity()"
-                style="background-image: url('assets/img/nav-icons/spin.svg');">
-           </div>
-           <span class="undo-button">{{ undoManagerIndex() }}</span> -->
-           RESET
-   </a>
-  </div>
+
 <!-- if color select then have tabs -->
    <!--  <div class="pack-selector">
         <ng-container *ngIf="activeSection().optionGroups.length>1 && activeSection().name=='Color'" >
