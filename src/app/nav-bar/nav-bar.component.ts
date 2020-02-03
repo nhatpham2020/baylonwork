@@ -156,14 +156,14 @@ export class NavBarComponent implements OnInit {
       document.getElementById('sideNav').classList.add('side-header-open');
       document.getElementById('primary-menu').style.display = 'block';
       if(document.getElementById('tabcontent1')) {
-        document.getElementById('tabcontent1').style.zIndex = '-5';
+        document.getElementById('tabcontent1').style.display = 'none';
       }
     } else {
       console.log('isopened')
       document.getElementById('sideNav').classList.remove('side-header-open');
       document.getElementById('primary-menu').style.display = 'none';
       if(document.getElementById('tabcontent1')) {
-        document.getElementById('tabcontent1').style.zIndex = '0';
+        document.getElementById('tabcontent1').style.display = 'block';
       }
 
     }
