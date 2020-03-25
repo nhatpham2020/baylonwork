@@ -146,6 +146,40 @@ export class AppearanceControlsComponent implements OnDestroy {
     }
     return this.stopEvent(event);
   }
+  onSwipeRight(event: MouseEvent, parameter) {
+    const delta = Math.abs(event.deltaX);
+    const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+    switch (parameter) {
+      case 'texture':
+        ne.scrollLeft = this.clampScrollValue(this.scrollTexture - delta);
+        this.scrollTexture = this.clampScrollValue(this.scrollTexture - delta);
+        break;
+      case 'color':
+        ne.scrollLeft = this.clampScrollValue(this.scrollColor - delta);
+        this.scrollColor = this.clampScrollValue(this.scrollColor - delta);
+        break;
+      default:
+        ne.scrollLeft = this.clampScrollValue(this.scrollAttach - delta);
+        this.scrollAttach = this.clampScrollValue(this.scrollAttach - delta);
+    }
+  }
+  onSwipeLeft(event: MouseEvent, parameter) {
+    const delta = Math.abs(event.deltaX);
+    const ne: HTMLDivElement = this.optionsContainer.nativeElement;
+    switch (parameter) {
+      case 'texture':
+        ne.scrollLeft = this.clampScrollValue(this.scrollTexture + delta);
+        this.scrollTexture = this.clampScrollValue(this.scrollTexture + delta);
+        break;
+      case 'color':
+        ne.scrollLeft = this.clampScrollValue(this.scrollColor + delta);
+        this.scrollColor = this.clampScrollValue(this.scrollColor + delta);
+        break;
+      default:
+        ne.scrollLeft = this.clampScrollValue(this.scrollAttach + delta);
+        this.scrollAttach = this.clampScrollValue(this.scrollAttach + delta);
+    }
+  }
   startMarketing(event?: MouseEvent) {
     if (this.authService.isLoggedIn) {
       // TODO
@@ -715,7 +749,7 @@ export class AppearanceControlsComponent implements OnDestroy {
     return this.stopEvent(event);
   }
 
-  scrollOptionsLeft(event, parameter) {
+  scrollOptionsLeft(event: MouseEvent, parameter) {
 
     const ne: HTMLDivElement = this.optionsContainer.nativeElement;
     switch (parameter) {
@@ -735,10 +769,9 @@ export class AppearanceControlsComponent implements OnDestroy {
         console.log(this.scrollAttach);
     }
 
-    return this.stopEvent(event);
   }
 
-  scrollOptionsRight(event, parameter) {
+  scrollOptionsRight(event: MouseEvent, parameter) {
     const ne: HTMLDivElement = this.optionsContainer.nativeElement;
     switch (parameter) {
       case 'texture':
@@ -756,8 +789,6 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.scrollAttach = this.clampScrollValue(this.scrollAttach + (ne.clientWidth - 64));
         console.log(this.scrollAttach)
     }
-
-    return this.stopEvent(event);
   }
 
   selectedOption(optionGroup: AppearanceOptionGroup): AppearanceOption {

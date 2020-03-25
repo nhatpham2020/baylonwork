@@ -148,6 +148,8 @@
 .arrow-controls {
   font-size: 2.5em;
   line-height: 0;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .arrow-controls .disabled {

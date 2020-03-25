@@ -164,6 +164,7 @@
                        [class.active]=" (option === selectedOption(optionGroup))"
                        (click)="optionClicked($event, optionGroup, option)"
                        (dblclick)="onVeryLongPress($event, optionGroup, option)"
+                       (swipeleft)="onSwipeLeft($event, activeSection().affectedParameter)" (swiperight)="onSwipeRight($event, activeSection().affectedParameter)"
                     >
                         <!--   [longPress]="500" (onRelease)="onVeryLongPress($event)" -->
                         <div  class="display" [className]="'display '+optionGroup.itemCustomClasses || 'display'"
@@ -171,6 +172,7 @@
                              [style.backgroundImage]="option.displayImg ? ('url(\'' + option.displayImg + '\')') : ''"></div>
                     </a>
                     <a class="section-option" href="javascript: void(0);"
+                    (swipeleft)="onSwipeLeft($event, activeSection().affectedParameter)" (swiperight)="onSwipeRight($event, activeSection().affectedParameter)"
                            *ngFor="let plusbutton of plusbuttons;"
                            (click)="fileToUpload2.click()"
                     >
@@ -180,6 +182,7 @@
                     </a>
                     <a class="section-option" href="#"
                       (click)="upgradeMembership($event)"
+                      (swipeleft)="onSwipeLeft($event, activeSection().affectedParameter)" (swiperight)="onSwipeRight($event, activeSection().affectedParameter)"
                            *ngFor="let lockbutton of lockbuttons;"
                            >
                             <div class="display undefined" style="border-radius: 50%; background-Image:url(assets/img/nav-icons/lockbutton.jpg)"
@@ -193,6 +196,7 @@
                      [class.active]=" (option === selectedOption(optionGroup))"
                      (click)="optionClicked($event, optionGroup, option)"
                      (dblclick)="onVeryLongPress($event, optionGroup, option)"
+                     (swipeleft)="onSwipeLeft($event, activeSection().affectedParameter)" (swiperight)="onSwipeRight($event, activeSection().affectedParameter)"
                   >
                       <!--   [longPress]="500" (onRelease)="onVeryLongPress($event)" -->
                       <div  class="display" [className]="'display '+optionGroup.itemCustomClasses || 'display'"
@@ -207,7 +211,8 @@
                            [class.first-of-set]="isFirst"
                            [class.active]=" (option === selectedOption(optionGroup))"
                            (click)="optionClicked($event, optionGroup, option)"
-                           (dblclick)="onVeryLongPress($event, optionGroup, option)">
+                           (dblclick)="onVeryLongPress($event, optionGroup, option)"
+                           (swipeleft)="onSwipeLeft($event, activeSection().affectedParameter)" (swiperight)="onSwipeRight($event, activeSection().affectedParameter)">
                             <!--   [longPress]="500" (onRelease)="onVeryLongPress($event)" -->
                             <div class="display" [className]="'display '+optionGroup.itemCustomClasses || 'display'"
                                  [style.backgroundColor]="option.displayColor || ''" style="border-radius: 50%"
@@ -232,12 +237,12 @@
                <input #fileToUpload type="file"  accept="image/jpeg, .jpeg, image/png, .png, image/pjpeg, .jpg" name="fileToUpload" (change)="uploadTexture($event)"style="display:none;">
             </a>
 
-            <a class="m-auto" href="#"
+            <a class="m-auto d-none d-lg-block" href="#"
                (click)="scrollOptionsLeft($event, activeSection().affectedParameter)"
                [class.disabled]="optionsContainer.scrollLeft === 0">
                 <i class="material-icons md-inherit">arrow_left</i>
             </a>
-            <a class="m-auto" href="#"
+            <a class="m-auto d-none d-lg-block" href="#"
                (click)="scrollOptionsRight($event, activeSection().affectedParameter)"
                [class.disabled]="(optionsContainer.scrollLeft + optionsContainer.clientWidth) >= optionsContainer.scrollWidth">
                 <i class="material-icons md-inherit">arrow_right</i>
