@@ -146,7 +146,7 @@ export class AppearanceControlsComponent implements OnDestroy {
     }
     return this.stopEvent(event);
   }
-  onSwipeRight(event: MouseEvent, parameter) {
+  onSwipeRight(event: WheelEvent, parameter) {
     const delta = Math.abs(event.deltaX);
     const ne: HTMLDivElement = this.optionsContainer.nativeElement;
     switch (parameter) {
@@ -163,7 +163,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.scrollAttach = this.clampScrollValue(this.scrollAttach - delta);
     }
   }
-  onSwipeLeft(event: MouseEvent, parameter) {
+  onSwipeLeft(event: WheelEvent, parameter) {
     const delta = Math.abs(event.deltaX);
     const ne: HTMLDivElement = this.optionsContainer.nativeElement;
     switch (parameter) {
