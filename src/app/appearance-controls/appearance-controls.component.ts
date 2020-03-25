@@ -768,7 +768,7 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.scrollAttach = this.clampScrollValue(this.scrollAttach - (ne.clientWidth - 64));
         console.log(this.scrollAttach);
     }
-
+    return this.stopEvent(event);
   }
 
   scrollOptionsRight(event: MouseEvent, parameter) {
@@ -789,6 +789,8 @@ export class AppearanceControlsComponent implements OnDestroy {
         this.scrollAttach = this.clampScrollValue(this.scrollAttach + (ne.clientWidth - 64));
         console.log(this.scrollAttach)
     }
+
+    return this.stopEvent(event);
   }
 
   selectedOption(optionGroup: AppearanceOptionGroup): AppearanceOption {

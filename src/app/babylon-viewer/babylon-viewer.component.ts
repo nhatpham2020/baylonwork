@@ -545,13 +545,13 @@ export class BabylonViewerComponent implements AfterContentInit, OnDestroy {
     this.camera.minZ = 0.01;
     this.camera.lowerRadiusLimit = 1;
     this.camera.upperRadiusLimit = 5;
+    this.camera.panningSensibility = 0; //disable move by mouse right
     this.camera.attachControl(this.displayCanvas);
 
   }
 
   showMesh(meshName: string, modelFolder?: string, modelFile?: string) {
     this.getMesh(meshName, modelFolder, modelFile).setEnabled(true);
-
   }
 
   setPosition(meshName: string, position: Value3D) {
