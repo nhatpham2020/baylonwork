@@ -39,4 +39,3 @@ testem.log
 Thumbs.db
 server/converter/ffmpeg/
 server-ts/
-/src/assets
