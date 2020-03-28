@@ -72,116 +72,82 @@ export interface ColorOptionInterface {
 
 }
 
-
 const colorOptions: ColorOptionInterface[] = [
   {
-    name: 'Silver',
-    displayColor: '#fcfaf5',
-    interactionValue: '#fcfaf5'
-  },
-  /*  {
-       name: 'Gold',
-       displayColor: '#ffe29b',
-       interactionValue: '#ffe29b'
-   },
-   {
-       name: 'White',
-       displayColor: '#FFFFFF',
-       interactionValue: '#FFFFFF'
-   }, */
-  {
-    name: 'Pink',
-    displayColor: '#EE82EE',
-    interactionValue: '#EE82EE'
-  },
-  {
-    name: 'Fuchsia',
-    displayColor: '#800080',
-    interactionValue: '#800080'
-  },
-  {
-    name: 'Blue',
-    displayColor: '#000080',
-    interactionValue: '#000080'
-  },
-  {
-    name: 'Teal',
-    displayColor: '#7FFFD4',
-    interactionValue: '#7FFFD4'
-  },
-  {
-    name: 'Lime',
-    displayColor: '#00FF00',
-    interactionValue: '#00FF00'
-  },
-  {
-    name: 'Green',
-    displayColor: '#008000',
-    interactionValue: '#008000'
-  },
-  {
-    name: 'Yellow',
-    displayColor: '#FFFF00',
-    interactionValue: '#FFFF00'
-  },
-  {
-    name: 'Orange',
-    displayColor: '#FFA500',
-    interactionValue: '#FFA500'
-  },
-  {
-    name: 'Red',
-    displayColor: '#FF0000',
-    interactionValue: '#FF0000'
-  },
-  {
-    name: 'Black',
+    name: 'Black10',
     displayColor: '#000000',
     interactionValue: '#000000'
   },
   {
-    name: 'Brown',
-    displayColor: '#5f4322',
-    interactionValue: '#5f4322'
-  },
-  {
-    name: 'Grey',
+    name: 'Grey12',
     displayColor: '#4c4c4c',
     interactionValue: '#4c4c4c'
   },
   {
-    name: 'Pink',
-    displayColor: '#006acd',
-    interactionValue: '#006acd'
+    name: 'Silver0',
+    displayColor: '#fcfaf5',
+    interactionValue: '#fcfaf5'
   },
   {
-    name: 'PinkBlue',
-    displayColor: '#c918c3',
-    interactionValue: '#c918c3'
-  },
-];
-
-const colorOptionsPack2: ColorOptionInterface[] = [
-  {
-    name: 'Green',
-    displayColor: '#008000',
-    interactionValue: '#008000'
-  },
-  {
-    name: 'Yellow',
+    name: 'Yellow7',
     displayColor: '#FFFF00',
     interactionValue: '#FFFF00'
   },
   {
-    name: 'Orange',
+    name: 'Orange8',
     displayColor: '#FFA500',
     interactionValue: '#FFA500'
   },
   {
-    name: 'Red',
+    name: 'Red9',
     displayColor: '#FF0000',
     interactionValue: '#FF0000'
-  }
+  },
+  {
+    name: 'Brown11',
+    displayColor: '#5f4322',
+    interactionValue: '#5f4322'
+  },
+  {
+    name: 'Pink1',
+    displayColor: '#EE82EE',
+    interactionValue: '#EE82EE'
+  },
+  {
+    name: 'PinkBlue14',
+    displayColor: '#c918c3',
+    interactionValue: '#c918c3'
+  },
+  {
+    name: 'Fuchsia2',
+    displayColor: '#800080',
+    interactionValue: '#800080'
+  },
+  {
+    name: 'Pink13',
+    displayColor: '#006acd',
+    interactionValue: '#006acd'
+  },
+  {
+    name: 'Blue3',
+    displayColor: '#000080',
+    interactionValue: '#000080'
+  },
+  {
+    name: 'Teal4',
+    displayColor: '#7FFFD4',
+    interactionValue: '#7FFFD4'
+  },
+  {
+    name: 'Lime5',
+    displayColor: '#00FF00',
+    interactionValue: '#00FF00'
+  },
+  {
+    name: 'Green6',
+    displayColor: '#008000',
+    interactionValue: '#008000'
+  },
 ];
 
 const colorOptionsPack3: ColorOptionInterface[] =
