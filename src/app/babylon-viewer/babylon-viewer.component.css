@@ -41,3 +41,11 @@
   width: 198px;
   top: 20vh;
 }
+
+@media (min-width: 576px) {
+	.logo { width: 300px; }
+}
+
+@media (min-width: 768px) {
+	.logo { width: 400px; }
+}

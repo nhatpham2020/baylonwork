@@ -133,7 +133,32 @@ const colorOptions: ColorOptionInterface[] = [
     name: 'Red',
     displayColor: '#FF0000',
     interactionValue: '#FF0000'
-  }
+  },
+  {
+    name: 'Black',
+    displayColor: '#000000',
+    interactionValue: '#000000'
+  },
+  {
+    name: 'Brown',
+    displayColor: '#5f4322',
+    interactionValue: '#5f4322'
+  },
+  {
+    name: 'Grey',
+    displayColor: '#4c4c4c',
+    interactionValue: '#4c4c4c'
+  },
+  {
+    name: 'Pink',
+    displayColor: '#006acd',
+    interactionValue: '#006acd'
+  },
+  {
+    name: 'PinkBlue',
+    displayColor: '#c918c3',
+    interactionValue: '#c918c3'
+  },
 ];
 
 const colorOptionsPack2: ColorOptionInterface[] = [
@@ -320,4 +345,3 @@ export class CustomizerDataService {
 
 
 }
-
