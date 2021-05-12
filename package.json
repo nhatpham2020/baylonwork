@@ -50,7 +50,7 @@
     "ngx-color-picker": "^7.2.0",
     "ngx-long-press": "0.0.1",
     "ngx-stripe": "^7.4.3",
-    "nodemailer": "^6.3.0",
+    "nodemailer": "^6.4.16",
     "nvc": "0.0.0",
     "parsehtml": "^1.0.0",
     "passport": "^0.4.0",
